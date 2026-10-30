@@ -24,7 +24,7 @@
 | Về nhà | HW3 PVS Arena | 1 tuần | `src/homeworks/KraftonPubgVnArena/` | [WBS HW3](src/homeworks/KraftonPubgVnArena/TASK_DECOMPOSITION.md) |
 | Tuỳ chọn | Bonus: Situationship FSM | không xếp lịch | `src/homeworks/BonusSituationship/` | [WBS Bonus](src/homeworks/BonusSituationship/TASK_DECOMPOSITION.md) |
 
-Mã, WBS và bằng chứng của mỗi bài in-class nằm trong folder bài (`src/exercises/<Bài>/`). Đường dẫn checklist `src/components/{DeveloperCard,ScientistDirectory,PubgMatchTelemetry}.jsx` là file re-export một dòng trỏ về folder bài (tạo khi bài đó có component).
+Gốc repo chỉ chứa tài liệu. **Mỗi bài là một project Vite độc lập** (`package.json`, `node_modules/`, `src/` riêng) nằm ở `src/exercises/<Bài>/` hoặc `src/homeworks/<Bài>/`; chạy `npm` trong folder bài. Component checklist nằm ở `src/components/` của từng project (ví dụ `src/exercises/Exercise1_DeveloperCard/src/components/DeveloperCard.jsx`).
 
 ## 3. Block 1 — Khởi tạo chung (X)
 
@@ -32,12 +32,12 @@ Mã, WBS và bằng chứng của mỗi bài in-class nằm trong folder bài (`
 |---|---|---|---|
 | X0-01 | Đọc lại cầu nối Lab 2 → 3 ([Context.md §3](docs/Context.md)); trả lời miệng 3 ý: Fiber vs đệ quy, hook queue vs `stateStore[cursor]`, `Object.is` | Tự giải thích được, không nhìn tài liệu | [ ] |
 | X0-02 | Chốt stack: JS + JSDoc hay TypeScript (ghi vào [project-rules.md §1](project-rules.md)) | Một lựa chọn duy nhất | [x] |
-| X0-03 | Khởi tạo Vite + React 19 trong repo này (giữ nguyên `docs/`, `src/exercises/`, `src/homeworks/`) | `npm run dev` hiện trang; `package.json` có `react@19` | [x] |
+| X0-03 | Khởi tạo Vite + React 19 trong project Ex1 (`src/exercises/Exercise1_DeveloperCard/`); bài khác sao chép cấu hình ở task `*-00` | `npm run dev` hiện trang; `package.json` có `react@19` | [x] |
 | X0-04 | Cài Vitest + jsdom + `@testing-library/react` + `@testing-library/jest-dom`; `setupFiles` có `afterEach(cleanup)`; script `test` | `npm test` chạy (0 test cũng được) | [x] |
 | X0-05 | `src/main.jsx` dùng `createRoot` + `StrictMode`, kiểm `#root` tồn tại | Không còn `ReactDOM.render`, `import * as React` | [x] |
 | X0-06 | `.gitignore` (`node_modules/`, `dist/`); dọn template mẫu Vite thừa | `git status` chỉ còn file có chủ đích | [x] |
 | X0-07 | Nạp `project-rules.md` cho công cụ AI đang dùng (Cursor `.cursorrules`, hoặc đọc `Agents.md`) | AI trả lời được 3 luật cấm khi hỏi | [ ] |
-| X0-08 | Chuẩn bị avatar local: cắt/resize từ `C:\Dev\Project\MSIS207_Lab1\Exercise_3\assets\hero-avatar-320.jpg` thành `src/exercises/Exercise1_DeveloperCard/assets/avatar-128.jpg` (128×128; môi trường không có encoder WebP nên dùng JPEG, 5 KB) | File tồn tại, vài KB, import được từ Vite | [x] |
+| X0-08 | Chuẩn bị avatar local: cắt/resize từ `C:\Dev\Project\MSIS207_Lab1\Exercise_3\assets\hero-avatar-320.jpg` thành `src/exercises/Exercise1_DeveloperCard/src/assets/avatar-128.jpg` (128×128; môi trường không có encoder WebP nên dùng JPEG, 5 KB) | File tồn tại, vài KB, import được từ Vite | [x] |
 | X0-09 | ESLint: `eslint-plugin-react-hooks` + `eslint-plugin-jsx-a11y`; script `lint` | `npm run lint` chạy sạch trên khung rỗng. Ghi chú: dùng ESLint 9 vì `eslint-plugin-jsx-a11y` chưa hỗ trợ ESLint 10 | [x] |
 
 **Commit C0** (spec): `docs: add context, agents, project rules and WBS`
@@ -80,15 +80,17 @@ Tổng 9 commit (7 theo đề + 2 hạ tầng). Thêm commit tích hợp `feat(a
 
 ## 6. Kiểm tra cuối trước khi lên bàn chấm
 
-Đối chiếu slide 34. Chạy từ gốc repo:
+Đối chiếu slide 34. Chạy **trong từng folder bài** (mỗi bài một project). Ví dụ với Ex1:
 
 ```bash
-grep -n '<div' src/exercises/Exercise1_DeveloperCard/DeveloperCard.jsx   # 0 dòng
+cd src/exercises/Exercise1_DeveloperCard
+grep -n '<div' src/components/DeveloperCard.jsx   # 0 dòng
 grep -rnE 'http://' src                                        # 0 dòng
 grep -rnE 'extends (React\.)?Component|ReactDOM\.render|defaultProps|keyCode|alert\(|dangerouslySetInnerHTML|key=\{(i|idx|index)\}' src   # 0 dòng
 grep -rn 'import \* as React' src                    # 0 dòng
 npm test                                                       # pass
-git log --oneline --graph                                      # >= 6-8 commit
+npm run lint                                                   # sạch
+cd ../../.. && git log --oneline --graph                       # >= 6-8 commit (chạy ở gốc repo)
 ```
 
 | Hạng mục | Cách kiểm | Trạng thái |
@@ -96,7 +98,7 @@ git log --oneline --graph                                      # >= 6-8 commit
 | `project-rules.md` | File tồn tại ở gốc, đã chỉnh theo thực tế | [ ] |
 | `TASK_DECOMPOSITION.md` | Tổng + từng bài; task đã tick; commit khớp | [ ] |
 | `AI_FAILURE_AUDIT.md` | >= 3 lỗi, mỗi lỗi có bằng chứng DevTools và bản sửa | [ ] |
-| `src/components/` | 3 file `.jsx` re-export có mặt, import chạy được | [ ] |
+| `src/components/` của từng project | `DeveloperCard.jsx`, `ScientistDirectory.jsx`, `PubgMatchTelemetry.jsx` có mặt và chạy | [ ] |
 | `src/homeworks/` | 3 thư mục có code, test, `evidence/` | [ ] |
 | Console | Không warning/error ở cả ba bài in-class | [ ] |
 | 375px | Không cuộn ngang ở mọi bài | [ ] |

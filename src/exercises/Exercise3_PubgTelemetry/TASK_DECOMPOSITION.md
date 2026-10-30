@@ -1,6 +1,7 @@
 # TASK_DECOMPOSITION — Exercise 3: PubgMatchTelemetry (Sprint 3, 35 phút)
 
 > WBS con của [TASK_DECOMPOSITION.md](../../../TASK_DECOMPOSITION.md). Mỗi prompt AI = đúng một task ID.
+> **Mỗi bài là một project Vite độc lập** (có `package.json`, `node_modules/` riêng). Chạy mọi lệnh `npm` ngay trong folder này; đường dẫn file bên dưới tính từ folder này.
 
 ## 1. Mục tiêu và phạm vi
 
@@ -33,15 +34,16 @@ Radar trực tiếp cho các đội PUBG Vietnam Series: máy trạng thái `IDL
 
 | ID | Task | File | Gate | Trạng thái |
 |---|---|---|---|---|
-| E3-01 | Dữ liệu `PUBG_VN_SQUADS` + typedef | `data/pubgSquads.js` | Test: 3 squad đủ trường | [ ] |
-| E3-02 | Mock `fetchKraftonPubgTelemetry` có latency, lossRate, tôn trọng `signal`, **dọn timer và listener khi abort** (§7) | `api/krafton.js` | Test: abort giữa chừng → `AbortError`; lossRate 1 → luôn lỗi; 0 → luôn thành công; sau abort `vi.getTimerCount() === 0` | [ ] |
-| E3-03 | Component + `ViewState`, effect `LOADING → SUCCESS/ERROR` | `PubgMatchTelemetry.jsx` | Test: đủ 3 trạng thái hiển thị đúng | [ ] |
-| E3-04 | Cleanup `controller.abort()` + guard `AbortError` | `PubgMatchTelemetry.jsx` | Test: đổi squad khi đang tải → không hiện lỗi giả, dữ liệu đúng squad mới | [ ] |
-| E3-05 | Bộ chọn squad (CES, TE, GE); cache theo squad bằng `useRef(Map)` (§7) | `PubgMatchTelemetry.jsx` | Click nhanh CES→TE→GE: Network có `(canceled)`; quay lại squad cũ không nháy skeleton | [ ] |
-| E3-06 | Hiển thị dữ liệu SUCCESS bằng `<article>` + `<dl>` (map, phase, alive, kills, WWCD, status) | `PubgMatchTelemetry.jsx` | Accessibility tree đúng; vùng cập nhật `aria-live="polite"` | [ ] |
-| E3-07 | Skeleton 220px `aria-busy="true"` (tôn trọng reduced-motion) | `PubgMatchTelemetry.module.css` | Slow 3G: CLS 0,00 | [ ] |
-| E3-08 | Lỗi `<section role="alert">` + nút Retry tăng `retryTick` | `PubgMatchTelemetry.jsx` | Test: retry chạy lại effect, về LOADING rồi kết quả mới | [ ] |
-| E3-09 | CSS Modules + 375px | `.module.css` | 0 cuộn ngang | [ ] |
+| E3-00 | Khởi tạo project Vite riêng: sao chép `package.json` (đổi `name`), `vite.config.js`, `eslint.config.js`, `index.html`, `src/main.jsx`, `src/test/setup.js` từ Ex1, rồi `npm install` | `package.json`, `vite.config.js`, `eslint.config.js`, `index.html`, `src/main.jsx`, `src/test/setup.js` | `npm test` và `npm run lint` chạy được | [ ] |
+| E3-01 | Dữ liệu `PUBG_VN_SQUADS` + typedef | `src/data/pubgSquads.js` | Test: 3 squad đủ trường | [ ] |
+| E3-02 | Mock `fetchKraftonPubgTelemetry` có latency, lossRate, tôn trọng `signal`, **dọn timer và listener khi abort** (§7) | `src/api/krafton.js` | Test: abort giữa chừng → `AbortError`; lossRate 1 → luôn lỗi; 0 → luôn thành công; sau abort `vi.getTimerCount() === 0` | [ ] |
+| E3-03 | Component + `ViewState`, effect `LOADING → SUCCESS/ERROR` | `src/components/PubgMatchTelemetry.jsx` | Test: đủ 3 trạng thái hiển thị đúng | [ ] |
+| E3-04 | Cleanup `controller.abort()` + guard `AbortError` | `src/components/PubgMatchTelemetry.jsx` | Test: đổi squad khi đang tải → không hiện lỗi giả, dữ liệu đúng squad mới | [ ] |
+| E3-05 | Bộ chọn squad (CES, TE, GE); cache theo squad bằng `useRef(Map)` (§7) | `src/components/PubgMatchTelemetry.jsx` | Click nhanh CES→TE→GE: Network có `(canceled)`; quay lại squad cũ không nháy skeleton | [ ] |
+| E3-06 | Hiển thị dữ liệu SUCCESS bằng `<article>` + `<dl>` (map, phase, alive, kills, WWCD, status) | `src/components/PubgMatchTelemetry.jsx` | Accessibility tree đúng; vùng cập nhật `aria-live="polite"` | [ ] |
+| E3-07 | Skeleton 220px `aria-busy="true"` (tôn trọng reduced-motion) | `src/components/PubgMatchTelemetry.module.css` | Slow 3G: CLS 0,00 | [ ] |
+| E3-08 | Lỗi `<section role="alert">` + nút Retry tăng `retryTick` | `src/components/PubgMatchTelemetry.jsx` | Test: retry chạy lại effect, về LOADING rồi kết quả mới | [ ] |
+| E3-09 | CSS Modules + 375px | `src/components/PubgMatchTelemetry.module.css` | 0 cuộn ngang | [ ] |
 | E3-10 | StrictMode: xác nhận không rò request/timer; lưu bằng chứng | `evidence/` | Ảnh Network (canceled), Performance CLS, Lighthouse a11y | [ ] |
 
 ## 4. Commit

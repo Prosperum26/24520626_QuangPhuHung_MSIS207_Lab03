@@ -1,6 +1,7 @@
 # TASK_DECOMPOSITION — Homework 2: 88-Key Polyphonic Piano & FIFO Sequencer
 
 > WBS con của [TASK_DECOMPOSITION.md](../../../TASK_DECOMPOSITION.md). Mỗi prompt AI = đúng một task ID. Nối tiếp `memo()` và `AudioTaskQueue` FIFO của Lab 2 (`C:\Dev\Project\24520626_QuangPhuHung_MSIS207_Lab02\Homework2_Lab02`).
+> **Mỗi bài là một project Vite độc lập** (có `package.json`, `node_modules/` riêng). Chạy mọi lệnh `npm` ngay trong folder này; đường dẫn file bên dưới tính từ folder này.
 
 ## 1. Mục tiêu và phạm vi
 
@@ -42,16 +43,17 @@ Piano 88 phím (A0 đến C8) phát đa âm bằng Web Audio, tối đa 8 voice 
 
 | ID | Task | File | Gate | Trạng thái |
 |---|---|---|---|---|
-| H2-01 | Spec + `midiToFreq` + tên nốt | `music/notes.js` | Test: A4 (69) = 440 Hz; A0 = 27,5 Hz; C8 ≈ 4186 Hz | [ ] |
-| H2-02 | `buildKeys()` 88 phím, 52 trắng + 36 đen | `music/notes.js` | Test: độ dài 88, đếm trắng/đen đúng, midi 21..108 | [ ] |
-| H2-03 | `PolyphonicSynth`: noteOn/noteOff, ADSR click-free | `audio/PolyphonicSynth.js` | Test (AudioContext giả): ramp trước stop, disconnect | [ ] |
-| H2-04 | Giới hạn 8 voice + steal FIFO | `PolyphonicSynth.js` | Test: nốt thứ 9 đẩy nốt đầu tiên; thứ tự đúng | [ ] |
-| H2-05 | `PianoKey` bằng `memo`, `aria-pressed`, vùng bấm hợp lệ | `components/PianoKey.jsx` | Test: đổi `isPressed` của phím khác → không render lại | [ ] |
-| H2-06 | `GrandPiano` bố cục 88 phím + trạng thái pressed | `components/GrandPiano.jsx` | Profiler: nhấn 1 phím = 1 component render | [ ] |
-| H2-07 | Bộ ghi FIFO `{midi,freqHz,durationMs,deltaMs}` | `audio/recorder.js` | Test: thứ tự ghi giữ nguyên | [ ] |
-| H2-08 | Phát lại bất đồng bộ 0,5x/1x/2x + `AbortController` | `audio/sequencer.js` | Test: Stop hủy sớm, không còn tiếng | [ ] |
-| H2-09 | UI Record/Play/Stop/Tốc độ, thông báo `role="status"` | `components/Sequencer.jsx` | Điều khiển bằng bàn phím; nhãn rõ | [ ] |
-| H2-10 | CSS Modules, 375px (cuộn ngang có chủ đích cho bàn phím piano hoặc co giãn) | `*.module.css` | Trang không cuộn ngang ngoài vùng đàn; tương phản đạt | [ ] |
+| H2-00 | Khởi tạo project Vite riêng: sao chép `package.json` (đổi `name`), `vite.config.js`, `eslint.config.js`, `index.html`, `src/main.jsx`, `src/test/setup.js` từ Ex1, rồi `npm install` | `package.json`, `vite.config.js`, `eslint.config.js`, `index.html`, `src/main.jsx`, `src/test/setup.js` | `npm test` và `npm run lint` chạy được | [ ] |
+| H2-01 | Spec + `midiToFreq` + tên nốt | `src/music/notes.js` | Test: A4 (69) = 440 Hz; A0 = 27,5 Hz; C8 ≈ 4186 Hz | [ ] |
+| H2-02 | `buildKeys()` 88 phím, 52 trắng + 36 đen | `src/music/notes.js` | Test: độ dài 88, đếm trắng/đen đúng, midi 21..108 | [ ] |
+| H2-03 | `PolyphonicSynth`: noteOn/noteOff, ADSR click-free | `src/audio/PolyphonicSynth.js` | Test (AudioContext giả): ramp trước stop, disconnect | [ ] |
+| H2-04 | Giới hạn 8 voice + steal FIFO | `src/audio/PolyphonicSynth.js` | Test: nốt thứ 9 đẩy nốt đầu tiên; thứ tự đúng | [ ] |
+| H2-05 | `PianoKey` bằng `memo`, `aria-pressed`, vùng bấm hợp lệ | `src/components/PianoKey.jsx` | Test: đổi `isPressed` của phím khác → không render lại | [ ] |
+| H2-06 | `GrandPiano` bố cục 88 phím + trạng thái pressed | `src/components/GrandPiano.jsx` | Profiler: nhấn 1 phím = 1 component render | [ ] |
+| H2-07 | Bộ ghi FIFO `{midi,freqHz,durationMs,deltaMs}` | `src/audio/recorder.js` | Test: thứ tự ghi giữ nguyên | [ ] |
+| H2-08 | Phát lại bất đồng bộ 0,5x/1x/2x + `AbortController` | `src/audio/sequencer.js` | Test: Stop hủy sớm, không còn tiếng | [ ] |
+| H2-09 | UI Record/Play/Stop/Tốc độ, thông báo `role="status"` | `src/components/Sequencer.jsx` | Điều khiển bằng bàn phím; nhãn rõ | [ ] |
+| H2-10 | CSS Modules, 375px (cuộn ngang có chủ đích cho bàn phím piano hoặc co giãn) | `src/**/*.module.css` | Trang không cuộn ngang ngoài vùng đàn; tương phản đạt | [ ] |
 | H2-11 | Bằng chứng: Profiler render isolation, Lighthouse | `evidence/` | Ảnh Profiler, JSON Lighthouse | [ ] |
 
 ## 4. Commit gợi ý
@@ -61,8 +63,8 @@ Piano 88 phím (A0 đến C8) phát đa âm bằng Web Audio, tối đa 8 voice 
 ## 5. Cổng kiểm tra
 
 ```bash
-grep -rnE 'keyCode|alert\(|innerHTML' src/homeworks/GrandPiano88   # 0 dòng
-npm test -- src/homeworks/GrandPiano88
+grep -rnE 'keyCode|alert\(|innerHTML' src   # 0 dòng
+npm test -- src
 ```
 
 DevTools: Profiler ghi một lần nhấn → chỉ `PianoKey` đó render; giữ 9 phím → voice cũ nhất tắt; Stop khi đang phát lại → im lặng ngay.

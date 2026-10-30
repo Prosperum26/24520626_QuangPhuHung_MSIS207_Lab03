@@ -144,7 +144,7 @@ useEffect(() => {
 
 ## 5. Cấu trúc repo (checklist cuối slide + phần mình thêm)
 
-Bắt buộc theo slide 34: `project-rules.md`, `TASK_DECOMPOSITION.md`, `AI_FAILURE_AUDIT.md`, `src/components/{DeveloperCard,ScientistDirectory,PubgMatchTelemetry}.jsx`, `src/homeworks/{DrumMachine,GrandPiano88,KraftonPubgVnArena}/` (trong ảnh checklist, `homeworks/` nằm **bên trong** `src/`, ngang hàng `components/`). Còn lại là phần thêm của mình.
+Bắt buộc theo slide 34: `project-rules.md`, `TASK_DECOMPOSITION.md`, `AI_FAILURE_AUDIT.md`, `src/components/{DeveloperCard,ScientistDirectory,PubgMatchTelemetry}.jsx` (trong `src/` của từng project bài tập), `src/homeworks/{DrumMachine,GrandPiano88,KraftonPubgVnArena}/` (trong ảnh checklist, `homeworks/` nằm **bên trong** `src/`, ngang hàng `components/`). Còn lại là phần thêm của mình.
 
 ```text
 24520626_QuangPhuHung_MSIS207_Lab03/
@@ -156,23 +156,23 @@ Bắt buộc theo slide 34: `project-rules.md`, `TASK_DECOMPOSITION.md`, `AI_FAI
     Context.md                   (thêm) file này
     prompt_logs/                 (thêm) export session AI
   src/
-    components/                  (bắt buộc) file re-export một dòng, trỏ về folder bài
-      DeveloperCard.jsx          Sprint 1 (zero div)
-      ScientistDirectory.jsx     Sprint 2 (derived state)
-      PubgMatchTelemetry.jsx     Sprint 3 (KRAFTON PUBG VN)
-    exercises/                   (thêm) mã + WBS + bằng chứng từng bài in-class
-      Exercise1_DeveloperCard/   TASK_DECOMPOSITION.md, mã thật, test, assets/, evidence/
-      Exercise2_ScientistDirectory/
-      Exercise3_PubgTelemetry/
-    homeworks/                   (bắt buộc)
-      DrumMachine/               HW1; TASK_DECOMPOSITION.md, evidence/
+    exercises/                   (thêm) mỗi bài in-class là một project Vite độc lập
+      Exercise1_DeveloperCard/
+        package.json, vite.config.js, eslint.config.js, index.html
+        TASK_DECOMPOSITION.md, evidence/
+        src/
+          main.jsx, App.jsx, test/setup.js, assets/
+          components/            (bắt buộc) DeveloperCard.jsx, SkillBadge.jsx, developerCardModel.js, test
+      Exercise2_ScientistDirectory/   (cấu trúc như Ex1; components/ScientistDirectory.jsx)
+      Exercise3_PubgTelemetry/        (cấu trúc như Ex1; components/PubgMatchTelemetry.jsx)
+    homeworks/                   (bắt buộc) mỗi bài là một project Vite độc lập
+      DrumMachine/               HW1; TASK_DECOMPOSITION.md, evidence/, src/
       GrandPiano88/              HW2
       KraftonPubgVnArena/        HW3
       BonusSituationship/        (thêm) bonus tuỳ chọn, SituationshipAnalyzer FSM
-    main.jsx, App.jsx, test/     (thêm) khung Vite
 ```
 
-Mã thật của mỗi bài in-class nằm trong folder bài (`src/exercises/<Bài>/`, gồm component, `*.module.css`, hook, mock API, test); file `src/components/*.jsx` chỉ re-export để khớp checklist. Mã của mỗi homework nằm trong folder của nó (`src/homeworks/<Tên>/...`); đường dẫn file trong WBS homework tính từ folder đó. Khung dự án Vite (package.json, vite.config) tạo ở task `X0` (commit `chore: init react19 vite & rules`). Không dùng `.gitkeep`: folder rỗng như `evidence/` tạo khi có file đầu tiên.
+Mỗi bài là một project Vite độc lập: `package.json`, `node_modules/` và `src/` riêng; chạy `npm` trong folder bài. Gốc repo chỉ giữ tài liệu (`Agents.md`, `project-rules.md`, `TASK_DECOMPOSITION.md`, `AI_FAILURE_AUDIT.md`, `docs/`). Đường dẫn file trong WBS từng bài tính từ folder bài. Khung dự án (package.json, vite.config) tạo ở task `X0` trong Ex1 (commit `chore: init react19 vite & rules`); các bài khác sao chép ở task `*-00`. Không dùng `.gitkeep`: folder rỗng như `evidence/` tạo khi có file đầu tiên.
 
 ## 6. Bảo vệ trực tiếp 3 phút (25%)
 

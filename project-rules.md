@@ -6,7 +6,7 @@
 
 ## 1. Stack [Thầy]
 
-- React 19 + Vite + ES2024 (nối tiếp Lab 2). `createRoot` từ `react-dom/client`, bọc `<StrictMode>`.
+- React 19 + Vite + ES2024 (nối tiếp Lab 2). **Mỗi bài (exercise/homework) là một project Vite độc lập** với `package.json` và `node_modules/` riêng; gốc repo chỉ chứa tài liệu. Chạy `npm` trong folder bài. `createRoot` từ `react-dom/client`, bọc `<StrictMode>`.
 - JS (`.jsx`) với contract bằng JSDoc (đã chốt ở X0-02, không dùng TypeScript).
 - CSS Modules (`*.module.css`) + CSS Custom Properties. Không Tailwind, không UI framework, không Ant Design.
 - Test: Vitest + jsdom + React Testing Library [Cá nhân, giả định].

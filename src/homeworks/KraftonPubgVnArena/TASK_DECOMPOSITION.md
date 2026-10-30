@@ -1,6 +1,7 @@
 # TASK_DECOMPOSITION — Homework 3: KRAFTON x PUBG Vietnam Arena
 
 > WBS con của [TASK_DECOMPOSITION.md](../../../TASK_DECOMPOSITION.md). Mỗi prompt AI = đúng một task ID. Nối tiếp HW3 Lab 2 (flash-sale, timer không trôi, `C:\Dev\Project\24520626_QuangPhuHung_MSIS207_Lab02\Homework3_Lab02`).
+> **Mỗi bài là một project Vite độc lập** (có `package.json`, `node_modules/` riêng). Chạy mọi lệnh `npm` ngay trong folder này; đường dẫn file bên dưới tính từ folder này.
 
 ## 1. Mục tiêu và phạm vi
 
@@ -34,15 +35,16 @@ interface PubgVnSquadStanding { readonly squadId: string; readonly squadName: st
 
 | ID | Task | File | Gate | Trạng thái |
 |---|---|---|---|---|
-| H3-01 | Spec, kiểu dữ liệu, dữ liệu mẫu, `formatVnd`, `getDropPhase` | `domain/*.js` | Test: định dạng VND; ma trận phase | [ ] |
-| H3-02 | `usePubgAirdropTimer` (200ms + `visibilitychange`, đồng hồ neo `performance.now()`, `now()` tiêm được) | `hooks/usePubgAirdropTimer.js` | Test với fake timers: sau 1 phút nền, khi `visible` giá trị đúng ngay | [ ] |
-| H3-03 | Cleanup interval/listener, an toàn StrictMode | `usePubgAirdropTimer.js` | Test: unmount gỡ cả hai | [ ] |
-| H3-04 | API giả `reserveCrate` 200/409 | `api/arena.js` | Test: 409 theo cấu hình; abort được | [ ] |
-| H3-05 | Hook/reducer claim lạc quan + khoá `claimId` chống bấm đúp | `hooks/useCrateClaim.js` | Test: hai click liên tiếp chỉ một request | [ ] |
-| H3-06 | Rollback khi 409, hiển thị thông báo bằng chữ | `useCrateClaim.js` | Test: stock trở lại giá trị cũ, `role="alert"` | [ ] |
-| H3-07 | UI crate/vé: đếm ngược, giá VND, nút Claim theo phase | `components/CrateCard.jsx` | Nút `disabled` khi không hợp lệ + lý do bằng chữ | [ ] |
-| H3-08 | Bảng xếp hạng + lọc đội + sắp xếp (dẫn xuất) | `components/Leaderboard.jsx` | Test: sắp xếp bất biến; 0 `useEffect` cho lọc/sắp xếp | [ ] |
-| H3-09 | CSS Modules, 375px, reduced-motion, a11y | `*.module.css` | 0 cuộn ngang; Lighthouse a11y 100 | [ ] |
+| H3-00 | Khởi tạo project Vite riêng: sao chép `package.json` (đổi `name`), `vite.config.js`, `eslint.config.js`, `index.html`, `src/main.jsx`, `src/test/setup.js` từ Ex1, rồi `npm install` | `package.json`, `vite.config.js`, `eslint.config.js`, `index.html`, `src/main.jsx`, `src/test/setup.js` | `npm test` và `npm run lint` chạy được | [ ] |
+| H3-01 | Spec, kiểu dữ liệu, dữ liệu mẫu, `formatVnd`, `getDropPhase` | `src/domain/*.js` | Test: định dạng VND; ma trận phase | [ ] |
+| H3-02 | `usePubgAirdropTimer` (200ms + `visibilitychange`, đồng hồ neo `performance.now()`, `now()` tiêm được) | `src/hooks/usePubgAirdropTimer.js` | Test với fake timers: sau 1 phút nền, khi `visible` giá trị đúng ngay | [ ] |
+| H3-03 | Cleanup interval/listener, an toàn StrictMode | `src/hooks/usePubgAirdropTimer.js` | Test: unmount gỡ cả hai | [ ] |
+| H3-04 | API giả `reserveCrate` 200/409 | `src/api/arena.js` | Test: 409 theo cấu hình; abort được | [ ] |
+| H3-05 | Hook/reducer claim lạc quan + khoá `claimId` chống bấm đúp | `src/hooks/useCrateClaim.js` | Test: hai click liên tiếp chỉ một request | [ ] |
+| H3-06 | Rollback khi 409, hiển thị thông báo bằng chữ | `src/hooks/useCrateClaim.js` | Test: stock trở lại giá trị cũ, `role="alert"` | [ ] |
+| H3-07 | UI crate/vé: đếm ngược, giá VND, nút Claim theo phase | `src/components/CrateCard.jsx` | Nút `disabled` khi không hợp lệ + lý do bằng chữ | [ ] |
+| H3-08 | Bảng xếp hạng + lọc đội + sắp xếp (dẫn xuất) | `src/components/Leaderboard.jsx` | Test: sắp xếp bất biến; 0 `useEffect` cho lọc/sắp xếp | [ ] |
+| H3-09 | CSS Modules, 375px, reduced-motion, a11y | `src/**/*.module.css` | 0 cuộn ngang; Lighthouse a11y 100 | [ ] |
 | H3-10 | Đo drift (tab nền) và chụp bằng chứng | `evidence/` | JSON/ảnh đo drift, ảnh 409 rollback | [ ] |
 | H3-11 | `AI_FAILURE_AUDIT.md` hoàn thiện từ lỗi thật | [../../../AI_FAILURE_AUDIT.md](../../../AI_FAILURE_AUDIT.md) | >= 3 lỗi có DevTools proof và bản sửa | [ ] |
 

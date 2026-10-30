@@ -1,6 +1,7 @@
 # TASK_DECOMPOSITION — Exercise 2: ScientistDirectory (Sprint 2, 45 phút)
 
 > WBS con của [TASK_DECOMPOSITION.md](../../../TASK_DECOMPOSITION.md). Mỗi prompt AI = đúng một task ID.
+> **Mỗi bài là một project Vite độc lập** (có `package.json`, `node_modules/` riêng). Chạy mọi lệnh `npm` ngay trong folder này; đường dẫn file bên dưới tính từ folder này.
 
 ## 1. Mục tiêu và phạm vi
 
@@ -30,16 +31,17 @@ Biến mảng `smartPeople` tĩnh thành trình khám phá dữ liệu: 1) tìm 
 
 | ID | Task | File | Gate | Trạng thái |
 |---|---|---|---|---|
-| E2-01 | Hằng `SMART_PEOPLE` với `id` ổn định (sửa dữ liệu mẫu nếu cần) | `data/smartPeople.js` | Test: id duy nhất, đủ trường | [ ] |
-| E2-02 | Khung `ScientistDirectory` + render `<ul>` key `p.id` | `ScientistDirectory.jsx` | Không warning key | [ ] |
-| E2-03 | Ô tìm tên: `useId`, `<label htmlFor>`, lọc không phân biệt hoa thường, trim | `ScientistDirectory.jsx` | Test: "ein" ra Einstein; "  EIN " cũng ra | [ ] |
-| E2-04 | Ô Min IQ: `type=number`, `valueAsNumber`, `Number.isNaN` → 0 | `ScientistDirectory.jsx` | Test: gõ rỗng không `NaN`; `minIq` luôn là number | [ ] |
-| E2-05 | Sắp xếp `<select>` có label; `.toSorted()` | `ScientistDirectory.jsx` | Test: mảng `people` gốc không đổi thứ tự | [ ] |
+| E2-00 | Khởi tạo project Vite riêng: sao chép `package.json` (đổi `name`), `vite.config.js`, `eslint.config.js`, `index.html`, `src/main.jsx`, `src/test/setup.js` từ Ex1, rồi `npm install` | `package.json`, `vite.config.js`, `eslint.config.js`, `index.html`, `src/main.jsx`, `src/test/setup.js` | `npm test` và `npm run lint` chạy được | [ ] |
+| E2-01 | Hằng `SMART_PEOPLE` với `id` ổn định (sửa dữ liệu mẫu nếu cần) | `src/data/smartPeople.js` | Test: id duy nhất, đủ trường | [ ] |
+| E2-02 | Khung `ScientistDirectory` + render `<ul>` key `p.id` | `src/components/ScientistDirectory.jsx` | Không warning key | [ ] |
+| E2-03 | Ô tìm tên: `useId`, `<label htmlFor>`, lọc không phân biệt hoa thường, trim | `src/components/ScientistDirectory.jsx` | Test: "ein" ra Einstein; "  EIN " cũng ra | [ ] |
+| E2-04 | Ô Min IQ: `type=number`, `valueAsNumber`, `Number.isNaN` → 0 | `src/components/ScientistDirectory.jsx` | Test: gõ rỗng không `NaN`; `minIq` luôn là number | [ ] |
+| E2-05 | Sắp xếp `<select>` có label; `.toSorted()` | `src/components/ScientistDirectory.jsx` | Test: mảng `people` gốc không đổi thứ tự | [ ] |
 | E2-06 | Kiểm render: 1 ký tự gõ = đúng 1 render pass | Profiler | Ảnh Profiler trong `evidence/`; grep `useEffect` = 0 | [ ] |
-| E2-07 | Nút xoá từng người (tên truy cập có tên người), xoá bất biến | `ScientistDirectory.jsx` | Test: xoá giữa danh sách, key còn lại giữ nguyên | [ ] |
-| E2-08 | Nút Reset khôi phục toàn bộ | `ScientistDirectory.jsx` | Test: sau reset mọi điều khiển về mặc định | [ ] |
-| E2-09 | `<output role="status" aria-live="polite">` "Found N pioneers" + trạng thái rỗng | `ScientistDirectory.jsx` | Test: N khớp; rỗng có thông báo chữ | [ ] |
-| E2-10 | CSS Modules + 375px + Lighthouse | `ScientistDirectory.module.css`, `evidence/` | 0 cuộn ngang; a11y 100; focus giữ khi xoá | [ ] |
+| E2-07 | Nút xoá từng người (tên truy cập có tên người), xoá bất biến | `src/components/ScientistDirectory.jsx` | Test: xoá giữa danh sách, key còn lại giữ nguyên | [ ] |
+| E2-08 | Nút Reset khôi phục toàn bộ | `src/components/ScientistDirectory.jsx` | Test: sau reset mọi điều khiển về mặc định | [ ] |
+| E2-09 | `<output role="status" aria-live="polite">` "Found N pioneers" + trạng thái rỗng | `src/components/ScientistDirectory.jsx` | Test: N khớp; rỗng có thông báo chữ | [ ] |
+| E2-10 | CSS Modules + 375px + Lighthouse | `src/components/ScientistDirectory.module.css`, `evidence/` | 0 cuộn ngang; a11y 100; focus giữ khi xoá | [ ] |
 
 ## 4. Commit
 
@@ -53,7 +55,7 @@ Biến mảng `smartPeople` tĩnh thành trình khám phá dữ liệu: 1) tìm 
 
 - React DevTools Profiler: gõ 1 ký tự vào ô tìm → đúng **1** render pass.
 - Xoá "Johann Goethe": các item còn lại giữ key, focus không nhảy về `<body>` một cách vô lý (xác định chỗ focus sau xoá và ghi vào code review).
-- Accessibility: 100% control có label; `grep -n useEffect src/exercises/Exercise2_ScientistDirectory/ScientistDirectory.jsx` = 0.
+- Accessibility: 100% control có label; `grep -n useEffect src/components/ScientistDirectory.jsx` = 0.
 
 ## 6. Dễ sai
 

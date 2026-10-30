@@ -58,7 +58,7 @@ Giảng viên đổi một yêu cầu trên code đang chạy, có 180 giây đ�
   - HW1: `e.code`, `e.repeat`, bỏ qua input, `aria-pressed`, hit log `aria-live`.
   - HW2: tần số `440 * 2^((midi-69)/12)`, đủ 88 phím (52 trắng + 36 đen), tối đa 8 voice và steal FIFO, replay hủy được.
   - HW3: timer đúng sau `visibilitychange`, giữ hàng lạc quan và rollback khi 409, chống bấm đúp, định dạng VND, lọc/sắp xếp bảng xếp hạng.
-- Lệnh kiểm tra lặp lại (không cần AI): `grep -rn "<div" src/exercises/Exercise1_DeveloperCard/DeveloperCard.jsx` và `grep -rn "http://" src` đều phải ra 0 dòng.
+- Lệnh kiểm tra lặp lại (không cần AI): (chạy trong folder bài, ví dụ `cd src/exercises/Exercise1_DeveloperCard`) `grep -rn "<div" src/components/DeveloperCard.jsx` và `grep -rn "http://" src` đều phải ra 0 dòng. Mỗi bài là một project Vite riêng: `npm test`, `npm run lint` chạy trong folder bài.
 - Trước khi báo hoàn thành: chạy test + lint, dán kết quả thật.
 
 ## 5. Git

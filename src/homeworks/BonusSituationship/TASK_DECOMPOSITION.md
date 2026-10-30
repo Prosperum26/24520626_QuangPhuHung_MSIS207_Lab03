@@ -1,6 +1,7 @@
 # TASK_DECOMPOSITION — Bonus: Situationship Analyzer (tuỳ chọn)
 
 > WBS con của [TASK_DECOMPOSITION.md](../../../TASK_DECOMPOSITION.md). Không nằm trong lịch 180 phút và thang điểm; chỉ làm sau khi xong mọi bài chấm điểm. Mỗi prompt AI = đúng một task ID.
+> **Mỗi bài là một project Vite độc lập** (có `package.json`, `node_modules/` riêng). Chạy mọi lệnh `npm` ngay trong folder này; đường dẫn file bên dưới tính từ folder này.
 
 ## 1. Mục tiêu và phạm vi
 
@@ -27,11 +28,12 @@ Slide có hai bộ tên trạng thái mâu thuẫn ([Context.md §9](../../../do
 
 | ID | Task | File | Gate | Trạng thái |
 |---|---|---|---|---|
-| B-01 | Chốt bộ trạng thái + `transition()` thuần | `fsm.js` | Test: mọi chuyển hợp lệ/không hợp lệ | [ ] |
-| B-02 | Reducer nhật ký tín hiệu bất biến + điểm dẫn xuất | `effort.js` | Test: không mutate; điểm đúng | [ ] |
-| B-03 | Component + `<output role="status">` cờ đỏ | `SituationshipAnalyzer.jsx` | Test: red flag khi `em < rival` | [ ] |
-| B-04 | Ghosting timer 5s + cleanup + abort promise | `SituationshipAnalyzer.jsx` | Test (fake timers): unmount không còn timer | [ ] |
-| B-05 | Form tín hiệu `useId` + label; CSS Modules 375px | `*.module.css` | Lighthouse a11y 100 | [ ] |
+| B-00 | Khởi tạo project Vite riêng: sao chép `package.json` (đổi `name`), `vite.config.js`, `eslint.config.js`, `index.html`, `src/main.jsx`, `src/test/setup.js` từ Ex1, rồi `npm install` | `package.json`, `vite.config.js`, `eslint.config.js`, `index.html`, `src/main.jsx`, `src/test/setup.js` | `npm test` và `npm run lint` chạy được | [ ] |
+| B-01 | Chốt bộ trạng thái + `transition()` thuần | `src/fsm.js` | Test: mọi chuyển hợp lệ/không hợp lệ | [ ] |
+| B-02 | Reducer nhật ký tín hiệu bất biến + điểm dẫn xuất | `src/effort.js` | Test: không mutate; điểm đúng | [ ] |
+| B-03 | Component + `<output role="status">` cờ đỏ | `src/SituationshipAnalyzer.jsx` | Test: red flag khi `em < rival` | [ ] |
+| B-04 | Ghosting timer 5s + cleanup + abort promise | `src/SituationshipAnalyzer.jsx` | Test (fake timers): unmount không còn timer | [ ] |
+| B-05 | Form tín hiệu `useId` + label; CSS Modules 375px | `src/**/*.module.css` | Lighthouse a11y 100 | [ ] |
 
 ## 4. Commit (từ đề)
 
