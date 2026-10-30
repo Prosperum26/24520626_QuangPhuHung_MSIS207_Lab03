@@ -1,0 +1,1 @@
+not an image: demo cho ca ảnh lỗi (onError), server trả 200 nên Console không có lỗi mạng
