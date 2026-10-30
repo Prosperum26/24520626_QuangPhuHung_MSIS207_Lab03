@@ -25,14 +25,17 @@ interface PubgVnSquadStanding { readonly squadId: string; readonly squadName: st
 - Phase là hàm thuần của (`remainingMs`, `stock`): `WARMUP` trước giờ drop, `AIRDROP_LIVE` khi tới giờ và còn hàng, `LOOTED_OUT` khi hết hàng, `EXPIRED` sau thời hạn. Quy tắc nằm một chỗ.
 - API giả (`reserveCrate`): có latency, trả 200 hoặc 409; tiêm được rng/latency để test tất định; tôn trọng `AbortSignal`.
 - Dữ liệu mẫu và thời điểm drop đặt trong module cấu hình (một chỗ), có `serverOffsetMs` để mô phỏng lệch đồng hồ.
-- Thiết kế `Date.now()` có thể nhảy khi đổi giờ máy: ghi rõ giả định hoặc dùng `performance.now()` để chống nhảy ([Context.md §4.7](../../docs/Context.md)).
+- **Đồng hồ đơn điệu (đã chốt)**: khi khởi tạo lấy `anchor = { wall: Date.now() + serverOffsetMs, perf: performance.now() }`; thời gian hiện tại = `anchor.wall + (performance.now() - anchor.perf)`; còn lại = `Math.max(0, targetEpochMs - now)`. Đổi giờ hệ thống không làm nhảy. Hàm `now()` tiêm được vào hook để test tất định. Tính lại `anchor` khi `visibilitychange` sang `visible` hoặc `serverOffsetMs` đổi.
+- **Một nhịp chung**: một interval dùng chung cho mọi card đếm ngược thay vì mỗi card một interval; cleanup khi không còn ai đăng ký.
+- **Cập nhật tối thiểu**: chỉ `setState` khi giá trị hiển thị (giây) đổi, tránh render 5 lần/giây.
+- **Claim**: khoá `inFlightClaimId` trong `useRef` (không cần render); state chỉ cho `stock` và `error`; rollback theo `claimId`, không ghi đè trạng thái mới hơn.
 
 ## 3. Task
 
 | ID | Task | File | Gate | Trạng thái |
 |---|---|---|---|---|
 | H3-01 | Spec, kiểu dữ liệu, dữ liệu mẫu, `formatVnd`, `getDropPhase` | `src/domain/*.js` | Test: định dạng VND; ma trận phase | [ ] |
-| H3-02 | `usePubgAirdropTimer` (200ms + `visibilitychange`) | `src/hooks/usePubgAirdropTimer.js` | Test với fake timers: sau 1 phút nền, khi `visible` giá trị đúng ngay | [ ] |
+| H3-02 | `usePubgAirdropTimer` (200ms + `visibilitychange`, đồng hồ neo `performance.now()`, `now()` tiêm được) | `src/hooks/usePubgAirdropTimer.js` | Test với fake timers: sau 1 phút nền, khi `visible` giá trị đúng ngay | [ ] |
 | H3-03 | Cleanup interval/listener, an toàn StrictMode | `usePubgAirdropTimer.js` | Test: unmount gỡ cả hai | [ ] |
 | H3-04 | API giả `reserveCrate` 200/409 | `src/api/arena.js` | Test: 409 theo cấu hình; abort được | [ ] |
 | H3-05 | Hook/reducer claim lạc quan + khoá `claimId` chống bấm đúp | `src/hooks/useCrateClaim.js` | Test: hai click liên tiếp chỉ một request | [ ] |

@@ -86,7 +86,10 @@
 ### 4.7 Hiệu năng [Thầy]
 
 - Đo trước khi tối ưu bằng React DevTools Profiler. `React.memo`, `useCallback` chỉ khi có số liệu (bắt buộc ở HW2: nhấn một phím chỉ render lại đúng phím đó).
-- Không tạo object/array/hàm literal mới mỗi render làm vô hiệu `memo`.
+- Không tạo object/array/hàm literal mới mỗi render làm vô hiệu `memo`. Default parameter dạng object/array phải là **hằng module đóng băng** (`Object.freeze`), không phải literal trong chữ ký hàm.
+- Tạo `Intl.*`, `RegExp`, `AudioContext` **một lần** (module hoặc `useRef`), không tạo trong thân render.
+- Trạng thái lỗi theo đầu vào lưu **theo khóa** (vd. `failedUrl`) thay vì boolean, để tự hết hiệu lực khi đầu vào đổi mà không cần `useEffect` reset.
+- Thứ tự ưu tiên khi quyết định thiết kế: đúng (state, race, rò bộ nhớ) → nhanh (đo bằng Profiler) → dễ giải thích.
 
 ### 4.8 CSS và responsive [Thầy + Lab 1]
 

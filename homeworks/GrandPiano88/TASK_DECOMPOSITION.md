@@ -30,6 +30,14 @@ Piano 88 phím (A0 đến C8) phát đa âm bằng Web Audio, tối đa 8 voice 
 - Phím bàn phím máy tính (tuỳ chọn) dùng `e.code`, `e.repeat`; phím đàn truy cập được bằng bàn phím (WCAG 2.1.1).
 - Trong ví dụ lớp `PolyphonicSynth`, sửa lỗi gõ `this.cbx` → `this.ctx`, và bổ sung `noteOff`.
 
+## 2.1 Quy tắc state và bộ nhớ
+
+- `PolyphonicSynth`, `AudioContext`, `Map` voice nằm trong `useRef`/module, **không** vào state (đổi chúng không gây render).
+- Chỉ `isPressed` từng phím nằm trong state (một `Set` ID ở `GrandPiano`, mỗi `PianoKey` nhận boolean riêng). `buildKeys()` gọi một lần (module-level), không tính lại mỗi render.
+- Mỗi voice kết thúc: ramp, `osc.stop()`, `osc.disconnect()`, `gain.disconnect()`, xoá khỏi `Map`; `onended` dọn tham chiếu. Test: sau `stopAll()` thì `voices.size === 0`.
+- Một `AudioContext` duy nhất cho cả app; đóng khi unmount.
+- Nếu Profiler cho thấy cha render 88 phần tử gây chậm, cân nhắc `useSyncExternalStore` với store nhỏ để mỗi phím tự đăng ký; chỉ làm khi đo được.
+
 ## 3. Task
 
 | ID | Task | File | Gate | Trạng thái |

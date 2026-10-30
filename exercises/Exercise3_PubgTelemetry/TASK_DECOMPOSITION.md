@@ -34,10 +34,10 @@ Radar trực tiếp cho các đội PUBG Vietnam Series: máy trạng thái `IDL
 | ID | Task | File | Gate | Trạng thái |
 |---|---|---|---|---|
 | E3-01 | Dữ liệu `PUBG_VN_SQUADS` + typedef | `src/data/pubgSquads.js` | Test: 3 squad đủ trường | [ ] |
-| E3-02 | Mock `fetchKraftonPubgTelemetry` có latency, lossRate, tôn trọng `signal` | `src/api/krafton.js` | Test: abort giữa chừng → `AbortError`; lossRate 1 → luôn lỗi; 0 → luôn thành công | [ ] |
+| E3-02 | Mock `fetchKraftonPubgTelemetry` có latency, lossRate, tôn trọng `signal`, **dọn timer và listener khi abort** (§7) | `src/api/krafton.js` | Test: abort giữa chừng → `AbortError`; lossRate 1 → luôn lỗi; 0 → luôn thành công; sau abort `vi.getTimerCount() === 0` | [ ] |
 | E3-03 | Component + `ViewState`, effect `LOADING → SUCCESS/ERROR` | `src/components/PubgMatchTelemetry.jsx` | Test: đủ 3 trạng thái hiển thị đúng | [ ] |
 | E3-04 | Cleanup `controller.abort()` + guard `AbortError` | `PubgMatchTelemetry.jsx` | Test: đổi squad khi đang tải → không hiện lỗi giả, dữ liệu đúng squad mới | [ ] |
-| E3-05 | Bộ chọn squad (CES, TE, GE) | `PubgMatchTelemetry.jsx` | Click nhanh CES→TE→GE: Network có `(canceled)` | [ ] |
+| E3-05 | Bộ chọn squad (CES, TE, GE); cache theo squad bằng `useRef(Map)` (§7) | `PubgMatchTelemetry.jsx` | Click nhanh CES→TE→GE: Network có `(canceled)`; quay lại squad cũ không nháy skeleton | [ ] |
 | E3-06 | Hiển thị dữ liệu SUCCESS bằng `<article>` + `<dl>` (map, phase, alive, kills, WWCD, status) | `PubgMatchTelemetry.jsx` | Accessibility tree đúng; vùng cập nhật `aria-live="polite"` | [ ] |
 | E3-07 | Skeleton 220px `aria-busy="true"` (tôn trọng reduced-motion) | `PubgMatchTelemetry.module.css` | Slow 3G: CLS 0,00 | [ ] |
 | E3-08 | Lỗi `<section role="alert">` + nút Retry tăng `retryTick` | `PubgMatchTelemetry.jsx` | Test: retry chạy lại effect, về LOADING rồi kết quả mới | [ ] |
@@ -63,6 +63,10 @@ Radar trực tiếp cho các đội PUBG Vietnam Series: máy trạng thái `IDL
 - Skeleton khác kích thước card (CLS); dùng `alert()`; bộ boolean `isLoading/isError`.
 - Dependency thiếu `retryTick` hoặc `squadId` (stale closure).
 
-## 7. Chuẩn bị cho Challenge B (polling 5 giây + Pause Radar)
+## 7. Bộ nhớ, race và hiệu năng
 
-Thêm `isPaused` và hằng `POLL_MS = 5000` một chỗ; effect riêng `setInterval` với dependency `[squadId, isPaused]`, cleanup `clearInterval` và abort fetch đang chạy; nút `aria-pressed` cho Pause. Luyện lại trong 180 giây khi tắt AI.
+- **Mock không rò**: `fetchKraftonPubgTelemetry` lưu id `setTimeout` và `clearTimeout` khi `signal` abort; đăng ký `signal.addEventListener('abort', onAbort, { once: true })` và gỡ khi settle. Test: sau abort không còn timer treo (fake timers, `vi.getTimerCount() === 0`).
+- **Chống ghi đè muộn**: effect chỉ ghi state nếu `!controller.signal.aborted`, thêm một lớp bảo vệ ngoài việc bắt `AbortError`.
+- **Cache theo squad**: giữ kết quả thành công gần nhất trong `useRef(new Map())`; khi quay lại squad đã có, hiển thị dữ liệu cũ thay vì skeleton nháy. Slide yêu cầu skeleton ở `LOADING`: lần tải đầu của mỗi squad vẫn hiện skeleton. Quyết định ở E3-05; nếu thấy lệch đề thì bỏ cache.
+- **Render ít nhất**: tách `TelemetryView` (SUCCESS) và `TelemetrySkeleton` (LOADING) để đổi trạng thái không dựng lại phần chọn squad.
+- **Polling (thử thách B)**: `POLL_MS = 5000` và `isPaused` ở một chỗ; effect riêng dependency `[squadId, isPaused]`; cleanup `clearInterval` và abort fetch đang bay; tab ẩn thì tạm dừng. Chỉ làm khi cần.

@@ -33,10 +33,12 @@ Component in-class đặt ở `src/components/` (đúng checklist slide); WBS v�
 | X0-01 | Đọc lại cầu nối Lab 2 → 3 ([Context.md §3](docs/Context.md)); trả lời miệng 3 ý: Fiber vs đệ quy, hook queue vs `stateStore[cursor]`, `Object.is` | Tự giải thích được, không nhìn tài liệu | [ ] |
 | X0-02 | Chốt stack: JS + JSDoc hay TypeScript (ghi vào [project-rules.md §1](project-rules.md)) | Một lựa chọn duy nhất | [ ] |
 | X0-03 | Khởi tạo Vite + React 19 trong repo này (giữ nguyên `docs/`, `exercises/`, `homeworks/`) | `npm run dev` hiện trang; `package.json` có `react@19` | [ ] |
-| X0-04 | Cài Vitest + jsdom + React Testing Library; thêm script `test` | `npm test` chạy (0 test cũng được) | [ ] |
+| X0-04 | Cài Vitest + jsdom + `@testing-library/react` + `@testing-library/jest-dom`; `setupFiles` có `afterEach(cleanup)`; script `test` | `npm test` chạy (0 test cũng được) | [ ] |
 | X0-05 | `src/main.jsx` dùng `createRoot` + `StrictMode`, kiểm `#root` tồn tại | Không còn `ReactDOM.render`, `import * as React` | [ ] |
 | X0-06 | `.gitignore` (`node_modules/`, `dist/`); dọn template mẫu Vite thừa | `git status` chỉ còn file có chủ đích | [ ] |
 | X0-07 | Nạp `project-rules.md` cho công cụ AI đang dùng (Cursor `.cursorrules`, hoặc đọc `Agents.md`) | AI trả lời được 3 luật cấm khi hỏi | [ ] |
+| X0-08 | Chuẩn bị avatar local: cắt/resize từ `C:\Dev\Project\MSIS207_Lab1\Exercise_3\assets\hero-avatar-320.jpg` thành `src/assets/avatar-128.webp` (128×128) | File tồn tại, vài KB, import được từ Vite | [ ] |
+| X0-09 | ESLint: `eslint-plugin-react-hooks` + `eslint-plugin-jsx-a11y`; script `lint` | `npm run lint` chạy sạch trên khung rỗng | [ ] |
 
 **Commit C0** (spec): `docs: add context, agents, project rules and WBS`
 **Commit C1** (init): `chore: init react19 vite & rules`
@@ -48,9 +50,9 @@ Component in-class đặt ở `src/components/` (đúng checklist slide); WBS v�
 | # | Commit | Task | Gate chính |
 |---|---|---|---|
 | C0 | `docs: add context, agents, project rules and WBS` | tài liệu | Link trong tài liệu mở được |
-| C1 | `chore: init react19 vite & rules` | X0-01..07 | `npm test` chạy, dev server lên |
-| C2 | `feat(ex1): implement semantic DeveloperCard and SkillBadge` | E1-01..06 | `grep -n '<div' src/components/DeveloperCard.jsx` = 0 dòng |
-| C3 | `style(ex1): add responsive 375px CSS module` | E1-07..09 | 375px không cuộn ngang |
+| C1 | `chore: init react19 vite & rules` | X0-01..09 | `npm test` chạy, dev server lên |
+| C2 | `feat(ex1): implement semantic DeveloperCard and SkillBadge` | E1-01..07 | `grep -n '<div' src/components/DeveloperCard.jsx` = 0 dòng; test pass |
+| C3 | `style(ex1): add responsive 375px CSS module` | E1-08..10 | 375px không cuộn ngang |
 | C4 | `feat(ex2): normalize smartPeople schema with stable IDs` | E2-01..02 | Mọi record có `id` duy nhất |
 | C5 | `feat(ex2): add search, IQ filter & toSorted` | E2-03..06 | Profiler: 1 ký tự = đúng 1 lần render |
 | C6 | `feat(ex2): add delete/reset & live status` | E2-07..10 | Xoá giữ focus và key; `role="status"` đúng |

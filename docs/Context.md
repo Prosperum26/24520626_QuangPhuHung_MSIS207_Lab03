@@ -133,7 +133,7 @@ useEffect(() => {
 
 ### 4.7 Đồng hồ không trôi (HW3)
 
-`setInterval(s => s - 1, 1000)` trôi hàng phút khi tab nền bị Chrome giới hạn còn khoảng 1 tick mỗi phút. Giải pháp: tính còn lại từ mốc tuyệt đối mỗi lần tick (200ms) và ngay khi tab `visible`. Cần `serverOffsetMs` để bù lệch đồng hồ máy khách. `Date.now()` có thể bị đổi giờ hệ thống; nếu cần đơn điệu tuyệt đối, đo bước nhảy bằng `performance.now()` (xem §9).
+`setInterval(s => s - 1, 1000)` trôi hàng phút khi tab nền bị Chrome giới hạn còn khoảng 1 tick mỗi phút. Giải pháp: tính còn lại từ mốc tuyệt đối mỗi lần tick (200ms) và ngay khi tab `visible`. Cần `serverOffsetMs` để bù lệch đồng hồ máy khách. `Date.now()` có thể bị đổi giờ hệ thống nên HW3 neo mốc một lần rồi cộng `performance.now()` (đơn điệu); chi tiết ở [WBS HW3](../homeworks/KraftonPubgVnArena/TASK_DECOMPOSITION.md).
 
 ### 4.8 Âm thanh đa âm (HW1, HW2)
 

@@ -61,6 +61,12 @@ Biến mảng `smartPeople` tĩnh thành trình khám phá dữ liệu: 1) tìm 
 - Reset chỉ khôi phục `people`; input không nhãn; `key={p.name}`.
 - Ghi vào ghi chú audit nếu AI mắc, kèm ảnh Profiler.
 
-## 7. Chuẩn bị cho Challenge A (Watchlist, không thêm `useEffect`)
+## 7. Hiệu năng và bộ nhớ (đo trước, tối ưu sau)
 
-State thêm `watchlist` (mảng ID) và `onlyWatched` (boolean); điều kiện lọc thêm `(!onlyWatched || watchlist.includes(p.id))`; nút sao là `<button aria-pressed>`; thêm cập nhật bất biến. Luyện lại trong 180 giây khi tắt AI.
+- **Giữ nguyên** pipeline dẫn xuất trong render; với 6 bản ghi không cần `useMemo`. Nếu dữ liệu lớn, chỉ thêm `useMemo` khi Profiler cho thấy lọc/sắp xếp đáng kể.
+- Tách `PersonRow` nhận `person` và `onDelete`. Chỉ bọc `memo` + `useCallback` nếu Profiler cho thấy gõ phím làm render lại các dòng không đổi; ghi ảnh trước/sau vào `evidence/`.
+- `handleDelete`/`handleReset` dùng cập nhật hàm `setPeople((prev) => ...)` để an toàn dưới StrictMode và nhấp nhanh.
+- Reset dùng **snapshot module-level đóng băng** (`SMART_PEOPLE`), không clone mỗi lần render.
+- Focus sau khi xoá: chuyển focus có chủ đích (dòng kế tiếp hoặc ô tìm kiếm) bằng `ref`, không để rơi về `<body>`.
+- Khi nâng `selectedId` lên `<App />` (thử thách C): `ScientistDirectory` nhận `selectedId` và `onSelect` qua props, không tự giữ state chọn.
+- Watchlist (thử thách A): `watchlist` là mảng ID, lọc thêm một điều kiện trong pipeline dẫn xuất, không thêm `useEffect`. Chỉ làm khi cần.
