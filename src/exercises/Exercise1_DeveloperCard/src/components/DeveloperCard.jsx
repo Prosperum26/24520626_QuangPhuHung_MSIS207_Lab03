@@ -1,5 +1,6 @@
 import { Fragment, useId, useState } from 'react';
 import defaultAvatarUrl from '../assets/avatar-128.jpg';
+import styles from './DeveloperCard.module.css';
 import { SkillBadge } from './SkillBadge.jsx';
 import {
   DEFAULT_FULL_NAME,
@@ -42,10 +43,11 @@ export function DeveloperCard({
   const metricEntries = Object.entries(metrics);
 
   return (
-    <article aria-labelledby={headingId}>
-      <header>
+    <article className={styles.card} aria-labelledby={headingId}>
+      <header className={styles.header}>
         {showImage ? (
           <img
+            className={styles.avatar}
             src={avatarUrl}
             alt=""
             width={AVATAR_SIZE}
@@ -54,16 +56,18 @@ export function DeveloperCard({
             onError={() => setFailedUrl(avatarUrl)}
           />
         ) : (
-          <span aria-hidden="true">{getInitials(fullName)}</span>
+          <span className={`${styles.avatar} ${styles.initials}`} aria-hidden="true">
+            {getInitials(fullName)}
+          </span>
         )}
-        <hgroup>
+        <hgroup className={styles.identity}>
           <h2 id={headingId}>{fullName}</h2>
           <p>{role}</p>
         </hgroup>
       </header>
 
       {metricEntries.length > 0 && (
-        <dl>
+        <dl className={styles.metrics}>
           {metricEntries.map(([key, value]) => (
             <Fragment key={key}>
               <dt>{formatMetricLabel(key)}</dt>
@@ -74,7 +78,7 @@ export function DeveloperCard({
       )}
 
       {skills.length > 0 && (
-        <ul aria-label="Engineered Skills">
+        <ul className={styles.skills} aria-label="Engineered Skills">
           {skills.map((skill) => (
             <SkillBadge key={skill.id} name={skill.name} tier={skill.tier} />
           ))}
