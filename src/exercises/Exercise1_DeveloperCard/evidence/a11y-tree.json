@@ -3,245 +3,956 @@
   "name": "Exercise 1 - Developer Card",
   "children": [
     {
-      "role": "main",
-      "name": "",
+      "role": "none",
       "children": [
         {
-          "role": "heading",
-          "name": "Exercise 1: Developer Card",
-          "level": 1
-        },
-        {
-          "role": "region",
-          "name": "Các trường hợp hiển thị",
+          "role": "none",
           "children": [
             {
-              "role": "heading",
-              "name": "Quang Phú Hưng",
-              "level": 2
-            },
-            {
-              "role": "StaticText",
-              "name": "Web Developer, UIT"
-            },
-            {
-              "role": "StaticText",
-              "name": "Commits"
-            },
-            {
-              "role": "StaticText",
-              "name": "512"
-            },
-            {
-              "role": "StaticText",
-              "name": "VDOM nodes"
-            },
-            {
-              "role": "StaticText",
-              "name": "0"
-            },
-            {
-              "role": "StaticText",
-              "name": "A11y score"
-            },
-            {
-              "role": "StaticText",
-              "name": "100"
-            },
-            {
-              "role": "StaticText",
-              "name": "React 19 Fiber"
-            },
-            {
-              "role": "StaticText",
-              "name": " ("
-            },
-            {
-              "role": "StaticText",
-              "name": "Core"
-            },
-            {
-              "role": "StaticText",
-              "name": ")"
-            },
-            {
-              "role": "heading",
-              "name": "Nguyễn Thị Minh Khai Phạm Trần Quang Đức Anh Tuấn",
-              "level": 2
-            },
-            {
-              "role": "StaticText",
-              "name": "Senior Frontend Engineer, Accessibility and Performance Guild"
-            },
-            {
-              "role": "StaticText",
-              "name": "Commits"
-            },
-            {
-              "role": "StaticText",
-              "name": "1.234.567"
-            },
-            {
-              "role": "StaticText",
-              "name": "VDOM nodes"
-            },
-            {
-              "role": "StaticText",
-              "name": "5.000"
-            },
-            {
-              "role": "StaticText",
-              "name": "A11y score"
-            },
-            {
-              "role": "StaticText",
-              "name": "100"
-            },
-            {
-              "role": "StaticText",
-              "name": "Open issues"
-            },
-            {
-              "role": "StaticText",
-              "name": "3"
-            },
-            {
-              "role": "StaticText",
-              "name": "React 19 Fiber"
-            },
-            {
-              "role": "StaticText",
-              "name": " ("
-            },
-            {
-              "role": "StaticText",
-              "name": "Core"
-            },
-            {
-              "role": "StaticText",
-              "name": ")"
-            },
-            {
-              "role": "StaticText",
-              "name": "Semantic HTML"
-            },
-            {
-              "role": "StaticText",
-              "name": " ("
-            },
-            {
-              "role": "StaticText",
-              "name": "Core"
-            },
-            {
-              "role": "StaticText",
-              "name": ")"
-            },
-            {
-              "role": "StaticText",
-              "name": "CSS Modules"
-            },
-            {
-              "role": "StaticText",
-              "name": " ("
-            },
-            {
-              "role": "StaticText",
-              "name": "Core"
-            },
-            {
-              "role": "StaticText",
-              "name": ")"
-            },
-            {
-              "role": "StaticText",
-              "name": "Web Audio API"
-            },
-            {
-              "role": "StaticText",
-              "name": " ("
-            },
-            {
-              "role": "StaticText",
-              "name": "Awareness"
-            },
-            {
-              "role": "StaticText",
-              "name": ")"
-            },
-            {
-              "role": "StaticText",
-              "name": "React.memo"
-            },
-            {
-              "role": "StaticText",
-              "name": " ("
-            },
-            {
-              "role": "StaticText",
-              "name": "Awareness"
-            },
-            {
-              "role": "StaticText",
-              "name": ")"
-            },
-            {
-              "role": "heading",
-              "name": "Ada Lovelace",
-              "level": 2
-            },
-            {
-              "role": "StaticText",
-              "name": "Mathematician"
-            },
-            {
-              "role": "StaticText",
-              "name": "Commits"
-            },
-            {
-              "role": "StaticText",
-              "name": "512"
-            },
-            {
-              "role": "StaticText",
-              "name": "VDOM nodes"
-            },
-            {
-              "role": "StaticText",
-              "name": "0"
-            },
-            {
-              "role": "StaticText",
-              "name": "A11y score"
-            },
-            {
-              "role": "StaticText",
-              "name": "100"
-            },
-            {
-              "role": "StaticText",
-              "name": "React 19 Fiber"
-            },
-            {
-              "role": "StaticText",
-              "name": " ("
-            },
-            {
-              "role": "StaticText",
-              "name": "Core"
-            },
-            {
-              "role": "StaticText",
-              "name": ")"
-            },
-            {
-              "role": "heading",
-              "name": "Grace Hopper",
-              "level": 2
-            },
-            {
-              "role": "StaticText",
-              "name": "Computer Scientist"
+              "role": "generic",
+              "name": "",
+              "children": [
+                {
+                  "role": "main",
+                  "name": "",
+                  "children": [
+                    {
+                      "role": "heading",
+                      "name": "Exercise 1: Developer Card",
+                      "level": 1,
+                      "children": [
+                        {
+                          "role": "StaticText",
+                          "name": "Exercise 1: Developer Card",
+                          "children": [
+                            {
+                              "role": "InlineTextBox",
+                              "name": "Exercise 1: Developer Card"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "role": "region",
+                      "name": "Các trường hợp hiển thị",
+                      "children": [
+                        {
+                          "role": "article",
+                          "name": "Quang Phú Hưng",
+                          "children": [
+                            {
+                              "role": "sectionheader",
+                              "name": "",
+                              "children": [
+                                {
+                                  "role": "none"
+                                },
+                                {
+                                  "role": "group",
+                                  "name": "",
+                                  "children": [
+                                    {
+                                      "role": "heading",
+                                      "name": "Quang Phú Hưng",
+                                      "level": 2,
+                                      "children": [
+                                        {
+                                          "role": "StaticText",
+                                          "name": "Quang Phú Hưng",
+                                          "children": [
+                                            {
+                                              "role": "InlineTextBox",
+                                              "name": "Quang Phú Hưng"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "role": "paragraph",
+                                      "name": "",
+                                      "children": [
+                                        {
+                                          "role": "StaticText",
+                                          "name": "Web Developer, UIT",
+                                          "children": [
+                                            {
+                                              "role": "InlineTextBox",
+                                              "name": "Web Developer, UIT"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "role": "DescriptionList",
+                              "name": "",
+                              "children": [
+                                {
+                                  "role": "term",
+                                  "name": "Commits",
+                                  "children": [
+                                    {
+                                      "role": "StaticText",
+                                      "name": "Commits",
+                                      "children": [
+                                        {
+                                          "role": "InlineTextBox",
+                                          "name": "Commits"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "role": "definition",
+                                  "name": "",
+                                  "children": [
+                                    {
+                                      "role": "StaticText",
+                                      "name": "512",
+                                      "children": [
+                                        {
+                                          "role": "InlineTextBox",
+                                          "name": "512"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "role": "term",
+                                  "name": "VDOM nodes",
+                                  "children": [
+                                    {
+                                      "role": "StaticText",
+                                      "name": "VDOM nodes",
+                                      "children": [
+                                        {
+                                          "role": "InlineTextBox",
+                                          "name": "VDOM nodes"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "role": "definition",
+                                  "name": "",
+                                  "children": [
+                                    {
+                                      "role": "StaticText",
+                                      "name": "0",
+                                      "children": [
+                                        {
+                                          "role": "InlineTextBox",
+                                          "name": "0"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "role": "term",
+                                  "name": "A11y score",
+                                  "children": [
+                                    {
+                                      "role": "StaticText",
+                                      "name": "A11y score",
+                                      "children": [
+                                        {
+                                          "role": "InlineTextBox",
+                                          "name": "A11y score"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "role": "definition",
+                                  "name": "",
+                                  "children": [
+                                    {
+                                      "role": "StaticText",
+                                      "name": "100",
+                                      "children": [
+                                        {
+                                          "role": "InlineTextBox",
+                                          "name": "100"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "role": "list",
+                              "name": "Engineered Skills",
+                              "children": [
+                                {
+                                  "role": "listitem",
+                                  "name": "",
+                                  "level": 1,
+                                  "children": [
+                                    {
+                                      "role": "StaticText",
+                                      "name": "React 19 Fiber",
+                                      "children": [
+                                        {
+                                          "role": "InlineTextBox",
+                                          "name": "React 19 Fiber"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "role": "StaticText",
+                                      "name": " (",
+                                      "children": [
+                                        {
+                                          "role": "InlineTextBox",
+                                          "name": " ("
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "role": "StaticText",
+                                      "name": "Core",
+                                      "children": [
+                                        {
+                                          "role": "InlineTextBox",
+                                          "name": "Core"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "role": "StaticText",
+                                      "name": ")",
+                                      "children": [
+                                        {
+                                          "role": "InlineTextBox",
+                                          "name": ")"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "role": "article",
+                          "name": "Nguyễn Thị Minh Khai Phạm Trần Quang Đức Anh Tuấn",
+                          "children": [
+                            {
+                              "role": "sectionheader",
+                              "name": "",
+                              "children": [
+                                {
+                                  "role": "none"
+                                },
+                                {
+                                  "role": "group",
+                                  "name": "",
+                                  "children": [
+                                    {
+                                      "role": "heading",
+                                      "name": "Nguyễn Thị Minh Khai Phạm Trần Quang Đức Anh Tuấn",
+                                      "level": 2,
+                                      "children": [
+                                        {
+                                          "role": "StaticText",
+                                          "name": "Nguyễn Thị Minh Khai Phạm Trần Quang Đức Anh Tuấn",
+                                          "children": [
+                                            {
+                                              "role": "InlineTextBox",
+                                              "name": "Nguyễn Thị Minh Khai "
+                                            },
+                                            {
+                                              "role": "InlineTextBox",
+                                              "name": "Phạm Trần Quang Đức "
+                                            },
+                                            {
+                                              "role": "InlineTextBox",
+                                              "name": "Anh Tuấn"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "role": "paragraph",
+                                      "name": "",
+                                      "children": [
+                                        {
+                                          "role": "StaticText",
+                                          "name": "Senior Frontend Engineer, Accessibility and Performance Guild",
+                                          "children": [
+                                            {
+                                              "role": "InlineTextBox",
+                                              "name": "Senior Frontend Engineer, "
+                                            },
+                                            {
+                                              "role": "InlineTextBox",
+                                              "name": "Accessibility and Performance "
+                                            },
+                                            {
+                                              "role": "InlineTextBox",
+                                              "name": "Guild"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "role": "DescriptionList",
+                              "name": "",
+                              "children": [
+                                {
+                                  "role": "term",
+                                  "name": "Commits",
+                                  "children": [
+                                    {
+                                      "role": "StaticText",
+                                      "name": "Commits",
+                                      "children": [
+                                        {
+                                          "role": "InlineTextBox",
+                                          "name": "Commits"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "role": "definition",
+                                  "name": "",
+                                  "children": [
+                                    {
+                                      "role": "StaticText",
+                                      "name": "1.234.567",
+                                      "children": [
+                                        {
+                                          "role": "InlineTextBox",
+                                          "name": "1.234.567"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "role": "term",
+                                  "name": "VDOM nodes",
+                                  "children": [
+                                    {
+                                      "role": "StaticText",
+                                      "name": "VDOM nodes",
+                                      "children": [
+                                        {
+                                          "role": "InlineTextBox",
+                                          "name": "VDOM nodes"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "role": "definition",
+                                  "name": "",
+                                  "children": [
+                                    {
+                                      "role": "StaticText",
+                                      "name": "5.000",
+                                      "children": [
+                                        {
+                                          "role": "InlineTextBox",
+                                          "name": "5.000"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "role": "term",
+                                  "name": "A11y score",
+                                  "children": [
+                                    {
+                                      "role": "StaticText",
+                                      "name": "A11y score",
+                                      "children": [
+                                        {
+                                          "role": "InlineTextBox",
+                                          "name": "A11y score"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "role": "definition",
+                                  "name": "",
+                                  "children": [
+                                    {
+                                      "role": "StaticText",
+                                      "name": "100",
+                                      "children": [
+                                        {
+                                          "role": "InlineTextBox",
+                                          "name": "100"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "role": "term",
+                                  "name": "Open issues",
+                                  "children": [
+                                    {
+                                      "role": "StaticText",
+                                      "name": "Open issues",
+                                      "children": [
+                                        {
+                                          "role": "InlineTextBox",
+                                          "name": "Open issues"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "role": "definition",
+                                  "name": "",
+                                  "children": [
+                                    {
+                                      "role": "StaticText",
+                                      "name": "3",
+                                      "children": [
+                                        {
+                                          "role": "InlineTextBox",
+                                          "name": "3"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "role": "list",
+                              "name": "Engineered Skills",
+                              "children": [
+                                {
+                                  "role": "listitem",
+                                  "name": "",
+                                  "level": 1,
+                                  "children": [
+                                    {
+                                      "role": "StaticText",
+                                      "name": "React 19 Fiber",
+                                      "children": [
+                                        {
+                                          "role": "InlineTextBox",
+                                          "name": "React 19 Fiber"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "role": "StaticText",
+                                      "name": " (",
+                                      "children": [
+                                        {
+                                          "role": "InlineTextBox",
+                                          "name": " ("
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "role": "StaticText",
+                                      "name": "Core",
+                                      "children": [
+                                        {
+                                          "role": "InlineTextBox",
+                                          "name": "Core"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "role": "StaticText",
+                                      "name": ")",
+                                      "children": [
+                                        {
+                                          "role": "InlineTextBox",
+                                          "name": ")"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "role": "listitem",
+                                  "name": "",
+                                  "level": 1,
+                                  "children": [
+                                    {
+                                      "role": "StaticText",
+                                      "name": "Semantic HTML",
+                                      "children": [
+                                        {
+                                          "role": "InlineTextBox",
+                                          "name": "Semantic HTML"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "role": "StaticText",
+                                      "name": " (",
+                                      "children": [
+                                        {
+                                          "role": "InlineTextBox",
+                                          "name": " ("
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "role": "StaticText",
+                                      "name": "Core",
+                                      "children": [
+                                        {
+                                          "role": "InlineTextBox",
+                                          "name": "Core"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "role": "StaticText",
+                                      "name": ")",
+                                      "children": [
+                                        {
+                                          "role": "InlineTextBox",
+                                          "name": ")"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "role": "listitem",
+                                  "name": "",
+                                  "level": 1,
+                                  "children": [
+                                    {
+                                      "role": "StaticText",
+                                      "name": "CSS Modules",
+                                      "children": [
+                                        {
+                                          "role": "InlineTextBox",
+                                          "name": "CSS Modules"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "role": "StaticText",
+                                      "name": " (",
+                                      "children": [
+                                        {
+                                          "role": "InlineTextBox",
+                                          "name": " ("
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "role": "StaticText",
+                                      "name": "Core",
+                                      "children": [
+                                        {
+                                          "role": "InlineTextBox",
+                                          "name": "Core"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "role": "StaticText",
+                                      "name": ")",
+                                      "children": [
+                                        {
+                                          "role": "InlineTextBox",
+                                          "name": ")"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "role": "listitem",
+                                  "name": "",
+                                  "level": 1,
+                                  "children": [
+                                    {
+                                      "role": "StaticText",
+                                      "name": "Web Audio API",
+                                      "children": [
+                                        {
+                                          "role": "InlineTextBox",
+                                          "name": "Web Audio API"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "role": "StaticText",
+                                      "name": " (",
+                                      "children": [
+                                        {
+                                          "role": "InlineTextBox",
+                                          "name": " ("
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "role": "StaticText",
+                                      "name": "Awareness",
+                                      "children": [
+                                        {
+                                          "role": "InlineTextBox",
+                                          "name": "Awareness"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "role": "StaticText",
+                                      "name": ")",
+                                      "children": [
+                                        {
+                                          "role": "InlineTextBox",
+                                          "name": ")"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "role": "listitem",
+                                  "name": "",
+                                  "level": 1,
+                                  "children": [
+                                    {
+                                      "role": "StaticText",
+                                      "name": "React.memo",
+                                      "children": [
+                                        {
+                                          "role": "InlineTextBox",
+                                          "name": "React.memo"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "role": "StaticText",
+                                      "name": " (",
+                                      "children": [
+                                        {
+                                          "role": "InlineTextBox",
+                                          "name": " ("
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "role": "StaticText",
+                                      "name": "Awareness",
+                                      "children": [
+                                        {
+                                          "role": "InlineTextBox",
+                                          "name": "Awareness"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "role": "StaticText",
+                                      "name": ")",
+                                      "children": [
+                                        {
+                                          "role": "InlineTextBox",
+                                          "name": ")"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "role": "article",
+                          "name": "Ada Lovelace",
+                          "children": [
+                            {
+                              "role": "sectionheader",
+                              "name": "",
+                              "children": [
+                                {
+                                  "role": "group",
+                                  "name": "",
+                                  "children": [
+                                    {
+                                      "role": "heading",
+                                      "name": "Ada Lovelace",
+                                      "level": 2,
+                                      "children": [
+                                        {
+                                          "role": "StaticText",
+                                          "name": "Ada Lovelace",
+                                          "children": [
+                                            {
+                                              "role": "InlineTextBox",
+                                              "name": "Ada Lovelace"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "role": "paragraph",
+                                      "name": "",
+                                      "children": [
+                                        {
+                                          "role": "StaticText",
+                                          "name": "Mathematician",
+                                          "children": [
+                                            {
+                                              "role": "InlineTextBox",
+                                              "name": "Mathematician"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "role": "DescriptionList",
+                              "name": "",
+                              "children": [
+                                {
+                                  "role": "term",
+                                  "name": "Commits",
+                                  "children": [
+                                    {
+                                      "role": "StaticText",
+                                      "name": "Commits",
+                                      "children": [
+                                        {
+                                          "role": "InlineTextBox",
+                                          "name": "Commits"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "role": "definition",
+                                  "name": "",
+                                  "children": [
+                                    {
+                                      "role": "StaticText",
+                                      "name": "512",
+                                      "children": [
+                                        {
+                                          "role": "InlineTextBox",
+                                          "name": "512"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "role": "term",
+                                  "name": "VDOM nodes",
+                                  "children": [
+                                    {
+                                      "role": "StaticText",
+                                      "name": "VDOM nodes",
+                                      "children": [
+                                        {
+                                          "role": "InlineTextBox",
+                                          "name": "VDOM nodes"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "role": "definition",
+                                  "name": "",
+                                  "children": [
+                                    {
+                                      "role": "StaticText",
+                                      "name": "0",
+                                      "children": [
+                                        {
+                                          "role": "InlineTextBox",
+                                          "name": "0"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "role": "term",
+                                  "name": "A11y score",
+                                  "children": [
+                                    {
+                                      "role": "StaticText",
+                                      "name": "A11y score",
+                                      "children": [
+                                        {
+                                          "role": "InlineTextBox",
+                                          "name": "A11y score"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "role": "definition",
+                                  "name": "",
+                                  "children": [
+                                    {
+                                      "role": "StaticText",
+                                      "name": "100",
+                                      "children": [
+                                        {
+                                          "role": "InlineTextBox",
+                                          "name": "100"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "role": "list",
+                              "name": "Engineered Skills",
+                              "children": [
+                                {
+                                  "role": "listitem",
+                                  "name": "",
+                                  "level": 1,
+                                  "children": [
+                                    {
+                                      "role": "StaticText",
+                                      "name": "React 19 Fiber",
+                                      "children": [
+                                        {
+                                          "role": "InlineTextBox",
+                                          "name": "React 19 Fiber"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "role": "StaticText",
+                                      "name": " (",
+                                      "children": [
+                                        {
+                                          "role": "InlineTextBox",
+                                          "name": " ("
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "role": "StaticText",
+                                      "name": "Core",
+                                      "children": [
+                                        {
+                                          "role": "InlineTextBox",
+                                          "name": "Core"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "role": "StaticText",
+                                      "name": ")",
+                                      "children": [
+                                        {
+                                          "role": "InlineTextBox",
+                                          "name": ")"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "role": "article",
+                          "name": "Grace Hopper",
+                          "children": [
+                            {
+                              "role": "sectionheader",
+                              "name": "",
+                              "children": [
+                                {
+                                  "role": "group",
+                                  "name": "",
+                                  "children": [
+                                    {
+                                      "role": "heading",
+                                      "name": "Grace Hopper",
+                                      "level": 2,
+                                      "children": [
+                                        {
+                                          "role": "StaticText",
+                                          "name": "Grace Hopper",
+                                          "children": [
+                                            {
+                                              "role": "InlineTextBox",
+                                              "name": "Grace Hopper"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "role": "paragraph",
+                                      "name": "",
+                                      "children": [
+                                        {
+                                          "role": "StaticText",
+                                          "name": "Computer Scientist",
+                                          "children": [
+                                            {
+                                              "role": "InlineTextBox",
+                                              "name": "Computer Scientist"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
             }
           ]
         }
