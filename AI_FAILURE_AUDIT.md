@@ -1,7 +1,7 @@
 # AI Failure Mode Audit — Lab 03
 
 > Deliverable bắt buộc (15% điểm, cùng nhóm với Atomic Git): ít nhất **3 lỗi AI thật** kèm bằng chứng và bản sửa.
-> Ba mục dưới đây là lỗi thật xảy ra trong session làm Exercise 1 (phần nền và khung). Bằng chứng là output terminal và ảnh chụp checklist của giảng viên, **chưa phải DevTools**. Khi gặp lỗi có Profiler, Network hoặc Accessibility tree ở Ex2, Ex3 và homework, thay hoặc bổ sung vào đây để đủ yêu cầu "DevTools proof".
+> Bốn mục dưới đây là lỗi thật xảy ra trong session làm Exercise 1. Bằng chứng mục 1-3 là output terminal và ảnh checklist; mục 4 là log Console đo trên Edge (gần với DevTools nhất). Khi gặp lỗi có Profiler, Network hoặc Accessibility tree ở Ex2, Ex3 và homework, thay hoặc bổ sung vào đây để đủ yêu cầu "DevTools proof".
 > Chỉ ghi điều đã xảy ra. Không bịa prompt, code, ảnh hay commit hash. Các ô `(điền)` do bạn bổ sung.
 
 - **Sinh viên:** Quang Phú Hùng — 24520626
@@ -16,6 +16,7 @@
 | 1 | Cấu trúc repo (X0) | AI đặt `homeworks/` ở gốc repo, trong khi checklist đặt trong `src/`; còn tự bịa "bắt buộc" cho vị trí sai | Ảnh checklist + `git status` | Đã sửa, chờ hash commit |
 | 2 | Khởi tạo (X0-09) | Cài ESLint bản mới nhất mà không kiểm peer dependency, `npm install` thất bại | Output `npm` (ERESOLVE) | Đã sửa, chờ hash commit |
 | 3 | Exercise 1 (E1-03) | 34 test pass nhưng gate `grep '<div'` vẫn ra 1 dòng do chính comment của AI; thêm cảnh báo giả của ESLint | Output `grep`, `eslint` | Đã sửa, chờ hash commit |
+| 4 | Exercise 1 (E1-07) | Demo "ảnh lỗi" và favicon mặc định bắn lỗi đỏ vào Console, trái gate "Console sạch" | Log Console đo trên Edge | Đã sửa, chờ hash commit |
 
 ## Lỗi 1 — Đọc sai cấu trúc folder của checklist và ghi nhầm là "bắt buộc"
 
@@ -127,3 +128,42 @@ DeveloperCard.test.jsx
 ### Bài học
 
 Test pass không thay cho gate của đề: phải chạy đúng lệnh kiểm chứng giảng viên sẽ chạy. Chuỗi cấm cũng không được xuất hiện trong chú thích của file mà gate quét.
+
+## Lỗi 4 — Khung demo làm Console có lỗi đỏ, trái gate "Console không warning/error"
+
+### Bối cảnh
+
+- **Task:** E1-07, khung demo `App.jsx` với các ca kiểm thử (xem [WBS Ex1](src/exercises/Exercise1_DeveloperCard/TASK_DECOMPOSITION.md)).
+- **Prompt gốc của bạn:** "Ok ngon giờ hoàn thiện các task còn lại từ e07 tới e010,kiểm tra tổng quan rồi báo cáo nhanh cuối cho mình đi".
+- **Điều AI tuyên bố:** chưa có (AI tự đo trước khi báo cáo và phát hiện lỗi).
+
+### Lỗi
+
+Để tạo ca "ảnh lỗi", AI dùng `https://avatar.invalid/missing.png`, tức mỗi lần mở trang trình duyệt phát lỗi mạng đỏ vào Console. Trang cũng không khai báo favicon nên có thêm một lỗi 404. Test đơn vị (53 pass) và lint không bắt được vì chỉ đo trình duyệt thật mới thấy; gate của đề (Console sạch ở bàn chấm) sẽ bị trừ.
+
+Dòng AI sinh ra:
+
+```jsx
+{ id: 'broken', fullName: 'Ada Lovelace', role: 'Mathematician', avatarUrl: 'https://avatar.invalid/missing.png' },
+```
+
+### Bằng chứng
+
+Log Console (Edge headless, dev server) từ `evidence/browser-audit.json` ở lần đo đầu, lặp lại ở mỗi lần tải trang:
+
+```text
+requestfailed: https://avatar.invalid/missing.png
+error: Failed to load resource: net::ERR_NAME_NOT_RESOLVED
+error: Failed to load resource: the server responded with a status ...
+```
+
+Lỗi 404 còn lại nhiều khả năng là `/favicon.ico` (suy luận: biến mất sau khi thêm `<link rel="icon" href="data:,">`, chưa kiểm trực tiếp URL).
+
+### Bản sửa thủ công
+
+- **Commit:** (điền hash từ `git log`)
+- **Thay đổi:** ca ảnh lỗi dùng `public/broken-avatar.png` (file không phải ảnh, server trả 200 nên `onError` chạy mà không có lỗi mạng); thêm `<link rel="icon" href="data:," />`. Đo lại: Console chỉ còn debug/info, 0 error/warning.
+
+### Bài học
+
+Dữ liệu demo cho ca lỗi cũng phải qua gate "Console sạch". Luôn đo bằng trình duyệt thật (Console, Network) trước khi báo xong, không chỉ dựa vào test đơn vị.

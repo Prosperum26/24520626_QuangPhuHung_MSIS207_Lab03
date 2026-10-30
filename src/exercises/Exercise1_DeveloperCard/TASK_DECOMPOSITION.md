@@ -22,7 +22,9 @@ Ex1 là một **project Vite độc lập** (`src/exercises/Exercise1_DeveloperC
 | `src/components/SkillBadge.jsx` | `<li>` một kỹ năng |
 | `src/components/DeveloperCard.jsx` | Component bắt buộc theo checklist slide; **không `<div>`** |
 | `src/components/DeveloperCard.module.css` | Bố cục, responsive |
-| `src/styles/tokens.css` | Token `:root` (màu, khoảng cách); các bài khác sao chép khi cần |
+| `src/styles/tokens.css` | Token `:root` (màu, khoảng cách) + theme tối; các bài khác sao chép khi cần |
+| `src/App.module.css` | Bố cục trang demo (lưới auto-fit) |
+| `public/broken-avatar.png` | File không phải ảnh, dùng cho ca demo ảnh lỗi (server trả 200 nên Console không có lỗi mạng) |
 | `src/assets/avatar-128.jpg` | Avatar local (chuẩn bị ở X0-08) |
 | `src/components/*.test.jsx`, `developerCardModel.test.js` | Test |
 
@@ -41,7 +43,7 @@ Logic thuần nằm ở `developerCardModel.js` để test nhanh và sửa một
 | D7 | Nhãn `dt` qua `formatMetricLabel` (bảng nhãn + fallback tách camelCase) | `vdomNodes`, `a11yScore` in thô khó đọc |
 | D8 | `Intl.NumberFormat` tạo **một lần** ở module | Tạo formatter mỗi render rất tốn |
 | D9 | Tier kỹ năng hiển thị **bằng chữ** `(Core)`, không chỉ màu | WCAG 1.4.1 |
-| D10 | `React.memo` **chỉ khi Profiler chứng minh cần** (E1-10) | Không tối ưu sớm; D2 làm cho `memo` có hiệu lực khi cần |
+| D10 | `React.memo` **chỉ khi chứng minh cần** (E1-10). **Kết quả: không thêm `memo`** | Trong Ex1 và cả khi ghép Ex2 (state của Ex2 nằm trong chính `ScientistDirectory`, `<App />` chỉ đổi `selectedId` thì props card đổi theo), không có lần render lại với props bằng nhau để tiết kiệm. Test `DeveloperCard.stability.test.jsx` chứng minh nếu cần bọc `memo` sau này thì có hiệu lực nhờ D2 |
 | D11 | Default `fullName`/`role` là dữ liệu của chính bạn, không phải tên giảng viên trong slide | Slide dạy cú pháp, không dạy nội dung (sửa nếu muốn) |
 
 ## 4. Contract
@@ -90,10 +92,10 @@ Thời lượng là ngân sách trong Block 2; X0-08 (avatar) làm ở Block 1.
 | E1-04 | `dl` metrics: `Object.entries`, `<Fragment key>` | `src/components/DeveloperCard.jsx` | Test: số `dt` = số `dd` = số khóa; nhãn đã format | 3 | [x] |
 | E1-05 | `ul` skills, key `skill.id` | `src/components/DeveloperCard.jsx` | Test: `listitem` đủ; không warning key | 2 | [x] |
 | E1-06 | Avatar: `failedUrl`, `isSafeAvatarUrl`, `onError`, initials | `src/components/DeveloperCard.jsx` | Test tự hồi (D1) và URL không an toàn | 5 | [x] |
-| E1-07 | Khung demo `src/App.jsx`: `<main><h1>` + các ca (mặc định, tên rất dài, ảnh lỗi, 2 card) | `src/App.jsx` | Chạy dev server, Console sạch dưới StrictMode | 2 | [ ] |
-| E1-08 | `tokens.css` + `src/components/DeveloperCard.module.css` (bố cục, token, tương phản) | `src/styles/tokens.css`, `src/components/DeveloperCard.module.css` | Không hex ngoài `:root`; không inline `style` | 7 | [ ] |
-| E1-09 | Responsive 375 → 1440px, `overflow-wrap`, `min-width: 0` | `src/components/DeveloperCard.module.css` | Device Toolbar iPhone SE: 0 cuộn ngang | 3 | [ ] |
-| E1-10 | Verify: lint, grep, a11y tree, Lighthouse, Profiler quyết định `memo` | `evidence/` | Xem §7 | 3 | [ ] |
+| E1-07 | Khung demo `src/App.jsx`: `<main><h1>` + các ca (mặc định, tên rất dài, ảnh lỗi, 2 card) | `src/App.jsx` | Chạy dev server, Console sạch dưới StrictMode | 2 | [x] |
+| E1-08 | `tokens.css` + `src/components/DeveloperCard.module.css` (bố cục, token, tương phản) | `src/styles/tokens.css`, `src/components/DeveloperCard.module.css` | Không hex ngoài `:root`; không inline `style` | 7 | [x] |
+| E1-09 | Responsive 375 → 1440px, `overflow-wrap`, `min-width: 0` | `src/components/DeveloperCard.module.css` | Device Toolbar iPhone SE: 0 cuộn ngang | 3 | [x] |
+| E1-10 | Verify: lint, grep, a11y tree, Lighthouse, Profiler quyết định `memo` | `evidence/` | Xem §7 | 3 | [x] |
 
 ### Test cần có (chỉ những cái bắt được lỗi thật)
 
@@ -133,7 +135,7 @@ DevTools:
 - Device Toolbar iPhone SE (375px): 0 cuộn ngang; thử thêm ca tên rất dài.
 - Console: không warning dưới StrictMode.
 - Lighthouse Accessibility = 100 (lưu JSON/ảnh vào `evidence/`).
-- **Quyết định `memo` (D10)**: tạm thêm một nút "re-render parent" (state không liên quan) vào `App.jsx`, ghi React Profiler. Nếu card render lại dù props bằng nhau, bọc `memo(function DeveloperCard…)`, đo lại, lưu hai ảnh (trước/sau), rồi **xoá nút tạm**. Nếu không render lại vì lý do khác, không thêm `memo`.
+- **Quyết định `memo` (D10)**: đo bằng test đếm số lần React gọi `SkillBadge` (`DeveloperCard.stability.test.jsx`): không bọc `memo` thì card render lại khi cha đổi state không liên quan; bọc `memo` thì không (default là hằng ổn định). Kết luận: **không thêm `memo`** vì chưa có kịch bản cha render lại với props bằng nhau; xem lại khi ghép Ex2.
 
 ## 8. Dễ sai (AI hay sinh)
 
@@ -142,3 +144,17 @@ DevTools:
 - `http://` hoặc ảnh Unsplash bắt buộc; thiếu `width/height`; `alt` trùng tên; `loading="lazy"` cho avatar.
 - Tạo `Intl.NumberFormat` trong thân component.
 - Ghi lỗi AI mắc phải vào ghi chú cho [AI_FAILURE_AUDIT.md](../../../AI_FAILURE_AUDIT.md), kèm bằng chứng (Profiler, test fail).
+
+## 9. Bằng chứng đã lưu (`evidence/`)
+
+Đo trên Edge headless (Chromium) với dev server (StrictMode) và bản build.
+
+| File | Nội dung | Kết quả |
+|---|---|---|
+| `browser-audit.json` | Cuộn ngang, số card/`div`/kích thước ảnh ở 320, 375, 768, 1440px; log Console | Không cuộn ngang; 4 card; 0 `div`; ảnh 64×64; Console chỉ có debug/info |
+| `a11y-tree.json` | Cây accessibility đầy đủ ở 375px | `article` (có tên) → `header` + `DescriptionList` + `list "Engineered Skills"` |
+| `axe-audit.json` | axe-core (WCAG 2.0/2.1/2.2 A/AA + best-practice), theme sáng và tối, 375px | 0 vi phạm, 30 rule pass, Console trống |
+| `lighthouse-ex1.report.html/.json` | Lighthouse trên bản build (mobile mặc định) | Performance 100, Accessibility 100, Best Practices 100, CLS 0 |
+| `ex1-320px.png`, `ex1-375px.png`, `ex1-375px-light.png`, `ex1-768px.png`, `ex1-1440px.png` | Ảnh chụp toàn trang | Xem bằng mắt |
+
+Chưa làm: kiểm tay bằng DevTools của riêng bạn (panel Elements/Accessibility, Device Toolbar iPhone SE). Nên tự chụp một ảnh để có "DevTools proof" của chính mình.

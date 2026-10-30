@@ -45,7 +45,7 @@ describe('DeveloperCard khung (E1-03)', () => {
   });
 
   it('chuỗi HTML trong fullName hiện như text, không tạo element', () => {
-    const evil = '<img src=x onerror=alert(1)>';
+    const evil = '<img src=x onerror=pwned()>';
     const { container } = render(<DeveloperCard fullName={evil} avatarUrl="" />);
     expect(container.querySelector('img')).toBeNull();
     expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent(evil);
@@ -131,7 +131,7 @@ describe('avatar (E1-06)', () => {
     ['chuỗi rỗng', ''],
     ['null', null],
     ['http://', 'http://example.com/a.png'],
-    ['javascript:', 'javascript:alert(1)'],
+    ['javascript:', 'javascript:pwned()'],
     ['data:', 'data:image/png;base64,AAAA'],
   ])('%s thì không có <img>, hiện chữ cái đầu', (_label, url) => {
     const { container } = render(<DeveloperCard fullName="Quang Phú Hưng" avatarUrl={url} />);

@@ -85,7 +85,7 @@ describe('isSafeAvatarUrl', () => {
     ['avatar.jpg', true],
     ['http://localhost:5173/a.png', true],
     ['http://example.com/a.png', false],
-    ['javascript:alert(1)', false],
+    ['javascript:pwned()', false],
     ['data:image/png;base64,AAAA', false],
     ['//evil.example/a.png', false],
     ['', false],
