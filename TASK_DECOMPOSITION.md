@@ -15,30 +15,30 @@
 | Block | Bài | Thời lượng | Thư mục | WBS |
 |---|---|---|---|---|
 | 1 (00-40) | Cầu nối Lab 2 → 3, init, rules, WBS | 40 phút | gốc repo | mục §3 (file này) |
-| 2 (40-75) | Exercise 1: `DeveloperCard` | 35 phút | `exercises/Exercise1_DeveloperCard/` | [WBS Ex1](exercises/Exercise1_DeveloperCard/TASK_DECOMPOSITION.md) |
-| 3 (75-120) | Exercise 2: `ScientistDirectory` | 45 phút | `exercises/Exercise2_ScientistDirectory/` | [WBS Ex2](exercises/Exercise2_ScientistDirectory/TASK_DECOMPOSITION.md) |
-| 4 (120-155) | Exercise 3: `PubgMatchTelemetry` | 35 phút | `exercises/Exercise3_PubgTelemetry/` | [WBS Ex3](exercises/Exercise3_PubgTelemetry/TASK_DECOMPOSITION.md) |
+| 2 (40-75) | Exercise 1: `DeveloperCard` | 35 phút | `src/exercises/Exercise1_DeveloperCard/` | [WBS Ex1](src/exercises/Exercise1_DeveloperCard/TASK_DECOMPOSITION.md) |
+| 3 (75-120) | Exercise 2: `ScientistDirectory` | 45 phút | `src/exercises/Exercise2_ScientistDirectory/` | [WBS Ex2](src/exercises/Exercise2_ScientistDirectory/TASK_DECOMPOSITION.md) |
+| 4 (120-155) | Exercise 3: `PubgMatchTelemetry` | 35 phút | `src/exercises/Exercise3_PubgTelemetry/` | [WBS Ex3](src/exercises/Exercise3_PubgTelemetry/TASK_DECOMPOSITION.md) |
 | 5 (155-180) | Bảo vệ 3 phút + giao HW | 25 phút | — | mục §5 |
-| Về nhà | HW1 Drum Kit | 1 tuần | `homeworks/DrumMachine/` | [WBS HW1](homeworks/DrumMachine/TASK_DECOMPOSITION.md) |
-| Về nhà | HW2 Piano 88 phím | 1 tuần | `homeworks/GrandPiano88/` | [WBS HW2](homeworks/GrandPiano88/TASK_DECOMPOSITION.md) |
-| Về nhà | HW3 PVS Arena | 1 tuần | `homeworks/KraftonPubgVnArena/` | [WBS HW3](homeworks/KraftonPubgVnArena/TASK_DECOMPOSITION.md) |
-| Tuỳ chọn | Bonus: Situationship FSM | không xếp lịch | `homeworks/BonusSituationship/` | [WBS Bonus](homeworks/BonusSituationship/TASK_DECOMPOSITION.md) |
+| Về nhà | HW1 Drum Kit | 1 tuần | `src/homeworks/DrumMachine/` | [WBS HW1](src/homeworks/DrumMachine/TASK_DECOMPOSITION.md) |
+| Về nhà | HW2 Piano 88 phím | 1 tuần | `src/homeworks/GrandPiano88/` | [WBS HW2](src/homeworks/GrandPiano88/TASK_DECOMPOSITION.md) |
+| Về nhà | HW3 PVS Arena | 1 tuần | `src/homeworks/KraftonPubgVnArena/` | [WBS HW3](src/homeworks/KraftonPubgVnArena/TASK_DECOMPOSITION.md) |
+| Tuỳ chọn | Bonus: Situationship FSM | không xếp lịch | `src/homeworks/BonusSituationship/` | [WBS Bonus](src/homeworks/BonusSituationship/TASK_DECOMPOSITION.md) |
 
-Component in-class đặt ở `src/components/` (đúng checklist slide); WBS và bằng chứng của bài nằm ở folder bài.
+Mã, WBS và bằng chứng của mỗi bài in-class nằm trong folder bài (`src/exercises/<Bài>/`). Đường dẫn checklist `src/components/{DeveloperCard,ScientistDirectory,PubgMatchTelemetry}.jsx` là file re-export một dòng trỏ về folder bài (tạo khi bài đó có component).
 
 ## 3. Block 1 — Khởi tạo chung (X)
 
 | ID | Task | Gate | Trạng thái |
 |---|---|---|---|
 | X0-01 | Đọc lại cầu nối Lab 2 → 3 ([Context.md §3](docs/Context.md)); trả lời miệng 3 ý: Fiber vs đệ quy, hook queue vs `stateStore[cursor]`, `Object.is` | Tự giải thích được, không nhìn tài liệu | [ ] |
-| X0-02 | Chốt stack: JS + JSDoc hay TypeScript (ghi vào [project-rules.md §1](project-rules.md)) | Một lựa chọn duy nhất | [ ] |
-| X0-03 | Khởi tạo Vite + React 19 trong repo này (giữ nguyên `docs/`, `exercises/`, `homeworks/`) | `npm run dev` hiện trang; `package.json` có `react@19` | [ ] |
-| X0-04 | Cài Vitest + jsdom + `@testing-library/react` + `@testing-library/jest-dom`; `setupFiles` có `afterEach(cleanup)`; script `test` | `npm test` chạy (0 test cũng được) | [ ] |
-| X0-05 | `src/main.jsx` dùng `createRoot` + `StrictMode`, kiểm `#root` tồn tại | Không còn `ReactDOM.render`, `import * as React` | [ ] |
-| X0-06 | `.gitignore` (`node_modules/`, `dist/`); dọn template mẫu Vite thừa | `git status` chỉ còn file có chủ đích | [ ] |
+| X0-02 | Chốt stack: JS + JSDoc hay TypeScript (ghi vào [project-rules.md §1](project-rules.md)) | Một lựa chọn duy nhất | [x] |
+| X0-03 | Khởi tạo Vite + React 19 trong repo này (giữ nguyên `docs/`, `src/exercises/`, `src/homeworks/`) | `npm run dev` hiện trang; `package.json` có `react@19` | [x] |
+| X0-04 | Cài Vitest + jsdom + `@testing-library/react` + `@testing-library/jest-dom`; `setupFiles` có `afterEach(cleanup)`; script `test` | `npm test` chạy (0 test cũng được) | [x] |
+| X0-05 | `src/main.jsx` dùng `createRoot` + `StrictMode`, kiểm `#root` tồn tại | Không còn `ReactDOM.render`, `import * as React` | [x] |
+| X0-06 | `.gitignore` (`node_modules/`, `dist/`); dọn template mẫu Vite thừa | `git status` chỉ còn file có chủ đích | [x] |
 | X0-07 | Nạp `project-rules.md` cho công cụ AI đang dùng (Cursor `.cursorrules`, hoặc đọc `Agents.md`) | AI trả lời được 3 luật cấm khi hỏi | [ ] |
-| X0-08 | Chuẩn bị avatar local: cắt/resize từ `C:\Dev\Project\MSIS207_Lab1\Exercise_3\assets\hero-avatar-320.jpg` thành `src/assets/avatar-128.webp` (128×128) | File tồn tại, vài KB, import được từ Vite | [ ] |
-| X0-09 | ESLint: `eslint-plugin-react-hooks` + `eslint-plugin-jsx-a11y`; script `lint` | `npm run lint` chạy sạch trên khung rỗng | [ ] |
+| X0-08 | Chuẩn bị avatar local: cắt/resize từ `C:\Dev\Project\MSIS207_Lab1\Exercise_3\assets\hero-avatar-320.jpg` thành `src/exercises/Exercise1_DeveloperCard/assets/avatar-128.jpg` (128×128; môi trường không có encoder WebP nên dùng JPEG, 5 KB) | File tồn tại, vài KB, import được từ Vite | [x] |
+| X0-09 | ESLint: `eslint-plugin-react-hooks` + `eslint-plugin-jsx-a11y`; script `lint` | `npm run lint` chạy sạch trên khung rỗng. Ghi chú: dùng ESLint 9 vì `eslint-plugin-jsx-a11y` chưa hỗ trợ ESLint 10 | [x] |
 
 **Commit C0** (spec): `docs: add context, agents, project rules and WBS`
 **Commit C1** (init): `chore: init react19 vite & rules`
@@ -51,7 +51,7 @@ Component in-class đặt ở `src/components/` (đúng checklist slide); WBS v�
 |---|---|---|---|
 | C0 | `docs: add context, agents, project rules and WBS` | tài liệu | Link trong tài liệu mở được |
 | C1 | `chore: init react19 vite & rules` | X0-01..09 | `npm test` chạy, dev server lên |
-| C2 | `feat(ex1): implement semantic DeveloperCard and SkillBadge` | E1-01..07 | `grep -n '<div' src/components/DeveloperCard.jsx` = 0 dòng; test pass |
+| C2 | `feat(ex1): implement semantic DeveloperCard and SkillBadge` | E1-01..07 | `grep -n '<div'` trên `DeveloperCard.jsx` = 0 dòng; test pass |
 | C3 | `style(ex1): add responsive 375px CSS module` | E1-08..10 | 375px không cuộn ngang |
 | C4 | `feat(ex2): normalize smartPeople schema with stable IDs` | E2-01..02 | Mọi record có `id` duy nhất |
 | C5 | `feat(ex2): add search, IQ filter & toSorted` | E2-03..06 | Profiler: 1 ký tự = đúng 1 lần render |
@@ -83,10 +83,10 @@ Tổng 9 commit (7 theo đề + 2 hạ tầng). Thêm commit tích hợp `feat(a
 Đối chiếu slide 34. Chạy từ gốc repo:
 
 ```bash
-grep -n '<div' src/components/DeveloperCard.jsx                # 0 dòng
+grep -n '<div' src/exercises/Exercise1_DeveloperCard/DeveloperCard.jsx   # 0 dòng
 grep -rnE 'http://' src                                        # 0 dòng
-grep -rnE 'extends (React\.)?Component|ReactDOM\.render|defaultProps|keyCode|alert\(|dangerouslySetInnerHTML|key=\{(i|idx|index)\}' src homeworks   # 0 dòng
-grep -rn 'import \* as React' src homeworks                    # 0 dòng
+grep -rnE 'extends (React\.)?Component|ReactDOM\.render|defaultProps|keyCode|alert\(|dangerouslySetInnerHTML|key=\{(i|idx|index)\}' src   # 0 dòng
+grep -rn 'import \* as React' src                    # 0 dòng
 npm test                                                       # pass
 git log --oneline --graph                                      # >= 6-8 commit
 ```
@@ -96,8 +96,8 @@ git log --oneline --graph                                      # >= 6-8 commit
 | `project-rules.md` | File tồn tại ở gốc, đã chỉnh theo thực tế | [ ] |
 | `TASK_DECOMPOSITION.md` | Tổng + từng bài; task đã tick; commit khớp | [ ] |
 | `AI_FAILURE_AUDIT.md` | >= 3 lỗi, mỗi lỗi có bằng chứng DevTools và bản sửa | [ ] |
-| `src/components/` | 3 file `.jsx` bắt buộc có và chạy | [ ] |
-| `homeworks/` | 3 thư mục có code, test, `evidence/` | [ ] |
+| `src/components/` | 3 file `.jsx` re-export có mặt, import chạy được | [ ] |
+| `src/homeworks/` | 3 thư mục có code, test, `evidence/` | [ ] |
 | Console | Không warning/error ở cả ba bài in-class | [ ] |
 | 375px | Không cuộn ngang ở mọi bài | [ ] |
 | Lighthouse a11y | 100 ở Ex1-Ex3 và HW1-HW3 (lưu JSON/ảnh) | [ ] |

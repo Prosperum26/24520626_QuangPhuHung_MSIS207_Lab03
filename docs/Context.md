@@ -32,13 +32,13 @@ Chủ đề miền: KRAFTON x PUBG Vietnam Series (PVS). Các đội dùng làm 
 
 | Bài | Chủ đề | Thời lượng | WBS |
 |---|---|---|---|
-| Exercise 1 | `DeveloperCard` + `SkillBadge` ngữ nghĩa, zero `<div>` | 35 phút | [Exercise1_DeveloperCard](../exercises/Exercise1_DeveloperCard/TASK_DECOMPOSITION.md) |
-| Exercise 2 | `ScientistDirectory`: tìm, lọc IQ, sắp xếp, xoá/đặt lại | 45 phút | [Exercise2_ScientistDirectory](../exercises/Exercise2_ScientistDirectory/TASK_DECOMPOSITION.md) |
-| Exercise 3 | `PubgMatchTelemetry`: 4 trạng thái, skeleton, abort | 35 phút | [Exercise3_PubgTelemetry](../exercises/Exercise3_PubgTelemetry/TASK_DECOMPOSITION.md) |
-| Homework 1 | Drum Kit WCAG 2.2 AA, Lighthouse 100 | 1 tuần | [DrumMachine](../homeworks/DrumMachine/TASK_DECOMPOSITION.md) |
-| Homework 2 | Piano 88 phím, 8 voice, FIFO sequencer | 1 tuần | [GrandPiano88](../homeworks/GrandPiano88/TASK_DECOMPOSITION.md) |
-| Homework 3 | PVS Airdrop and Crate Arena | 1 tuần | [KraftonPubgVnArena](../homeworks/KraftonPubgVnArena/TASK_DECOMPOSITION.md) |
-| Bonus (tuỳ chọn) | `SituationshipAnalyzer` FSM | không xếp lịch | [BonusSituationship](../homeworks/BonusSituationship/TASK_DECOMPOSITION.md) |
+| Exercise 1 | `DeveloperCard` + `SkillBadge` ngữ nghĩa, zero `<div>` | 35 phút | [Exercise1_DeveloperCard](../src/exercises/Exercise1_DeveloperCard/TASK_DECOMPOSITION.md) |
+| Exercise 2 | `ScientistDirectory`: tìm, lọc IQ, sắp xếp, xoá/đặt lại | 45 phút | [Exercise2_ScientistDirectory](../src/exercises/Exercise2_ScientistDirectory/TASK_DECOMPOSITION.md) |
+| Exercise 3 | `PubgMatchTelemetry`: 4 trạng thái, skeleton, abort | 35 phút | [Exercise3_PubgTelemetry](../src/exercises/Exercise3_PubgTelemetry/TASK_DECOMPOSITION.md) |
+| Homework 1 | Drum Kit WCAG 2.2 AA, Lighthouse 100 | 1 tuần | [DrumMachine](../src/homeworks/DrumMachine/TASK_DECOMPOSITION.md) |
+| Homework 2 | Piano 88 phím, 8 voice, FIFO sequencer | 1 tuần | [GrandPiano88](../src/homeworks/GrandPiano88/TASK_DECOMPOSITION.md) |
+| Homework 3 | PVS Airdrop and Crate Arena | 1 tuần | [KraftonPubgVnArena](../src/homeworks/KraftonPubgVnArena/TASK_DECOMPOSITION.md) |
+| Bonus (tuỳ chọn) | `SituationshipAnalyzer` FSM | không xếp lịch | [BonusSituationship](../src/homeworks/BonusSituationship/TASK_DECOMPOSITION.md) |
 
 ## 3. Cầu nối Lab 2 → Lab 3
 
@@ -133,7 +133,7 @@ useEffect(() => {
 
 ### 4.7 Đồng hồ không trôi (HW3)
 
-`setInterval(s => s - 1, 1000)` trôi hàng phút khi tab nền bị Chrome giới hạn còn khoảng 1 tick mỗi phút. Giải pháp: tính còn lại từ mốc tuyệt đối mỗi lần tick (200ms) và ngay khi tab `visible`. Cần `serverOffsetMs` để bù lệch đồng hồ máy khách. `Date.now()` có thể bị đổi giờ hệ thống nên HW3 neo mốc một lần rồi cộng `performance.now()` (đơn điệu); chi tiết ở [WBS HW3](../homeworks/KraftonPubgVnArena/TASK_DECOMPOSITION.md).
+`setInterval(s => s - 1, 1000)` trôi hàng phút khi tab nền bị Chrome giới hạn còn khoảng 1 tick mỗi phút. Giải pháp: tính còn lại từ mốc tuyệt đối mỗi lần tick (200ms) và ngay khi tab `visible`. Cần `serverOffsetMs` để bù lệch đồng hồ máy khách. `Date.now()` có thể bị đổi giờ hệ thống nên HW3 neo mốc một lần rồi cộng `performance.now()` (đơn điệu); chi tiết ở [WBS HW3](../src/homeworks/KraftonPubgVnArena/TASK_DECOMPOSITION.md).
 
 ### 4.8 Âm thanh đa âm (HW1, HW2)
 
@@ -144,7 +144,7 @@ useEffect(() => {
 
 ## 5. Cấu trúc repo (checklist cuối slide + phần mình thêm)
 
-Bắt buộc theo slide 34: `project-rules.md`, `TASK_DECOMPOSITION.md`, `AI_FAILURE_AUDIT.md`, `src/components/{DeveloperCard,ScientistDirectory,PubgMatchTelemetry}.jsx`, `homeworks/{DrumMachine,GrandPiano88,KraftonPubgVnArena}/`. Còn lại là phần thêm của mình.
+Bắt buộc theo slide 34: `project-rules.md`, `TASK_DECOMPOSITION.md`, `AI_FAILURE_AUDIT.md`, `src/components/{DeveloperCard,ScientistDirectory,PubgMatchTelemetry}.jsx`, `src/homeworks/{DrumMachine,GrandPiano88,KraftonPubgVnArena}/` (trong ảnh checklist, `homeworks/` nằm **bên trong** `src/`, ngang hàng `components/`). Còn lại là phần thêm của mình.
 
 ```text
 24520626_QuangPhuHung_MSIS207_Lab03/
@@ -155,23 +155,24 @@ Bắt buộc theo slide 34: `project-rules.md`, `TASK_DECOMPOSITION.md`, `AI_FAI
   docs/
     Context.md                   (thêm) file này
     prompt_logs/                 (thêm) export session AI
-  exercises/                     (thêm) WBS + bằng chứng từng bài in-class
-    Exercise1_DeveloperCard/     TASK_DECOMPOSITION.md, evidence/
-    Exercise2_ScientistDirectory/
-    Exercise3_PubgTelemetry/
   src/
-    components/                  (bắt buộc)
+    components/                  (bắt buộc) file re-export một dòng, trỏ về folder bài
       DeveloperCard.jsx          Sprint 1 (zero div)
       ScientistDirectory.jsx     Sprint 2 (derived state)
       PubgMatchTelemetry.jsx     Sprint 3 (KRAFTON PUBG VN)
-  homeworks/                     (bắt buộc)
-    DrumMachine/                 HW1; TASK_DECOMPOSITION.md, evidence/
-    GrandPiano88/                HW2
-    KraftonPubgVnArena/          HW3
-    BonusSituationship/          (thêm) bonus tuỳ chọn, SituationshipAnalyzer FSM
+    exercises/                   (thêm) mã + WBS + bằng chứng từng bài in-class
+      Exercise1_DeveloperCard/   TASK_DECOMPOSITION.md, mã thật, test, assets/, evidence/
+      Exercise2_ScientistDirectory/
+      Exercise3_PubgTelemetry/
+    homeworks/                   (bắt buộc)
+      DrumMachine/               HW1; TASK_DECOMPOSITION.md, evidence/
+      GrandPiano88/              HW2
+      KraftonPubgVnArena/        HW3
+      BonusSituationship/        (thêm) bonus tuỳ chọn, SituationshipAnalyzer FSM
+    main.jsx, App.jsx, test/     (thêm) khung Vite
 ```
 
-File phụ của component (`*.module.css`, `SkillBadge.jsx`, hook, mock API, test) đặt cạnh component hoặc trong `src/{hooks,data,api}` khi tạo ở task tương ứng. Khung dự án Vite (package.json, vite.config) tạo ở task `X0` (commit `chore: init react19 vite & rules`).
+Mã thật của mỗi bài in-class nằm trong folder bài (`src/exercises/<Bài>/`, gồm component, `*.module.css`, hook, mock API, test); file `src/components/*.jsx` chỉ re-export để khớp checklist. Mã của mỗi homework nằm trong folder của nó (`src/homeworks/<Tên>/...`); đường dẫn file trong WBS homework tính từ folder đó. Khung dự án Vite (package.json, vite.config) tạo ở task `X0` (commit `chore: init react19 vite & rules`). Không dùng `.gitkeep`: folder rỗng như `evidence/` tạo khi có file đầu tiên.
 
 ## 6. Bảo vệ trực tiếp 3 phút (25%)
 
@@ -230,7 +231,7 @@ Slide chép từ ảnh nên có chỗ vỡ cú pháp. Khi dùng làm đặc tả
 
 ## 10. Bonus: SituationshipAnalyzer (tuỳ chọn)
 
-FSM thay cho bộ boolean mâu thuẫn; reducer cho nhật ký nỗ lực bất đối xứng (`EM` 100 lần trọng số 0,1 so với `AI_DO` 1 lần trọng số 50); timer "seen không rep" 5 giây có cleanup; cảnh báo red-flag trong `<output role="status" aria-live="polite">`; 375px; commit mẫu `feat(fsm): model HenHoKhongYeu state machine` và `feat(ui): add derived red-flag meter & ghosting cleanup`. Chỉ làm sau khi xong mọi bài chấm điểm. Folder và WBS: [homeworks/BonusSituationship](../homeworks/BonusSituationship/TASK_DECOMPOSITION.md).
+FSM thay cho bộ boolean mâu thuẫn; reducer cho nhật ký nỗ lực bất đối xứng (`EM` 100 lần trọng số 0,1 so với `AI_DO` 1 lần trọng số 50); timer "seen không rep" 5 giây có cleanup; cảnh báo red-flag trong `<output role="status" aria-live="polite">`; 375px; commit mẫu `feat(fsm): model HenHoKhongYeu state machine` và `feat(ui): add derived red-flag meter & ghosting cleanup`. Chỉ làm sau khi xong mọi bài chấm điểm. Folder và WBS: [homeworks/BonusSituationship](../src/homeworks/BonusSituationship/TASK_DECOMPOSITION.md).
 
 ## 11. Tài liệu liên quan
 
