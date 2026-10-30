@@ -1,0 +1,251 @@
+{
+  "role": "RootWebArea",
+  "name": "Exercise 1 - Developer Card",
+  "children": [
+    {
+      "role": "main",
+      "name": "",
+      "children": [
+        {
+          "role": "heading",
+          "name": "Exercise 1: Developer Card",
+          "level": 1
+        },
+        {
+          "role": "region",
+          "name": "Các trường hợp hiển thị",
+          "children": [
+            {
+              "role": "heading",
+              "name": "Quang Phú Hưng",
+              "level": 2
+            },
+            {
+              "role": "StaticText",
+              "name": "Web Developer, UIT"
+            },
+            {
+              "role": "StaticText",
+              "name": "Commits"
+            },
+            {
+              "role": "StaticText",
+              "name": "512"
+            },
+            {
+              "role": "StaticText",
+              "name": "VDOM nodes"
+            },
+            {
+              "role": "StaticText",
+              "name": "0"
+            },
+            {
+              "role": "StaticText",
+              "name": "A11y score"
+            },
+            {
+              "role": "StaticText",
+              "name": "100"
+            },
+            {
+              "role": "StaticText",
+              "name": "React 19 Fiber"
+            },
+            {
+              "role": "StaticText",
+              "name": " ("
+            },
+            {
+              "role": "StaticText",
+              "name": "Core"
+            },
+            {
+              "role": "StaticText",
+              "name": ")"
+            },
+            {
+              "role": "heading",
+              "name": "Nguyễn Thị Minh Khai Phạm Trần Quang Đức Anh Tuấn",
+              "level": 2
+            },
+            {
+              "role": "StaticText",
+              "name": "Senior Frontend Engineer, Accessibility and Performance Guild"
+            },
+            {
+              "role": "StaticText",
+              "name": "Commits"
+            },
+            {
+              "role": "StaticText",
+              "name": "1.234.567"
+            },
+            {
+              "role": "StaticText",
+              "name": "VDOM nodes"
+            },
+            {
+              "role": "StaticText",
+              "name": "5.000"
+            },
+            {
+              "role": "StaticText",
+              "name": "A11y score"
+            },
+            {
+              "role": "StaticText",
+              "name": "100"
+            },
+            {
+              "role": "StaticText",
+              "name": "Open issues"
+            },
+            {
+              "role": "StaticText",
+              "name": "3"
+            },
+            {
+              "role": "StaticText",
+              "name": "React 19 Fiber"
+            },
+            {
+              "role": "StaticText",
+              "name": " ("
+            },
+            {
+              "role": "StaticText",
+              "name": "Core"
+            },
+            {
+              "role": "StaticText",
+              "name": ")"
+            },
+            {
+              "role": "StaticText",
+              "name": "Semantic HTML"
+            },
+            {
+              "role": "StaticText",
+              "name": " ("
+            },
+            {
+              "role": "StaticText",
+              "name": "Core"
+            },
+            {
+              "role": "StaticText",
+              "name": ")"
+            },
+            {
+              "role": "StaticText",
+              "name": "CSS Modules"
+            },
+            {
+              "role": "StaticText",
+              "name": " ("
+            },
+            {
+              "role": "StaticText",
+              "name": "Core"
+            },
+            {
+              "role": "StaticText",
+              "name": ")"
+            },
+            {
+              "role": "StaticText",
+              "name": "Web Audio API"
+            },
+            {
+              "role": "StaticText",
+              "name": " ("
+            },
+            {
+              "role": "StaticText",
+              "name": "Awareness"
+            },
+            {
+              "role": "StaticText",
+              "name": ")"
+            },
+            {
+              "role": "StaticText",
+              "name": "React.memo"
+            },
+            {
+              "role": "StaticText",
+              "name": " ("
+            },
+            {
+              "role": "StaticText",
+              "name": "Awareness"
+            },
+            {
+              "role": "StaticText",
+              "name": ")"
+            },
+            {
+              "role": "heading",
+              "name": "Ada Lovelace",
+              "level": 2
+            },
+            {
+              "role": "StaticText",
+              "name": "Mathematician"
+            },
+            {
+              "role": "StaticText",
+              "name": "Commits"
+            },
+            {
+              "role": "StaticText",
+              "name": "512"
+            },
+            {
+              "role": "StaticText",
+              "name": "VDOM nodes"
+            },
+            {
+              "role": "StaticText",
+              "name": "0"
+            },
+            {
+              "role": "StaticText",
+              "name": "A11y score"
+            },
+            {
+              "role": "StaticText",
+              "name": "100"
+            },
+            {
+              "role": "StaticText",
+              "name": "React 19 Fiber"
+            },
+            {
+              "role": "StaticText",
+              "name": " ("
+            },
+            {
+              "role": "StaticText",
+              "name": "Core"
+            },
+            {
+              "role": "StaticText",
+              "name": ")"
+            },
+            {
+              "role": "heading",
+              "name": "Grace Hopper",
+              "level": 2
+            },
+            {
+              "role": "StaticText",
+              "name": "Computer Scientist"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

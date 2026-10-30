@@ -1,0 +1,13 @@
+{
+  "light": {
+    "violations": [],
+    "passes": 30,
+    "incomplete": []
+  },
+  "dark": {
+    "violations": [],
+    "passes": 30,
+    "incomplete": []
+  },
+  "console": []
+}

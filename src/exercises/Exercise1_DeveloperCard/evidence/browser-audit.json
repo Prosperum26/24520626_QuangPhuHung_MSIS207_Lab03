@@ -1,0 +1,203 @@
+{
+  "url": "http://localhost:5199/",
+  "viewports": [
+    {
+      "scrollWidth": 320,
+      "clientWidth": 320,
+      "cards": 4,
+      "divs": 0,
+      "images": [
+        {
+          "src": "/src/assets/avatar-128.jpg",
+          "w": "64",
+          "h": "64",
+          "rendered": [
+            64,
+            64
+          ],
+          "loaded": true
+        },
+        {
+          "src": "/src/assets/avatar-128.jpg",
+          "w": "64",
+          "h": "64",
+          "rendered": [
+            64,
+            64
+          ],
+          "loaded": true
+        }
+      ],
+      "initials": [
+        "AL",
+        "GH"
+      ],
+      "width": 320,
+      "horizontalScroll": false
+    },
+    {
+      "scrollWidth": 375,
+      "clientWidth": 375,
+      "cards": 4,
+      "divs": 0,
+      "images": [
+        {
+          "src": "/src/assets/avatar-128.jpg",
+          "w": "64",
+          "h": "64",
+          "rendered": [
+            64,
+            64
+          ],
+          "loaded": true
+        },
+        {
+          "src": "/src/assets/avatar-128.jpg",
+          "w": "64",
+          "h": "64",
+          "rendered": [
+            64,
+            64
+          ],
+          "loaded": true
+        }
+      ],
+      "initials": [
+        "AL",
+        "GH"
+      ],
+      "width": 375,
+      "horizontalScroll": false
+    },
+    {
+      "scrollWidth": 768,
+      "clientWidth": 768,
+      "cards": 4,
+      "divs": 0,
+      "images": [
+        {
+          "src": "/src/assets/avatar-128.jpg",
+          "w": "64",
+          "h": "64",
+          "rendered": [
+            64,
+            64
+          ],
+          "loaded": true
+        },
+        {
+          "src": "/src/assets/avatar-128.jpg",
+          "w": "64",
+          "h": "64",
+          "rendered": [
+            64,
+            64
+          ],
+          "loaded": true
+        }
+      ],
+      "initials": [
+        "AL",
+        "GH"
+      ],
+      "width": 768,
+      "horizontalScroll": false
+    },
+    {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "cards": 4,
+      "divs": 0,
+      "images": [
+        {
+          "src": "/src/assets/avatar-128.jpg",
+          "w": "64",
+          "h": "64",
+          "rendered": [
+            64,
+            64
+          ],
+          "loaded": true
+        },
+        {
+          "src": "/src/assets/avatar-128.jpg",
+          "w": "64",
+          "h": "64",
+          "rendered": [
+            64,
+            64
+          ],
+          "loaded": true
+        }
+      ],
+      "initials": [
+        "AL",
+        "GH"
+      ],
+      "width": 1440,
+      "horizontalScroll": false
+    }
+  ],
+  "console": [
+    {
+      "type": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "type": "info",
+      "text": "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold"
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "type": "info",
+      "text": "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold"
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "type": "info",
+      "text": "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold"
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "type": "info",
+      "text": "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold"
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "type": "info",
+      "text": "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold"
+    }
+  ]
+}
