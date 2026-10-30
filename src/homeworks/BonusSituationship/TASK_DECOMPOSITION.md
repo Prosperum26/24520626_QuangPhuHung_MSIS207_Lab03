@@ -1,6 +1,6 @@
 # TASK_DECOMPOSITION — Bonus: Situationship Analyzer (tuỳ chọn)
 
-> WBS con của [TASK_DECOMPOSITION.md](../../TASK_DECOMPOSITION.md). Không nằm trong lịch 180 phút và thang điểm; chỉ làm sau khi xong mọi bài chấm điểm. Mỗi prompt AI = đúng một task ID.
+> WBS con của [TASK_DECOMPOSITION.md](../../../TASK_DECOMPOSITION.md). Không nằm trong lịch 180 phút và thang điểm; chỉ làm sau khi xong mọi bài chấm điểm. Mỗi prompt AI = đúng một task ID.
 
 ## 1. Mục tiêu và phạm vi
 
@@ -11,7 +11,7 @@
 
 ## 2. Contract
 
-Slide có hai bộ tên trạng thái mâu thuẫn ([Context.md §9](../../docs/Context.md)); **chốt một bộ** ở task B-01 (đề xuất bộ trong code mẫu):
+Slide có hai bộ tên trạng thái mâu thuẫn ([Context.md §9](../../../docs/Context.md)); **chốt một bộ** ở task B-01 (đề xuất bộ trong code mẫu):
 
 ```js
 /** @typedef {'FRIENDS'|'DATING_NO_LOVE'|'OFFICIAL_LOVE'|'GHOSTED_EXIT'} RelationshipPhase */
@@ -27,9 +27,9 @@ Slide có hai bộ tên trạng thái mâu thuẫn ([Context.md §9](../../docs/
 
 | ID | Task | File | Gate | Trạng thái |
 |---|---|---|---|---|
-| B-01 | Chốt bộ trạng thái + `transition()` thuần | `src/fsm.js` | Test: mọi chuyển hợp lệ/không hợp lệ | [ ] |
-| B-02 | Reducer nhật ký tín hiệu bất biến + điểm dẫn xuất | `src/effort.js` | Test: không mutate; điểm đúng | [ ] |
-| B-03 | Component + `<output role="status">` cờ đỏ | `src/SituationshipAnalyzer.jsx` | Test: red flag khi `em < rival` | [ ] |
+| B-01 | Chốt bộ trạng thái + `transition()` thuần | `fsm.js` | Test: mọi chuyển hợp lệ/không hợp lệ | [ ] |
+| B-02 | Reducer nhật ký tín hiệu bất biến + điểm dẫn xuất | `effort.js` | Test: không mutate; điểm đúng | [ ] |
+| B-03 | Component + `<output role="status">` cờ đỏ | `SituationshipAnalyzer.jsx` | Test: red flag khi `em < rival` | [ ] |
 | B-04 | Ghosting timer 5s + cleanup + abort promise | `SituationshipAnalyzer.jsx` | Test (fake timers): unmount không còn timer | [ ] |
 | B-05 | Form tín hiệu `useId` + label; CSS Modules 375px | `*.module.css` | Lighthouse a11y 100 | [ ] |
 

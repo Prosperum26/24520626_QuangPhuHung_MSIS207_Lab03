@@ -1,6 +1,6 @@
 # TASK_DECOMPOSITION — Exercise 3: PubgMatchTelemetry (Sprint 3, 35 phút)
 
-> WBS con của [TASK_DECOMPOSITION.md](../../TASK_DECOMPOSITION.md). Mỗi prompt AI = đúng một task ID.
+> WBS con của [TASK_DECOMPOSITION.md](../../../TASK_DECOMPOSITION.md). Mỗi prompt AI = đúng một task ID.
 
 ## 1. Mục tiêu và phạm vi
 
@@ -25,7 +25,7 @@ Radar trực tiếp cho các đội PUBG Vietnam Series: máy trạng thái `IDL
 
 - Dữ liệu: `ces` Cerberus Esports (Erangel, Phase 6, 4 sống, 14 kill, 68%), `te` The Expendables (Miramar, Phase 7, 4, 18, 82%), `ge` Genius Esports (Taego, Phase 5, 3, 9, 41%).
 - Mock `fetchKraftonPubgTelemetry`: độ trễ tham số hóa (mặc định khoảng 800-1200ms), xác suất lỗi `lossRate = 0.35`, **tham số tiêm được** (rng/latency) để test tất định; lắng nghe `signal` và reject `AbortError` ngay khi abort; `signal` đã abort từ đầu thì reject ngay.
-- Chỉ một tên hàm cho fetch (xem [Context.md §9](../../docs/Context.md)).
+- Chỉ một tên hàm cho fetch (xem [Context.md §9](../../../docs/Context.md)).
 - `squadId` mặc định `'te'`; bộ chọn squad là nhóm `<button aria-pressed>` hoặc `radio` có label.
 - Hằng cấu hình (latency, lossRate, danh sách squad) ở **một module**, dễ đổi khi bị đột biến.
 
@@ -33,9 +33,9 @@ Radar trực tiếp cho các đội PUBG Vietnam Series: máy trạng thái `IDL
 
 | ID | Task | File | Gate | Trạng thái |
 |---|---|---|---|---|
-| E3-01 | Dữ liệu `PUBG_VN_SQUADS` + typedef | `src/data/pubgSquads.js` | Test: 3 squad đủ trường | [ ] |
-| E3-02 | Mock `fetchKraftonPubgTelemetry` có latency, lossRate, tôn trọng `signal`, **dọn timer và listener khi abort** (§7) | `src/api/krafton.js` | Test: abort giữa chừng → `AbortError`; lossRate 1 → luôn lỗi; 0 → luôn thành công; sau abort `vi.getTimerCount() === 0` | [ ] |
-| E3-03 | Component + `ViewState`, effect `LOADING → SUCCESS/ERROR` | `src/components/PubgMatchTelemetry.jsx` | Test: đủ 3 trạng thái hiển thị đúng | [ ] |
+| E3-01 | Dữ liệu `PUBG_VN_SQUADS` + typedef | `data/pubgSquads.js` | Test: 3 squad đủ trường | [ ] |
+| E3-02 | Mock `fetchKraftonPubgTelemetry` có latency, lossRate, tôn trọng `signal`, **dọn timer và listener khi abort** (§7) | `api/krafton.js` | Test: abort giữa chừng → `AbortError`; lossRate 1 → luôn lỗi; 0 → luôn thành công; sau abort `vi.getTimerCount() === 0` | [ ] |
+| E3-03 | Component + `ViewState`, effect `LOADING → SUCCESS/ERROR` | `PubgMatchTelemetry.jsx` | Test: đủ 3 trạng thái hiển thị đúng | [ ] |
 | E3-04 | Cleanup `controller.abort()` + guard `AbortError` | `PubgMatchTelemetry.jsx` | Test: đổi squad khi đang tải → không hiện lỗi giả, dữ liệu đúng squad mới | [ ] |
 | E3-05 | Bộ chọn squad (CES, TE, GE); cache theo squad bằng `useRef(Map)` (§7) | `PubgMatchTelemetry.jsx` | Click nhanh CES→TE→GE: Network có `(canceled)`; quay lại squad cũ không nháy skeleton | [ ] |
 | E3-06 | Hiển thị dữ liệu SUCCESS bằng `<article>` + `<dl>` (map, phase, alive, kills, WWCD, status) | `PubgMatchTelemetry.jsx` | Accessibility tree đúng; vùng cập nhật `aria-live="polite"` | [ ] |

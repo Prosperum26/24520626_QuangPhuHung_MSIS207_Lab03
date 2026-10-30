@@ -1,6 +1,6 @@
 # TASK_DECOMPOSITION — Homework 1: Production Studio Drum Kit
 
-> WBS con của [TASK_DECOMPOSITION.md](../../TASK_DECOMPOSITION.md). Mỗi prompt AI = đúng một task ID. Nối tiếp HW1 Lab 2 (WCAG 2.2 AA, Lighthouse 100) và Drum Kit HW2 của Lab 1 (`C:\Dev\Project\MSIS207_Lab1\Homework_2`, dùng làm tham khảo âm thanh).
+> WBS con của [TASK_DECOMPOSITION.md](../../../TASK_DECOMPOSITION.md). Mỗi prompt AI = đúng một task ID. Nối tiếp HW1 Lab 2 (WCAG 2.2 AA, Lighthouse 100) và Drum Kit HW2 của Lab 1 (`C:\Dev\Project\MSIS207_Lab1\Homework_2`, dùng làm tham khảo âm thanh).
 
 ## 1. Mục tiêu và phạm vi
 
@@ -33,13 +33,13 @@ Chuyển Drum Kit phím `w/a/s/d/j/k/l` của deck cũ thành app React 19 đạ
 
 | ID | Task | File | Gate | Trạng thái |
 |---|---|---|---|---|
-| H1-01 | Spec + `drumPads.js` (mảng pad, `padMap`) | `src/drumPads.js` | Test: 7 pad, `e.code` duy nhất | [ ] |
-| H1-02 | `useDrumKeyboard`: `e.code`, `e.repeat`, bỏ qua input, cleanup | `src/useDrumKeyboard.js` | Test: giữ phím không bắn lặp; gõ trong input không kích hoạt; unmount gỡ listener | [ ] |
-| H1-03 | Audio engine/hook phát chồng, không pop | `src/useDrumAudio.js` | Test: nhấn nhanh nhiều lần vẫn phát; không lỗi Console | [ ] |
-| H1-04 | `<Pad>` là `<button type="button" aria-pressed>` | `src/Pad.jsx` | Accessibility tree: nút có tên và trạng thái pressed | [ ] |
-| H1-05 | `<DrumMachine>` ghép pad, keyboard, audio; trạng thái active có thời hạn (timer có cleanup) | `src/DrumMachine.jsx` | Test: phím W làm pad W `aria-pressed=true` rồi về false | [ ] |
-| H1-06 | Hit log `<output aria-live="polite">` (giới hạn độ dài, không spam đọc) | `src/HitLog.jsx` | Screen reader/ảnh a11y tree; test nội dung log | [ ] |
-| H1-07 | Decibel meter trực quan (không chỉ màu; có text/aria) | `src/LevelMeter.jsx` | Có nhãn chữ; tương phản >= 3:1 | [ ] |
+| H1-01 | Spec + `drumPads.js` (mảng pad, `padMap`) | `drumPads.js` | Test: 7 pad, `e.code` duy nhất | [ ] |
+| H1-02 | `useDrumKeyboard`: `e.code`, `e.repeat`, bỏ qua input, cleanup | `useDrumKeyboard.js` | Test: giữ phím không bắn lặp; gõ trong input không kích hoạt; unmount gỡ listener | [ ] |
+| H1-03 | Audio engine/hook phát chồng, không pop | `useDrumAudio.js` | Test: nhấn nhanh nhiều lần vẫn phát; không lỗi Console | [ ] |
+| H1-04 | `<Pad>` là `<button type="button" aria-pressed>` | `Pad.jsx` | Accessibility tree: nút có tên và trạng thái pressed | [ ] |
+| H1-05 | `<DrumMachine>` ghép pad, keyboard, audio; trạng thái active có thời hạn (timer có cleanup) | `DrumMachine.jsx` | Test: phím W làm pad W `aria-pressed=true` rồi về false | [ ] |
+| H1-06 | Hit log `<output aria-live="polite">` (giới hạn độ dài, không spam đọc) | `HitLog.jsx` | Screen reader/ảnh a11y tree; test nội dung log | [ ] |
+| H1-07 | Decibel meter trực quan (không chỉ màu; có text/aria) | `LevelMeter.jsx` | Có nhãn chữ; tương phản >= 3:1 | [ ] |
 | H1-08 | CSS Modules: focus-visible, tương phản 4.5:1, vùng bấm, 375px, reduced-motion | `*.module.css` | Tab hết trang; 0 cuộn ngang ở 375px | [ ] |
 | H1-09 | Kiểm tự động + tay: Lighthouse a11y 100, tab bàn phím, UniKey | `evidence/` | JSON Lighthouse, ảnh a11y tree, ghi chú thử UniKey | [ ] |
 
@@ -50,8 +50,8 @@ Chuyển Drum Kit phím `w/a/s/d/j/k/l` của deck cũ thành app React 19 đạ
 ## 5. Cổng kiểm tra
 
 ```bash
-grep -rnE 'keyCode|keypress|alert\(' homeworks/DrumMachine     # 0 dòng
-npm test -- homeworks/DrumMachine
+grep -rnE 'keyCode|keypress|alert\(' src/homeworks/DrumMachine     # 0 dòng
+npm test -- src/homeworks/DrumMachine
 ```
 
 DevTools: Lighthouse Accessibility = 100; chỉ dùng bàn phím vẫn chơi được; giữ phím không flood; gõ vào ô nhập (nếu có) không kích hoạt pad.

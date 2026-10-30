@@ -1,6 +1,6 @@
 # TASK_DECOMPOSITION — Exercise 1: DeveloperCard (Sprint 1, 35 phút)
 
-> WBS con của [TASK_DECOMPOSITION.md](../../TASK_DECOMPOSITION.md). Mỗi prompt AI = đúng một task ID. AI không commit; chỉ đề xuất, bạn tự commit. Bối cảnh: [Context.md](../../docs/Context.md).
+> WBS con của [TASK_DECOMPOSITION.md](../../../TASK_DECOMPOSITION.md). Mỗi prompt AI = đúng một task ID. AI không commit; chỉ đề xuất, bạn tự commit. Bối cảnh: [Context.md](../../../docs/Context.md).
 > Ưu tiên của bài này (đã chốt): **chạy đúng, nhanh, state và memory đúng** trước, dễ bảo vệ sau. Các quyết định ở §3 đều xuất phát từ một lỗi cụ thể.
 
 ## 1. Mục tiêu và phạm vi
@@ -12,16 +12,18 @@ Xây `<DeveloperCard />` và `<SkillBadge />` bằng React 19, gộp ý từ Elo
 
 ## 2. File sẽ tạo
 
+Mã của bài nằm **trong folder này** (`src/exercises/Exercise1_DeveloperCard/`). Đường dẫn bên dưới tính từ folder đó, trừ khi ghi `src/...`. Đường dẫn theo checklist nộp bài `src/components/DeveloperCard.jsx` là một file **re-export** một dòng trỏ về đây; không đặt logic vào file đó.
+
 | File | Vai trò |
 |---|---|
-| `src/components/developerCardModel.js` | Toàn bộ logic thuần và hằng: `DEFAULT_*`, `getInitials`, `formatMetricLabel`, `isSafeAvatarUrl`, `metricFormatter` |
-| `src/components/SkillBadge.jsx` | `<li>` một kỹ năng |
-| `src/components/DeveloperCard.jsx` | Component bắt buộc theo checklist slide; **không `<div>`** |
-| `src/components/DeveloperCard.module.css` | Bố cục, responsive |
+| `developerCardModel.js` | Toàn bộ logic thuần và hằng: `DEFAULT_*`, `getInitials`, `formatMetricLabel`, `isSafeAvatarUrl`, `formatMetricValue` (bọc `Intl.NumberFormat` tạo một lần) |
+| `SkillBadge.jsx` | `<li>` một kỹ năng |
+| `DeveloperCard.jsx` | Component bắt buộc theo checklist slide; **không `<div>`** |
+| `DeveloperCard.module.css` | Bố cục, responsive |
 | `src/styles/tokens.css` | Token `:root` dùng chung cả lab (màu, khoảng cách) |
-| `src/assets/avatar-128.webp` | Avatar local (chuẩn bị ở X0-08) |
-| `src/App.jsx`, `src/main.jsx` | Khung demo; `main.jsx` đã có từ X0-05 |
-| `src/components/*.test.jsx`, `developerCardModel.test.js` | Test |
+| `assets/avatar-128.jpg` | Avatar local (chuẩn bị ở X0-08) |
+| `src/App.jsx`, `src/main.jsx` (ở gốc `src/`) | Khung demo; `main.jsx` đã có từ X0-05 |
+| `*.test.jsx`, `developerCardModel.test.js` | Test |
 
 Logic thuần nằm ở `developerCardModel.js` để test nhanh và sửa một chỗ; component chỉ ghép.
 
@@ -61,7 +63,7 @@ Logic thuần nằm ở `developerCardModel.js` để test nhanh và sửa một
 getInitials(name)            // 'Quang Phú Hưng' -> 'QH'; 'Plato' -> 'P'; '  ' -> '?'; dùng code point, không cắt dấu
 formatMetricLabel(key)       // bảng nhãn; fallback tách camelCase: 'someKey' -> 'Some key'
 isSafeAvatarUrl(url)         // new URL(url, location.origin): protocol 'https:' hoặc cùng origin
-metricFormatter              // new Intl.NumberFormat('vi-VN') tạo một lần
+formatMetricValue(v)         // number -> Intl.NumberFormat('vi-VN') tạo một lần ở module; còn lại String(v)
 ```
 
 Cây DOM đích:
@@ -81,9 +83,9 @@ Thời lượng là ngân sách trong Block 2; X0-08 (avatar) làm ở Block 1.
 
 | ID | Task | File | Gate | Phút | Trạng thái |
 |---|---|---|---|---|---|
-| E1-01 | Model thuần + test: defaults đóng băng, `getInitials`, `formatMetricLabel`, `isSafeAvatarUrl`, `metricFormatter` | `developerCardModel.js` (+ test) | Test: dấu tiếng Việt, 1 từ, rỗng, `http://`, `javascript:`, cùng origin, frozen | 4 | [ ] |
-| E1-02 | `SkillBadge({ name, tier = 'Core' })` trả `<li>`, tier bằng chữ | `SkillBadge.jsx` (+ test) | Test: tên + `(tier)` trong text | 2 | [ ] |
-| E1-03 | Khung `DeveloperCard`: `article`/`header`/`hgroup`, `useId`, default params dùng hằng D2 | `DeveloperCard.jsx` | `getByRole('article', { name })`, heading level 2 | 4 | [ ] |
+| E1-01 | Model thuần + test: defaults đóng băng, `getInitials`, `formatMetricLabel`, `formatMetricValue`, `isSafeAvatarUrl` | `developerCardModel.js` (+ test) | Test: dấu tiếng Việt, 1 từ, rỗng, `http://`, `javascript:`, cùng origin, frozen | 4 | [x] |
+| E1-02 | `SkillBadge({ name, tier = 'Core' })` trả `<li>`, tier bằng chữ | `SkillBadge.jsx` (+ test) | Test: tên + `(tier)` trong text | 2 | [x] |
+| E1-03 | Khung `DeveloperCard`: `article`/`header`/`hgroup`, `useId`, default params dùng hằng D2 | `DeveloperCard.jsx` | `getByRole('article', { name })`, heading level 2 | 4 | [x] |
 | E1-04 | `dl` metrics: `Object.entries`, `<Fragment key>` | `DeveloperCard.jsx` | Test: số `dt` = số `dd` = số khóa; nhãn đã format | 3 | [ ] |
 | E1-05 | `ul` skills, key `skill.id` | `DeveloperCard.jsx` | Test: `listitem` đủ; không warning key | 2 | [ ] |
 | E1-06 | Avatar: `failedUrl`, `isSafeAvatarUrl`, `onError`, initials | `DeveloperCard.jsx` | Test tự hồi (D1) và URL không an toàn | 5 | [ ] |
@@ -117,9 +119,10 @@ Xem `git diff` trước khi commit; không commit `evidence/` nặng không cầ
 ## 7. Cổng Checkpoint 1 (phút 75)
 
 ```bash
-grep -n '<div' src/components/DeveloperCard.jsx      # 0 dòng
-grep -n 'http://' src/components/DeveloperCard.jsx   # 0 dòng
-grep -rnE 'style=\{\{|dangerouslySetInnerHTML|key=\{(i|idx|index)\}' src/components   # 0 dòng
+E=src/exercises/Exercise1_DeveloperCard
+grep -n '<div' $E/DeveloperCard.jsx      # 0 dòng
+grep -n 'http://' $E/DeveloperCard.jsx   # 0 dòng
+grep -rnE 'style=\{\{|dangerouslySetInnerHTML|key=\{(i|idx|index)\}' $E   # 0 dòng
 npm test                                              # pass
 npm run lint                                          # sạch (react-hooks, jsx-a11y)
 ```
@@ -137,4 +140,4 @@ DevTools:
 - Default literal trong tham số (`metrics = { … }`); boolean `imgFailed` thay `failedUrl`; `useEffect` để reset lỗi ảnh.
 - `http://` hoặc ảnh Unsplash bắt buộc; thiếu `width/height`; `alt` trùng tên; `loading="lazy"` cho avatar.
 - Tạo `Intl.NumberFormat` trong thân component.
-- Ghi lỗi AI mắc phải vào ghi chú cho [AI_FAILURE_AUDIT.md](../../AI_FAILURE_AUDIT.md), kèm bằng chứng (Profiler, test fail).
+- Ghi lỗi AI mắc phải vào ghi chú cho [AI_FAILURE_AUDIT.md](../../../AI_FAILURE_AUDIT.md), kèm bằng chứng (Profiler, test fail).

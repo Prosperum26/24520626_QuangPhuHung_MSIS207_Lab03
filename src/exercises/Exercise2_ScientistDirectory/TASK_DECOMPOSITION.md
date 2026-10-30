@@ -1,6 +1,6 @@
 # TASK_DECOMPOSITION — Exercise 2: ScientistDirectory (Sprint 2, 45 phút)
 
-> WBS con của [TASK_DECOMPOSITION.md](../../TASK_DECOMPOSITION.md). Mỗi prompt AI = đúng một task ID.
+> WBS con của [TASK_DECOMPOSITION.md](../../../TASK_DECOMPOSITION.md). Mỗi prompt AI = đúng một task ID.
 
 ## 1. Mục tiêu và phạm vi
 
@@ -30,8 +30,8 @@ Biến mảng `smartPeople` tĩnh thành trình khám phá dữ liệu: 1) tìm 
 
 | ID | Task | File | Gate | Trạng thái |
 |---|---|---|---|---|
-| E2-01 | Hằng `SMART_PEOPLE` với `id` ổn định (sửa dữ liệu mẫu nếu cần) | `src/data/smartPeople.js` | Test: id duy nhất, đủ trường | [ ] |
-| E2-02 | Khung `ScientistDirectory` + render `<ul>` key `p.id` | `src/components/ScientistDirectory.jsx` | Không warning key | [ ] |
+| E2-01 | Hằng `SMART_PEOPLE` với `id` ổn định (sửa dữ liệu mẫu nếu cần) | `data/smartPeople.js` | Test: id duy nhất, đủ trường | [ ] |
+| E2-02 | Khung `ScientistDirectory` + render `<ul>` key `p.id` | `ScientistDirectory.jsx` | Không warning key | [ ] |
 | E2-03 | Ô tìm tên: `useId`, `<label htmlFor>`, lọc không phân biệt hoa thường, trim | `ScientistDirectory.jsx` | Test: "ein" ra Einstein; "  EIN " cũng ra | [ ] |
 | E2-04 | Ô Min IQ: `type=number`, `valueAsNumber`, `Number.isNaN` → 0 | `ScientistDirectory.jsx` | Test: gõ rỗng không `NaN`; `minIq` luôn là number | [ ] |
 | E2-05 | Sắp xếp `<select>` có label; `.toSorted()` | `ScientistDirectory.jsx` | Test: mảng `people` gốc không đổi thứ tự | [ ] |
@@ -53,7 +53,7 @@ Biến mảng `smartPeople` tĩnh thành trình khám phá dữ liệu: 1) tìm 
 
 - React DevTools Profiler: gõ 1 ký tự vào ô tìm → đúng **1** render pass.
 - Xoá "Johann Goethe": các item còn lại giữ key, focus không nhảy về `<body>` một cách vô lý (xác định chỗ focus sau xoá và ghi vào code review).
-- Accessibility: 100% control có label; `grep -n useEffect src/components/ScientistDirectory.jsx` = 0.
+- Accessibility: 100% control có label; `grep -n useEffect src/exercises/Exercise2_ScientistDirectory/ScientistDirectory.jsx` = 0.
 
 ## 6. Dễ sai
 
