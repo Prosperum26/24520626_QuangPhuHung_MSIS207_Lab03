@@ -12,18 +12,19 @@ Xây `<DeveloperCard />` và `<SkillBadge />` bằng React 19, gộp ý từ Elo
 
 ## 2. File sẽ tạo
 
-Mã của bài nằm **trong folder này** (`src/exercises/Exercise1_DeveloperCard/`). Đường dẫn bên dưới tính từ folder đó, trừ khi ghi `src/...`. Đường dẫn theo checklist nộp bài `src/components/DeveloperCard.jsx` là một file **re-export** một dòng trỏ về đây; không đặt logic vào file đó.
+Ex1 là một **project Vite độc lập** (`src/exercises/Exercise1_DeveloperCard/`). Đường dẫn tính từ folder này; chạy `npm` ở đây. Gốc repo không còn `package.json`.
 
 | File | Vai trò |
 |---|---|
-| `developerCardModel.js` | Toàn bộ logic thuần và hằng: `DEFAULT_*`, `getInitials`, `formatMetricLabel`, `isSafeAvatarUrl`, `formatMetricValue` (bọc `Intl.NumberFormat` tạo một lần) |
-| `SkillBadge.jsx` | `<li>` một kỹ năng |
-| `DeveloperCard.jsx` | Component bắt buộc theo checklist slide; **không `<div>`** |
-| `DeveloperCard.module.css` | Bố cục, responsive |
-| `src/styles/tokens.css` | Token `:root` dùng chung cả lab (màu, khoảng cách) |
-| `assets/avatar-128.jpg` | Avatar local (chuẩn bị ở X0-08) |
-| `src/App.jsx`, `src/main.jsx` (ở gốc `src/`) | Khung demo; `main.jsx` đã có từ X0-05 |
-| `*.test.jsx`, `developerCardModel.test.js` | Test |
+| `package.json`, `vite.config.js`, `eslint.config.js`, `index.html` | Cấu hình project (đã có từ X0) |
+| `src/main.jsx`, `src/App.jsx`, `src/test/setup.js` | Khung chạy và thiết lập test (đã có từ X0) |
+| `src/components/developerCardModel.js` | Toàn bộ logic thuần và hằng: `DEFAULT_*`, `getInitials`, `formatMetricLabel`, `isSafeAvatarUrl`, `formatMetricValue` (bọc `Intl.NumberFormat` tạo một lần) |
+| `src/components/SkillBadge.jsx` | `<li>` một kỹ năng |
+| `src/components/DeveloperCard.jsx` | Component bắt buộc theo checklist slide; **không `<div>`** |
+| `src/components/DeveloperCard.module.css` | Bố cục, responsive |
+| `src/styles/tokens.css` | Token `:root` (màu, khoảng cách); các bài khác sao chép khi cần |
+| `src/assets/avatar-128.jpg` | Avatar local (chuẩn bị ở X0-08) |
+| `src/components/*.test.jsx`, `developerCardModel.test.js` | Test |
 
 Logic thuần nằm ở `developerCardModel.js` để test nhanh và sửa một chỗ; component chỉ ghép.
 
@@ -83,15 +84,15 @@ Thời lượng là ngân sách trong Block 2; X0-08 (avatar) làm ở Block 1.
 
 | ID | Task | File | Gate | Phút | Trạng thái |
 |---|---|---|---|---|---|
-| E1-01 | Model thuần + test: defaults đóng băng, `getInitials`, `formatMetricLabel`, `formatMetricValue`, `isSafeAvatarUrl` | `developerCardModel.js` (+ test) | Test: dấu tiếng Việt, 1 từ, rỗng, `http://`, `javascript:`, cùng origin, frozen | 4 | [x] |
-| E1-02 | `SkillBadge({ name, tier = 'Core' })` trả `<li>`, tier bằng chữ | `SkillBadge.jsx` (+ test) | Test: tên + `(tier)` trong text | 2 | [x] |
-| E1-03 | Khung `DeveloperCard`: `article`/`header`/`hgroup`, `useId`, default params dùng hằng D2 | `DeveloperCard.jsx` | `getByRole('article', { name })`, heading level 2 | 4 | [x] |
-| E1-04 | `dl` metrics: `Object.entries`, `<Fragment key>` | `DeveloperCard.jsx` | Test: số `dt` = số `dd` = số khóa; nhãn đã format | 3 | [ ] |
-| E1-05 | `ul` skills, key `skill.id` | `DeveloperCard.jsx` | Test: `listitem` đủ; không warning key | 2 | [ ] |
-| E1-06 | Avatar: `failedUrl`, `isSafeAvatarUrl`, `onError`, initials | `DeveloperCard.jsx` | Test tự hồi (D1) và URL không an toàn | 5 | [ ] |
-| E1-07 | Khung demo `App.jsx`: `<main><h1>` + các ca (mặc định, tên rất dài, ảnh lỗi, 2 card) | `App.jsx` | Chạy dev server, Console sạch dưới StrictMode | 2 | [ ] |
-| E1-08 | `tokens.css` + `DeveloperCard.module.css` (bố cục, token, tương phản) | `.css` | Không hex ngoài `:root`; không inline `style` | 7 | [ ] |
-| E1-09 | Responsive 375 → 1440px, `overflow-wrap`, `min-width: 0` | `.module.css` | Device Toolbar iPhone SE: 0 cuộn ngang | 3 | [ ] |
+| E1-01 | Model thuần + test: defaults đóng băng, `getInitials`, `formatMetricLabel`, `formatMetricValue`, `isSafeAvatarUrl` | `src/components/developerCardModel.js` (+ test) | Test: dấu tiếng Việt, 1 từ, rỗng, `http://`, `javascript:`, cùng origin, frozen | 4 | [x] |
+| E1-02 | `SkillBadge({ name, tier = 'Core' })` trả `<li>`, tier bằng chữ | `src/components/SkillBadge.jsx` (+ test) | Test: tên + `(tier)` trong text | 2 | [x] |
+| E1-03 | Khung `DeveloperCard`: `article`/`header`/`hgroup`, `useId`, default params dùng hằng D2 | `src/components/DeveloperCard.jsx` | `getByRole('article', { name })`, heading level 2 | 4 | [x] |
+| E1-04 | `dl` metrics: `Object.entries`, `<Fragment key>` | `src/components/DeveloperCard.jsx` | Test: số `dt` = số `dd` = số khóa; nhãn đã format | 3 | [ ] |
+| E1-05 | `ul` skills, key `skill.id` | `src/components/DeveloperCard.jsx` | Test: `listitem` đủ; không warning key | 2 | [ ] |
+| E1-06 | Avatar: `failedUrl`, `isSafeAvatarUrl`, `onError`, initials | `src/components/DeveloperCard.jsx` | Test tự hồi (D1) và URL không an toàn | 5 | [ ] |
+| E1-07 | Khung demo `src/App.jsx`: `<main><h1>` + các ca (mặc định, tên rất dài, ảnh lỗi, 2 card) | `src/App.jsx` | Chạy dev server, Console sạch dưới StrictMode | 2 | [ ] |
+| E1-08 | `tokens.css` + `src/components/DeveloperCard.module.css` (bố cục, token, tương phản) | `src/styles/tokens.css`, `src/components/DeveloperCard.module.css` | Không hex ngoài `:root`; không inline `style` | 7 | [ ] |
+| E1-09 | Responsive 375 → 1440px, `overflow-wrap`, `min-width: 0` | `src/components/DeveloperCard.module.css` | Device Toolbar iPhone SE: 0 cuộn ngang | 3 | [ ] |
 | E1-10 | Verify: lint, grep, a11y tree, Lighthouse, Profiler quyết định `memo` | `evidence/` | Xem §7 | 3 | [ ] |
 
 ### Test cần có (chỉ những cái bắt được lỗi thật)
@@ -119,10 +120,10 @@ Xem `git diff` trước khi commit; không commit `evidence/` nặng không cầ
 ## 7. Cổng Checkpoint 1 (phút 75)
 
 ```bash
-E=src/exercises/Exercise1_DeveloperCard
-grep -n '<div' $E/DeveloperCard.jsx      # 0 dòng
-grep -n 'http://' $E/DeveloperCard.jsx   # 0 dòng
-grep -rnE 'style=\{\{|dangerouslySetInnerHTML|key=\{(i|idx|index)\}' $E   # 0 dòng
+# chạy trong src/exercises/Exercise1_DeveloperCard
+grep -n '<div' src/components/DeveloperCard.jsx      # 0 dòng
+grep -n 'http://' src/components/DeveloperCard.jsx   # 0 dòng
+grep -rnE 'style=\{\{|dangerouslySetInnerHTML|key=\{(i|idx|index)\}' src   # 0 dòng
 npm test                                              # pass
 npm run lint                                          # sạch (react-hooks, jsx-a11y)
 ```
