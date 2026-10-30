@@ -87,9 +87,9 @@ Thời lượng là ngân sách trong Block 2; X0-08 (avatar) làm ở Block 1.
 | E1-01 | Model thuần + test: defaults đóng băng, `getInitials`, `formatMetricLabel`, `formatMetricValue`, `isSafeAvatarUrl` | `src/components/developerCardModel.js` (+ test) | Test: dấu tiếng Việt, 1 từ, rỗng, `http://`, `javascript:`, cùng origin, frozen | 4 | [x] |
 | E1-02 | `SkillBadge({ name, tier = 'Core' })` trả `<li>`, tier bằng chữ | `src/components/SkillBadge.jsx` (+ test) | Test: tên + `(tier)` trong text | 2 | [x] |
 | E1-03 | Khung `DeveloperCard`: `article`/`header`/`hgroup`, `useId`, default params dùng hằng D2 | `src/components/DeveloperCard.jsx` | `getByRole('article', { name })`, heading level 2 | 4 | [x] |
-| E1-04 | `dl` metrics: `Object.entries`, `<Fragment key>` | `src/components/DeveloperCard.jsx` | Test: số `dt` = số `dd` = số khóa; nhãn đã format | 3 | [ ] |
-| E1-05 | `ul` skills, key `skill.id` | `src/components/DeveloperCard.jsx` | Test: `listitem` đủ; không warning key | 2 | [ ] |
-| E1-06 | Avatar: `failedUrl`, `isSafeAvatarUrl`, `onError`, initials | `src/components/DeveloperCard.jsx` | Test tự hồi (D1) và URL không an toàn | 5 | [ ] |
+| E1-04 | `dl` metrics: `Object.entries`, `<Fragment key>` | `src/components/DeveloperCard.jsx` | Test: số `dt` = số `dd` = số khóa; nhãn đã format | 3 | [x] |
+| E1-05 | `ul` skills, key `skill.id` | `src/components/DeveloperCard.jsx` | Test: `listitem` đủ; không warning key | 2 | [x] |
+| E1-06 | Avatar: `failedUrl`, `isSafeAvatarUrl`, `onError`, initials | `src/components/DeveloperCard.jsx` | Test tự hồi (D1) và URL không an toàn | 5 | [x] |
 | E1-07 | Khung demo `src/App.jsx`: `<main><h1>` + các ca (mặc định, tên rất dài, ảnh lỗi, 2 card) | `src/App.jsx` | Chạy dev server, Console sạch dưới StrictMode | 2 | [ ] |
 | E1-08 | `tokens.css` + `src/components/DeveloperCard.module.css` (bố cục, token, tương phản) | `src/styles/tokens.css`, `src/components/DeveloperCard.module.css` | Không hex ngoài `:root`; không inline `style` | 7 | [ ] |
 | E1-09 | Responsive 375 → 1440px, `overflow-wrap`, `min-width: 0` | `src/components/DeveloperCard.module.css` | Device Toolbar iPhone SE: 0 cuộn ngang | 3 | [ ] |
