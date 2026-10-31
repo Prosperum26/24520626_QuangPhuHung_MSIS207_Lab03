@@ -59,10 +59,10 @@ DEFAULT_MIN_IQ, DEFAULT_SORT
 
 | ID | Task | File | Gate | Trạng thái |
 |---|---|---|---|---|
-| E2-00 | Khởi tạo project Vite riêng: sao chép `package.json` (đổi `name` thành `msis207-lab03-ex2`), `vite.config.js`, `eslint.config.js`, `index.html`, `src/main.jsx`, `src/test/setup.js`, `src/styles/tokens.css` từ Ex1, rồi `npm install` | các file cấu hình | `npm test` và `npm run lint` chạy được | [ ] |
-| E2-01 | Nạp dữ liệu: `src/data/smartPeople.js` trích `people.json`, thêm `searchKey`, đóng băng; bạn nhập `sp-7` | `src/data/smartPeople.js` (+ test) | Test: `id` duy nhất, số hữu hạn, frozen; `grep TODO src/data/people.json` = 0 | [ ] |
-| E2-02 | `foldText`, `matchesQuery`, `selectVisible` (hàm thuần) | `src/components/peopleModel.js` (+ test) | Test: Hoa/thường, có/không dấu hai chiều, `đ`, substring, nhiều token, query rỗng, không mutate | [ ] |
-| E2-03 | Sao chép `DeveloperCard` + `SkillBadge` + `developerCardModel` từ Ex1, thêm nhãn `IQ` | `src/components/DeveloperCard.jsx`, `SkillBadge.jsx`, `developerCardModel.js`, `DeveloperCard.module.css` | Test của card chạy trong Ex2; `grep '<div'` = 0 | [ ] |
+| E2-00 | Khởi tạo project Vite riêng: sao chép `package.json` (đổi `name` thành `msis207-lab03-ex2`), `vite.config.js`, `eslint.config.js`, `index.html`, `src/main.jsx`, `src/test/setup.js`, `src/styles/tokens.css` từ Ex1, rồi `npm install` | các file cấu hình | `npm test` và `npm run lint` chạy được | [x] |
+| E2-01 | Nạp dữ liệu: `src/data/smartPeople.js` trích `people.json`, thêm `searchKey`, đóng băng; bạn nhập `sp-7` | `src/data/smartPeople.js` (+ test) | Test: `id` duy nhất, số hữu hạn, frozen; `grep TODO src/data/people.json` = 0 | [x] |
+| E2-02 | `foldText`, `matchesQuery`, `selectVisible` (hàm thuần) | `src/components/peopleModel.js` (+ test) | Test: Hoa/thường, có/không dấu hai chiều, `đ`, substring, nhiều token, query rỗng, không mutate | [x] |
+| E2-03 | Sao chép `DeveloperCard` + `SkillBadge` + `developerCardModel` từ Ex1, thêm nhãn `IQ` | `src/components/DeveloperCard.jsx`, `SkillBadge.jsx`, `developerCardModel.js`, `DeveloperCard.module.css` | Test của card chạy trong Ex2; `grep '<div'` = 0 | [x] |
 | E2-04 | Khung `ScientistDirectory`: `<ul>` key `p.id`, mỗi `<li>` một card | `src/components/ScientistDirectory.jsx` | Không warning key; đủ 7 người | [ ] |
 | E2-05 | Ô tìm tên: `useId`, `<label htmlFor>`, `type="search"`, dùng `selectVisible` | `ScientistDirectory.jsx` | Test: "hung", "HƯNG", "ein", "  EIN ", "vin" | [ ] |
 | E2-06 | Ô Min IQ: `type=number`, `valueAsNumber`, `Number.isNaN` → 0 | `ScientistDirectory.jsx` | Test: gõ rỗng không `NaN`; `minIq` luôn là number | [ ] |
