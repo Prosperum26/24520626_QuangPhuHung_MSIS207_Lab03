@@ -4,8 +4,9 @@
   min-width: 0;
   padding: var(--space-5);
   background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-border-soft);
   border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
 }
 
 .header {
@@ -79,7 +80,8 @@
 
 .skills > li {
   padding: var(--space-1) var(--space-3);
-  border: 1px solid var(--color-border);
+  background: var(--color-tint);
+  border: 1px solid var(--color-border-soft);
   border-radius: var(--radius-pill);
   font-size: 0.875rem;
 }
