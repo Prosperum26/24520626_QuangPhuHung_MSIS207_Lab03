@@ -63,11 +63,11 @@ DEFAULT_MIN_IQ, DEFAULT_SORT
 | E2-01 | Nạp dữ liệu: `src/data/smartPeople.js` trích `people.json`, thêm `searchKey`, đóng băng; bạn nhập `sp-7` | `src/data/smartPeople.js` (+ test) | Test: `id` duy nhất, số hữu hạn, frozen; `grep TODO src/data/people.json` = 0 | [x] |
 | E2-02 | `foldText`, `matchesQuery`, `selectVisible` (hàm thuần) | `src/components/peopleModel.js` (+ test) | Test: Hoa/thường, có/không dấu hai chiều, `đ`, substring, nhiều token, query rỗng, không mutate | [x] |
 | E2-03 | Sao chép `DeveloperCard` + `SkillBadge` + `developerCardModel` từ Ex1, thêm nhãn `IQ` | `src/components/DeveloperCard.jsx`, `SkillBadge.jsx`, `developerCardModel.js`, `DeveloperCard.module.css` | Test của card chạy trong Ex2; `grep '<div'` = 0 | [x] |
-| E2-04 | Khung `ScientistDirectory`: `<ul>` key `p.id`, mỗi `<li>` một card | `src/components/ScientistDirectory.jsx` | Không warning key; đủ 7 người | [ ] |
-| E2-05 | Ô tìm tên: `useId`, `<label htmlFor>`, `type="search"`, dùng `selectVisible` | `ScientistDirectory.jsx` | Test: "hung", "HƯNG", "ein", "  EIN ", "vin" | [ ] |
-| E2-06 | Ô Min IQ: `type=number`, `valueAsNumber`, `Number.isNaN` → 0 | `ScientistDirectory.jsx` | Test: gõ rỗng không `NaN`; `minIq` luôn là number | [ ] |
-| E2-07 | `<select>` sắp xếp có label; `.toSorted()` | `ScientistDirectory.jsx` | Test: mảng `people` gốc không đổi thứ tự | [ ] |
-| E2-08 | Kiểm render: 1 ký tự gõ = đúng 1 render pass | Profiler | Ảnh Profiler trong `evidence/`; `grep useEffect` = 0 | [ ] |
+| E2-04 | Khung `ScientistDirectory`: `<ul>` key `p.id`, mỗi `<li>` một card | `src/components/ScientistDirectory.jsx` | Không warning key; đủ 7 người | [x] |
+| E2-05 | Ô tìm tên: `useId`, `<label htmlFor>`, `type="search"`, dùng `selectVisible` | `ScientistDirectory.jsx` | Test: "hung", "HƯNG", "ein", "  EIN ", "vin" | [x] |
+| E2-06 | Ô Min IQ: `type=number`, `valueAsNumber`, `Number.isNaN` → 0 | `ScientistDirectory.jsx` | Test: gõ rỗng không `NaN`; `minIq` luôn là number | [x] |
+| E2-07 | `<select>` sắp xếp có label; `.toSorted()` | `ScientistDirectory.jsx` | Test: mảng `people` gốc không đổi thứ tự | [x] |
+| E2-08 | Kiểm render: 1 ký tự gõ = đúng 1 render pass | Profiler | Ảnh Profiler trong `evidence/`; `grep useEffect` = 0 | [x] |
 | E2-09 | Nút xoá từng người (tên truy cập có tên người), xoá bất biến, chuyển focus có chủ đích | `ScientistDirectory.jsx` | Test: xoá giữa danh sách, key còn lại giữ nguyên; focus không về `<body>` | [ ] |
 | E2-10 | Nút Reset khôi phục toàn bộ | `ScientistDirectory.jsx` | Test: sau reset mọi điều khiển và danh sách về mặc định | [ ] |
 | E2-11 | `<output role="status" aria-live="polite">` "Found N pioneers" + trạng thái rỗng bằng chữ | `ScientistDirectory.jsx` | Test: N khớp; rỗng có thông báo | [ ] |

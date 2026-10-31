@@ -1,0 +1,153 @@
+{
+  "viewports": [
+    {
+      "scheme": "light",
+      "width": 320,
+      "sw": 320,
+      "cw": 320,
+      "articles": 7,
+      "divs": 0,
+      "hscroll": false
+    },
+    {
+      "scheme": "light",
+      "width": 375,
+      "sw": 375,
+      "cw": 375,
+      "articles": 7,
+      "divs": 0,
+      "hscroll": false
+    },
+    {
+      "scheme": "light",
+      "width": 768,
+      "sw": 768,
+      "cw": 768,
+      "articles": 7,
+      "divs": 0,
+      "hscroll": false
+    },
+    {
+      "scheme": "light",
+      "width": 1440,
+      "sw": 1440,
+      "cw": 1440,
+      "articles": 7,
+      "divs": 0,
+      "hscroll": false
+    },
+    {
+      "scheme": "dark",
+      "width": 320,
+      "sw": 320,
+      "cw": 320,
+      "articles": 7,
+      "divs": 0,
+      "hscroll": false
+    },
+    {
+      "scheme": "dark",
+      "width": 375,
+      "sw": 375,
+      "cw": 375,
+      "articles": 7,
+      "divs": 0,
+      "hscroll": false
+    },
+    {
+      "scheme": "dark",
+      "width": 768,
+      "sw": 768,
+      "cw": 768,
+      "articles": 7,
+      "divs": 0,
+      "hscroll": false
+    },
+    {
+      "scheme": "dark",
+      "width": 1440,
+      "sw": 1440,
+      "cw": 1440,
+      "articles": 7,
+      "divs": 0,
+      "hscroll": false
+    }
+  ],
+  "typing": [
+    {
+      "typed": "hung",
+      "result": [
+        "Quảng Phú Hưng"
+      ]
+    },
+    {
+      "typed": "HƯNG",
+      "result": [
+        "Quảng Phú Hưng"
+      ]
+    },
+    {
+      "typed": "ein",
+      "result": [
+        "Albert Einstein"
+      ]
+    },
+    {
+      "typed": "vin",
+      "result": [
+        "Leonardo da Vinci"
+      ]
+    },
+    {
+      "typed": "phu quang",
+      "result": [
+        "Quảng Phú Hưng"
+      ]
+    },
+    {
+      "typed": "zzz",
+      "result": []
+    },
+    {
+      "typed": "(sort age-asc)",
+      "result": [
+        "Quảng Phú Hưng",
+        "William Sidis",
+        "James Maxwell",
+        "Leonardo da Vinci",
+        "Albert Einstein",
+        "Johann Goethe",
+        "Isaac Newton"
+      ]
+    }
+  ],
+  "axe": {
+    "light": {
+      "violations": [],
+      "passes": 38,
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": [
+            "h1 :: Element's background color could not be determined due to a background gradient",
+            "._header_w9ffh_9 > p :: Element's background color could not be determined due to a background gradient"
+          ]
+        }
+      ]
+    },
+    "dark": {
+      "violations": [],
+      "passes": 38,
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": [
+            "h1 :: Element's background color could not be determined due to a background gradient",
+            "._header_w9ffh_9 > p :: Element's background color could not be determined due to a background gradient"
+          ]
+        }
+      ]
+    }
+  },
+  "console": []
+}
