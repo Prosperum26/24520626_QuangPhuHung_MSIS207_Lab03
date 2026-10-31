@@ -1,0 +1,183 @@
+import { Profiler, StrictMode } from 'react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { DeveloperCard } from './DeveloperCard.jsx';
+import { ScientistDirectory } from './ScientistDirectory.jsx';
+
+// Đếm số lần React gọi DeveloperCard để chứng minh card không đổi thì không render lại.
+vi.mock('./DeveloperCard.jsx', async (importOriginal) => {
+  const actual = await importOriginal();
+  return { DeveloperCard: vi.fn(actual.DeveloperCard) };
+});
+
+const searchBox = () => screen.getByLabelText('Tìm theo tên');
+const minIqBox = () => screen.getByLabelText('IQ tối thiểu');
+const sortBox = () => screen.getByLabelText('Sắp xếp');
+const cardNames = () => screen.queryAllByRole('heading', { level: 2 }).map((h) => h.textContent);
+const type = (value) => fireEvent.change(searchBox(), { target: { value } });
+
+beforeEach(() => {
+  DeveloperCard.mockClear();
+});
+
+describe('khung danh sách (E2-04)', () => {
+  it('hiển thị đủ 7 người, mỗi người một article trong listitem', () => {
+    render(<ScientistDirectory />);
+    const list = screen.getByRole('list', { name: 'Danh sách nhà khoa học' });
+    expect(within(list).getAllByRole('listitem')).toHaveLength(7);
+    expect(screen.getAllByRole('article')).toHaveLength(7);
+  });
+
+  it('mặc định sắp xếp IQ giảm dần và minIq là 160', () => {
+    render(<ScientistDirectory />);
+    expect(minIqBox()).toHaveValue(160);
+    expect(cardNames()[0]).toBe('Johann Goethe');
+  });
+
+  it('không có cảnh báo key hay lỗi nào dưới StrictMode, không <div> trong danh sách', () => {
+    const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const { container } = render(
+      <StrictMode>
+        <ScientistDirectory />
+      </StrictMode>,
+    );
+    type('hung');
+    fireEvent.change(sortBox(), { target: { value: 'age-asc' } });
+    expect(spy).not.toHaveBeenCalled();
+    expect(container.querySelectorAll('div')).toHaveLength(0);
+    spy.mockRestore();
+  });
+
+  it('không ai dùng chung ảnh mặc định: mọi card chỉ hiện chữ cái đầu', () => {
+    const { container } = render(<ScientistDirectory />);
+    expect(container.querySelectorAll('img')).toHaveLength(0);
+  });
+});
+
+describe('ô tìm tên (E2-05)', () => {
+  it('có label gắn đúng với input (useId)', () => {
+    render(<ScientistDirectory />);
+    expect(searchBox()).toHaveAttribute('type', 'search');
+    expect(screen.getByRole('search')).toBeInTheDocument();
+  });
+
+  it.each([
+    ['ein', ['Albert Einstein']],
+    ['  EIN ', ['Albert Einstein']],
+    ['hung', ['Quảng Phú Hưng']],
+    ['HƯNG', ['Quảng Phú Hưng']],
+    ['phu quang', ['Quảng Phú Hưng']],
+    ['vin', ['Leonardo da Vinci']],
+  ])('gõ %j -> %j', (value, expected) => {
+    render(<ScientistDirectory />);
+    fireEvent.change(minIqBox(), { target: { value: '0' } });
+    type(value);
+    expect(cardNames()).toEqual(expected);
+  });
+
+  it('xóa query thì quay lại danh sách đầy đủ', () => {
+    render(<ScientistDirectory />);
+    type('ein');
+    type('');
+    expect(screen.getAllByRole('article')).toHaveLength(7);
+  });
+
+  it('submit form không tải lại trang', () => {
+    render(<ScientistDirectory />);
+    const form = screen.getByRole('search');
+    const notPrevented = fireEvent.submit(form);
+    expect(notPrevented).toBe(false);
+  });
+});
+
+describe('ô IQ tối thiểu (E2-06)', () => {
+  it('lọc theo số: 205 chỉ còn Goethe và Einstein', () => {
+    render(<ScientistDirectory />);
+    fireEvent.change(minIqBox(), { target: { value: '205' } });
+    expect(cardNames()).toEqual(['Johann Goethe', 'Albert Einstein']);
+  });
+
+  it('xóa trắng không sinh NaN: về 0 và hiện đủ mọi người', () => {
+    render(<ScientistDirectory />);
+    fireEvent.change(minIqBox(), { target: { value: '' } });
+    expect(minIqBox()).toHaveValue(0);
+    expect(screen.getAllByRole('article')).toHaveLength(7);
+  });
+
+  it('minIq là số, không phải chuỗi (211 > 210 nên rỗng, không so sánh chuỗi)', () => {
+    render(<ScientistDirectory />);
+    fireEvent.change(minIqBox(), { target: { value: '211' } });
+    expect(screen.queryAllByRole('article')).toHaveLength(0);
+    fireEvent.change(minIqBox(), { target: { value: '99' } });
+    expect(screen.getAllByRole('article')).toHaveLength(7);
+  });
+});
+
+describe('sắp xếp (E2-07)', () => {
+  it('đổi sang tuổi tăng dần: người trẻ nhất lên đầu', () => {
+    render(<ScientistDirectory />);
+    fireEvent.change(sortBox(), { target: { value: 'age-asc' } });
+    expect(cardNames()[0]).toBe('Quảng Phú Hưng');
+  });
+
+  it('đổi tiêu chí rồi đổi lại thì thứ tự cũ trở lại', () => {
+    render(<ScientistDirectory />);
+    const before = cardNames();
+    fireEvent.change(sortBox(), { target: { value: 'age-asc' } });
+    fireEvent.change(sortBox(), { target: { value: 'iq-desc' } });
+    expect(cardNames()).toEqual(before);
+  });
+
+  it('sắp xếp không làm đổi thứ tự dữ liệu gốc truyền vào', () => {
+    const data = Object.freeze([
+      Object.freeze({ id: 'a', name: 'Zed', age: 30, iq: 170, searchKey: 'zed', metrics: Object.freeze({ age: 30, iq: 170 }) }),
+      Object.freeze({ id: 'b', name: 'Amy', age: 20, iq: 190, searchKey: 'amy', metrics: Object.freeze({ age: 20, iq: 190 }) }),
+    ]);
+    render(<ScientistDirectory initialData={data} />);
+    fireEvent.change(sortBox(), { target: { value: 'age-asc' } });
+    expect(data.map((p) => p.id)).toEqual(['a', 'b']);
+    expect(cardNames()).toEqual(['Amy', 'Zed']);
+  });
+});
+
+describe('kiểm render (E2-08)', () => {
+  const renderProfiled = (ui) => {
+    const commits = [];
+    const onRender = (_id, phase) => commits.push(phase);
+    render(
+      <Profiler id="directory" onRender={onRender}>
+        {ui}
+      </Profiler>,
+    );
+    return commits;
+  };
+
+  it('mỗi ký tự gõ vào ô tìm = đúng 1 commit (không render đôi)', () => {
+    const commits = renderProfiled(<ScientistDirectory />);
+    expect(commits).toEqual(['mount']);
+    for (const value of ['h', 'hu', 'hun', 'hung']) type(value);
+    expect(commits).toEqual(['mount', 'update', 'update', 'update', 'update']);
+  });
+
+  it('đổi IQ và đổi sắp xếp cũng mỗi thao tác đúng 1 commit', () => {
+    const commits = renderProfiled(<ScientistDirectory />);
+    fireEvent.change(minIqBox(), { target: { value: '190' } });
+    fireEvent.change(sortBox(), { target: { value: 'age-asc' } });
+    expect(commits).toHaveLength(3);
+  });
+
+  it('card còn lại không render lại khi bộ lọc đổi (memo + props ổn định)', () => {
+    render(<ScientistDirectory />);
+    DeveloperCard.mockClear();
+    fireEvent.change(minIqBox(), { target: { value: '200' } });
+    expect(cardNames()).toEqual(['Johann Goethe', 'Albert Einstein', 'William Sidis']);
+    expect(DeveloperCard).not.toHaveBeenCalled();
+  });
+
+  it('đổi thứ tự sắp xếp không render lại card nào', () => {
+    render(<ScientistDirectory />);
+    DeveloperCard.mockClear();
+    fireEvent.change(sortBox(), { target: { value: 'age-asc' } });
+    expect(DeveloperCard).not.toHaveBeenCalled();
+  });
+});
