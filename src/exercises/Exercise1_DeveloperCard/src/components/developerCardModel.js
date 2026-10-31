@@ -65,7 +65,7 @@ export function formatMetricValue(value) {
 }
 
 /**
- * Chỉ nhận https hoặc cùng origin (đường dẫn tương đối của app). Chặn http://,
+ * Chỉ nhận https hoặc cùng origin (đường dẫn tương đối của app). Chặn giao thức http không mã hóa,
  * javascript:, data: và URL không phân tích được.
  * @param {unknown} url
  * @param {string} [origin]
