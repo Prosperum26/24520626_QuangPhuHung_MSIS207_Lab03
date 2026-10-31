@@ -53,9 +53,9 @@ Gốc repo chỉ chứa tài liệu. **Mỗi bài là một project Vite độc 
 | C1 | `chore: init react19 vite & rules` | X0-01..09 | `npm test` chạy, dev server lên |
 | C2 | `feat(ex1): implement semantic DeveloperCard and SkillBadge` | E1-01..07 | `grep -n '<div'` trên `DeveloperCard.jsx` = 0 dòng; test pass |
 | C3 | `style(ex1): add responsive 375px CSS module` | E1-08..10 | 375px không cuộn ngang |
-| C4 | `feat(ex2): normalize smartPeople schema with stable IDs` | E2-01..02 | Mọi record có `id` duy nhất |
-| C5 | `feat(ex2): add search, IQ filter & toSorted` | E2-03..06 | Profiler: 1 ký tự = đúng 1 lần render |
-| C6 | `feat(ex2): add delete/reset & live status` | E2-07..10 | Xoá giữ focus và key; `role="status"` đúng |
+| C4 | `feat(ex2): normalize smartPeople schema with stable IDs` | E2-00..04 | Mọi record có `id` duy nhất |
+| C5 | `feat(ex2): add search, IQ filter & toSorted` | E2-05..08 | Profiler: 1 ký tự = đúng 1 lần render |
+| C6 | `feat(ex2): add delete/reset & live status` | E2-09..12 | Xoá giữ focus và key; `role="status"` đúng |
 | C7 | `feat(ex3): implement PUBG VN 4-state telemetry & AbortController` | E3-01..06 | Network: request cũ `(canceled)` |
 | C8 | `feat(ex3): add skeleton UI & retry alert` | E3-07..10 | Slow 3G: CLS 0,00; lỗi hiện `role="alert"` |
 
@@ -109,7 +109,7 @@ cd ../../.. && git log --oneline --graph                       # >= 6-8 commit (
 | Rủi ro | Giảm bằng |
 |---|---|
 | AI sinh `useEffect` đồng bộ filter hoặc class component | `project-rules.md` nạp sẵn; gate `grep`; ghi lại làm bằng chứng cho audit |
-| Hết giờ ở Block 3 (45 phút, ba commit) | Làm đúng thứ tự E2-01 → E2-10; bỏ tính năng phụ trước, không bỏ test |
+| Hết giờ ở Block 3 (45 phút, ba commit) | Làm đúng thứ tự E2-00 → E2-12; bỏ tính năng phụ trước, không bỏ test |
 | Mock API Ex3 không tất định | Seed/tham số cho tỉ lệ lỗi và độ trễ (E3-02) để test và demo lặp lại được |
 | Quên giữ bằng chứng DevTools | Chụp ngay sau mỗi gate vào `evidence/`, đặt tên có tiền tố bài |
 | Không giải thích được code AI sinh | Mỗi task đọc lại diff và tự nói lý do; xoá đoạn không giải thích được |
