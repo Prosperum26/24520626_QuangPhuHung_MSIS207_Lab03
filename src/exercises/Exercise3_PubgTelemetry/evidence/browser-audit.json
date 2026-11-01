@@ -1,35 +1,103 @@
 {
-  "viewports": [
+  "network": {
+    "requests": [
+      "te",
+      "te",
+      "ge"
+    ],
+    "canceled": [
+      "te: net::ERR_ABORTED",
+      "te: net::ERR_ABORTED"
+    ]
+  },
+  "polling": {
+    "afterLoad": 2,
+    "afterPoll": 3,
+    "afterPause": 3,
+    "statusBefore": "Radar cập nhật lúc 23:29:32",
+    "statusAfter": "Radar cập nhật lúc 23:29:37",
+    "label": [
+      "Resume Radar"
+    ]
+  },
+  "heights": [
+    {
+      "width": 320,
+      "skeleton": 220,
+      "card": 220,
+      "alert": 220
+    },
+    {
+      "width": 375,
+      "skeleton": 220,
+      "card": 220,
+      "alert": 220
+    },
+    {
+      "width": 768,
+      "skeleton": 220,
+      "card": 220,
+      "alert": 220
+    },
+    {
+      "width": 1440,
+      "skeleton": 220,
+      "card": 220,
+      "alert": 220
+    }
+  ],
+  "hscroll": [
+    {
+      "width": 320,
+      "sw": 320,
+      "cw": 320,
+      "hscroll": false
+    },
     {
       "width": 375,
       "sw": 375,
       "cw": 375,
-      "skel": true,
+      "hscroll": false
+    },
+    {
+      "width": 768,
+      "sw": 768,
+      "cw": 768,
       "hscroll": false
     },
     {
       "width": 1440,
       "sw": 1440,
       "cw": 1440,
-      "skel": true,
       "hscroll": false
     }
   ],
-  "typing": [
-    {
-      "width": 375,
-      "txt": "KRAFTON PUBG Vietnam Series: Live Telemetry\n\nRadar trực tiếp cho các squad PUBG Vietnam Series. Đổi squad nhanh sẽ huỷ request cũ.\n\nChọn squad\nCerberus Esports\nThe Expendables\nGenius Esports\nRadar đã cập nhật\nThe Expendables\nMap\nMiramar\nPhase\nPhase 7\nAlive\n4\nKills\n18\nWWCD\n82%\nStatus\nHolding High Gro"
-    },
-    {
-      "width": 1440,
-      "txt": "KRAFTON PUBG Vietnam Series: Live Telemetry\n\nRadar trực tiếp cho các squad PUBG Vietnam Series. Đổi squad nhanh sẽ huỷ request cũ.\n\nChọn squad\nCerberus Esports\nThe Expendables\nGenius Esports\nRadar đã cập nhật\nThe Expendables\nMap\nMiramar\nPhase\nPhase 7\nAlive\n4\nKills\n18\nWWCD\n82%\nStatus\nHolding High Gro"
-    }
-  ],
-  "axe": {
-    "violations": [],
-    "incomplete": [
-      "color-contrast"
+  "cls": {
+    "success_load_only": 0,
+    "success_after_switching": 0.0031,
+    "error_load_only": 0,
+    "error_after_switching": 0
+  },
+  "clicks": {
+    "heading": "Genius Esports",
+    "alert": false,
+    "pressed": [
+      "Genius Esports"
     ]
+  },
+  "axe": {
+    "success": {
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    "error": {
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    }
   },
   "console": []
 }

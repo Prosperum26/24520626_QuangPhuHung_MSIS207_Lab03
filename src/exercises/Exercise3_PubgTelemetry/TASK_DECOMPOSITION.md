@@ -44,9 +44,9 @@ Radar trực tiếp cho các đội PUBG Vietnam Series: máy trạng thái `IDL
 | E3-07 | Skeleton 220px `aria-busy="true"` (tôn trọng reduced-motion) | `src/components/PubgMatchTelemetry.module.css` | Slow 3G: CLS 0,00 | [x] |
 | E3-08 | Lỗi `<section role="alert">` + nút Retry tăng `retryTick` | `src/components/PubgMatchTelemetry.jsx` | Test: retry chạy lại effect, về LOADING rồi kết quả mới | [x] |
 | E3-09 | CSS Modules + 375px | `src/components/PubgMatchTelemetry.module.css` | 0 cuộn ngang | [x] |
-| E3-10 | StrictMode: xác nhận không rò request/timer; lưu bằng chứng | `evidence/` | Ảnh Network (canceled), Performance CLS, Lighthouse a11y | [ ] |
-| E3-11 | Thử thách B: polling `POLL_MS = 5000`, nút "Pause Radar", effect riêng `[squadId, isPaused]`, `clearInterval` + abort request đang bay, tab ẩn thì tạm dừng | `src/config/telemetry.js`, `src/components/PubgMatchTelemetry.jsx` | Test fake timers: 5s đúng 1 request; pause thì 0; unmount thì `vi.getTimerCount() === 0`; không tạo interval mới mỗi render | [ ] |
-| E3-12 | Thử thách C (Ex1 + Ex2): nâng `selectedId` lên `App` của Ex2, bấm hàng đổi `DeveloperCard` chi tiết. Làm sau khi xong Ex3 | `Exercise2_ScientistDirectory/src/App.jsx`, `ScientistDirectory.jsx` | Test: bấm hàng thì card chi tiết đổi; component con không giữ state chọn riêng | [ ] |
+| E3-10 | StrictMode: xác nhận không rò request/timer; lưu bằng chứng | `evidence/` | Ảnh Network (canceled), Performance CLS, Lighthouse a11y | [x] |
+| E3-11 | Thử thách B: polling `POLL_MS = 5000`, nút "Pause Radar", effect riêng `[squadId, isPaused]`, `clearInterval` + abort request đang bay, tab ẩn thì tạm dừng | `src/config/telemetry.js`, `src/components/PubgMatchTelemetry.jsx` | Test fake timers: 5s đúng 1 request; pause thì 0; unmount thì `vi.getTimerCount() === 0`; không tạo interval mới mỗi render | [x] |
+| E3-12 | Thử thách C (Ex1 + Ex2): nâng `selectedId` lên `App` của Ex2, bấm hàng đổi `DeveloperCard` chi tiết. Làm sau khi xong Ex3 | `Exercise2_ScientistDirectory/src/App.jsx`, `ScientistDirectory.jsx` | Test: bấm hàng thì card chi tiết đổi; component con không giữ state chọn riêng | [x] |
 
 ## 4. Commit
 
@@ -71,7 +71,7 @@ Radar trực tiếp cho các đội PUBG Vietnam Series: máy trạng thái `IDL
 
 ## 7. Bộ nhớ, race và hiệu năng
 
-- **Mock không rò**: `fetchKraftonPubgTelemetry` lưu id `setTimeout` và `clearTimeout` khi `signal` abort; đăng ký `signal.addEventListener('abort', onAbort, { once: true })` và gỡ khi settle. Test: sau abort không còn timer treo (fake timers, `vi.getTimerCount() === 0`).
+- **Request thật (cập nhật ở E3-10)**: ban đầu mock chỉ dùng `setTimeout` nên tab Network không có gì để hiện `(canceled)`. Nay `fetchKraftonPubgTelemetry` gọi `fetch('/api/telemetry/:id', { signal })`; "vệ tinh" là middleware Vite (`server/telemetryPlugin.js`) trả JSON từ chính `pubgSquads.js` sau 800-1200ms và dừng timer khi client ngắt. `fetch` tự reject `AbortError`, nên không còn timer/listener tay ở client. Mất gói 35% vẫn mô phỏng ở client (tiêm được `rng`). Hạn chế: cần dev/preview server, host tĩnh sẽ báo 404.
 - **Chống ghi đè muộn**: effect chỉ ghi state nếu `!controller.signal.aborted`, thêm một lớp bảo vệ ngoài việc bắt `AbortError`.
 - **Cache theo squad**: giữ kết quả thành công gần nhất trong `useRef(new Map())`; khi quay lại squad đã có, hiển thị dữ liệu cũ thay vì skeleton nháy. Slide yêu cầu skeleton ở `LOADING`: lần tải đầu của mỗi squad vẫn hiện skeleton. Quyết định ở E3-05; nếu thấy lệch đề thì bỏ cache.
 - **Render ít nhất**: tách `TelemetryView` (SUCCESS) và `TelemetrySkeleton` (LOADING) để đổi trạng thái không dựng lại phần chọn squad.
