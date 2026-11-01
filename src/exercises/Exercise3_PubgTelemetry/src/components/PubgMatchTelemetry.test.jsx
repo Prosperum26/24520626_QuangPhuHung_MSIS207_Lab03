@@ -214,3 +214,45 @@ describe('hiển thị SUCCESS (E3-06)', () => {
     expect(container.querySelectorAll('div')).toHaveLength(0);
   });
 });
+
+describe('nút Retry (E3-08)', () => {
+  const retry = () => screen.getByRole('button', { name: 'Reconnect Satellite (Retry)' });
+
+  it('bấm Retry: về LOADING (skeleton), gọi fetch lại đúng squad rồi hiện kết quả mới', async () => {
+    render(<PubgMatchTelemetry />);
+    await flush(() => last().reject(new Error('Satellite packet timeout')));
+    expect(screen.getByRole('alert')).toBeInTheDocument();
+
+    await flush(() => fireEvent.click(retry()));
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    expect(screen.getByLabelText('Đang tải telemetry')).toBeInTheDocument();
+    expect(requests.map((r) => r.squadId)).toEqual(['te', 'te']);
+
+    await flush(() => last().resolve());
+    expect(heading()).toHaveTextContent('The Expendables');
+  });
+
+  it('Retry lỗi tiếp thì hiện lại banner, thử lần nữa vẫn được', async () => {
+    render(<PubgMatchTelemetry />);
+    await flush(() => last().reject(new Error('lost 1')));
+    await flush(() => fireEvent.click(retry()));
+    await flush(() => last().reject(new Error('lost 2')));
+    expect(screen.getByRole('alert')).toHaveTextContent('lost 2');
+    await flush(() => fireEvent.click(retry()));
+    await flush(() => last().resolve());
+    expect(requests).toHaveLength(3);
+    expect(heading()).toBeInTheDocument();
+  });
+
+  it('bấm Retry rồi đổi squad ngay: request retry bị huỷ, không hiện lỗi giả', async () => {
+    render(<PubgMatchTelemetry />);
+    await flush(() => last().reject(new Error('lost')));
+    await flush(() => fireEvent.click(retry()));
+    const retried = last();
+    await flush(() => pick('Genius Esports'));
+    expect(retried.signal.aborted).toBe(true);
+    await flush(() => last().resolve());
+    expect(heading()).toHaveTextContent('Genius Esports');
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+});
