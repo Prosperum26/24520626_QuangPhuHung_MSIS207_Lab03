@@ -41,9 +41,9 @@ Radar trực tiếp cho các đội PUBG Vietnam Series: máy trạng thái `IDL
 | E3-04 | Cleanup `controller.abort()` + guard `AbortError` | `src/components/PubgMatchTelemetry.jsx` | Test: đổi squad khi đang tải → không hiện lỗi giả, dữ liệu đúng squad mới | [x] |
 | E3-05 | Bộ chọn squad (CES, TE, GE); cache theo squad bằng `useRef(Map)` (§7) | `src/components/PubgMatchTelemetry.jsx` | Click nhanh CES→TE→GE: Network có `(canceled)`; quay lại squad cũ không nháy skeleton | [x] |
 | E3-06 | Hiển thị dữ liệu SUCCESS bằng `<article>` + `<dl>` (map, phase, alive, kills, WWCD, status) | `src/components/PubgMatchTelemetry.jsx` | Accessibility tree đúng; vùng cập nhật `aria-live="polite"` | [x] |
-| E3-07 | Skeleton 220px `aria-busy="true"` (tôn trọng reduced-motion) | `src/components/PubgMatchTelemetry.module.css` | Slow 3G: CLS 0,00 | [ ] |
-| E3-08 | Lỗi `<section role="alert">` + nút Retry tăng `retryTick` | `src/components/PubgMatchTelemetry.jsx` | Test: retry chạy lại effect, về LOADING rồi kết quả mới | [ ] |
-| E3-09 | CSS Modules + 375px | `src/components/PubgMatchTelemetry.module.css` | 0 cuộn ngang | [ ] |
+| E3-07 | Skeleton 220px `aria-busy="true"` (tôn trọng reduced-motion) | `src/components/PubgMatchTelemetry.module.css` | Slow 3G: CLS 0,00 | [x] |
+| E3-08 | Lỗi `<section role="alert">` + nút Retry tăng `retryTick` | `src/components/PubgMatchTelemetry.jsx` | Test: retry chạy lại effect, về LOADING rồi kết quả mới | [x] |
+| E3-09 | CSS Modules + 375px | `src/components/PubgMatchTelemetry.module.css` | 0 cuộn ngang | [x] |
 | E3-10 | StrictMode: xác nhận không rò request/timer; lưu bằng chứng | `evidence/` | Ảnh Network (canceled), Performance CLS, Lighthouse a11y | [ ] |
 | E3-11 | Thử thách B: polling `POLL_MS = 5000`, nút "Pause Radar", effect riêng `[squadId, isPaused]`, `clearInterval` + abort request đang bay, tab ẩn thì tạm dừng | `src/config/telemetry.js`, `src/components/PubgMatchTelemetry.jsx` | Test fake timers: 5s đúng 1 request; pause thì 0; unmount thì `vi.getTimerCount() === 0`; không tạo interval mới mỗi render | [ ] |
 | E3-12 | Thử thách C (Ex1 + Ex2): nâng `selectedId` lên `App` của Ex2, bấm hàng đổi `DeveloperCard` chi tiết. Làm sau khi xong Ex3 | `Exercise2_ScientistDirectory/src/App.jsx`, `ScientistDirectory.jsx` | Test: bấm hàng thì card chi tiết đổi; component con không giữ state chọn riêng | [ ] |
