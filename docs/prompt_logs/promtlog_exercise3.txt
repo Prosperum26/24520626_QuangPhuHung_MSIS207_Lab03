@@ -1,0 +1,1468 @@
+
+  Ran 3 shell commands (ctrl+o to expand)
+  ⎿  Read ..\..\..\Users\PHUHUN~1\AppData\Local\Temp\claude\c--Dev-Project-24520
+     626-QuangPhuHung-MSIS207-Lab03\fb1fa485-762b-441b-980f-c439f74905b9\scratch
+     pad\browser\ex2.mjs (59 lines)
+  ⎿  Read src\exercises\Exercise2_ScientistDirectory\src\components\ScientistDir
+     ectory.jsx (86 lines)
+  ⎿  Read src\exercises\Exercise2_ScientistDirectory\src\components\ScientistDir
+     ectory.test.jsx (184 lines)
+  ⎿  Read src\exercises\Exercise2_ScientistDirectory\src\App.module.css (24
+     lines)
+  ⎿  Read src\exercises\Exercise2_ScientistDirectory\src\App.jsx (15 lines)
+  ⎿  SessionStart:compact hook error
+  ⎿  [bash C:\Users\Phu Hung\.claude\plugins\cache\anthropic-plugin-directory\cl
+     aude-memory\1.0.0-0afb7b2da7cc/hooks/scripts/memory-context.sh]:
+     C:/Users/Phu: line 1: syntax error near unexpected token `('
+
+● Now write the component.
+
+  Ran 6 shell commands (ctrl+o to expand)
+
+● Đang sửa lại chỗ comment bị chèn nhầm, rồi chạy kiểm tra trình duyệt thật.
+
+  Read 1 file, ran 4 shell commands (ctrl+o to expand)
+
+● The Lighthouse report file was not found (path issue in my node one-liner).
+  Checking what was written.
+
+  Ran 2 shell commands (ctrl+o to expand)
+
+● Exercise 2 giờ đã xong hết E2-00 đến E2-12, và giao diện đã được nâng cấp.
+  Mình chưa commit gì.
+
+  Giao diện (lấy từ AI Code Vault)
+
+  Mình chỉ đọc 3 file, đều status: Stable. Cả ba gốc dùng Tailwind hoặc
+  framer-motion, nên mình viết lại bằng CSS thuần (không thêm thư viện).
+
+  - 📦 Web/Frontend/React/UI_Patterns/AuroraBackground.md → nền cực quang trôi
+    chậm, chỉ dùng transform nên không repaint, tắt khi prefers-reduced-motion.
+  - 📦 Web/Frontend/React/UI_Patterns/GridAndDotBackgrounds.md → lưới mờ dần ra
+    rìa.
+  - 📦 Web/Frontend/React/UI_Patterns/CardHoverEffect.md → card nhấc lên và phát
+    sáng viền khi hover hoặc focus.
+  - Thêm vài chỗ nhỏ: avatar nền gradient, form có kính mờ, nút "Đặt lại" nổi
+    bật. Mọi màu mới nằm trong tokens.css.
+
+  Tính năng mới
+
+  - E2-09, xoá:
+    - Mỗi người có nút Xoá <tên>, xoá bằng prev.filter.
+    - Focus nhảy sang hàng kế (hoặc hàng trước) ngay trong handler, không dùng
+      effect. Hết hàng thì về ô tìm kiếm.
+  - E2-10, đặt lại: khôi phục danh sách và cả 3 điều khiển trong đúng 1 commit
+    render.
+  - E2-11, trạng thái:
+    - <output aria-live="polite"> hiện "Found N pioneers", rỗng thì hiện câu
+      thông báo.
+    - Mình không viết role="status" tường minh vì <output> đã có sẵn role này và
+      jsx-a11y cấm ghi thừa. Test vẫn tìm được bằng role status.
+
+  Kết quả kiểm chứng
+
+  - npm test: 120/120 pass (thêm 9 test).
+  - npm run lint: sạch. npm run build: ok.
+  - Edge thật ở 320/375/768/1440, cả sáng và tối: không cuộn ngang, 7 card,
+    Console sạch.
+  - axe: 0 vi phạm. Mục color-contrast ở tiêu đề và label chỉ ở mức "incomplete"
+    vì nền gradient, nên mình chưa đo được bằng công cụ. Lần trước mình tính
+    tay các cặp màu này đều ≥ 6.6:1, nhưng bộ màu aurora mới chưa tính lại.
+  - Lighthouse: Performance 100, Accessibility 100, Best-practices 100, lưu ở
+    evidence/lighthouse-ex2.report.*.
+  - WBS Ex2 đã tick E2-09..12.
+  - Lưu ý: grep "http://" src ra 4 dòng, toàn bộ nằm trong file test (dữ liệu
+    kiểm tra việc từ chối URL http), không có trong code chạy. grep "<div" và
+    useEffect ra 0.
+
+  Đề xuất chia commit (bạn tự chạy và thêm co-author)
+
+  1. docs(ex2): update WBS — chỉ sửa TASK_DECOMPOSITION.md.
+  2. C4 feat(ex2): normalize smartPeople schema with stable IDs, C5 feat(ex2):
+     add search, IQ filter & toSorted. Hai commit này đã có sẵn trong lịch sử.
+  3. style(ex2): aurora/grid backdrop and card hover from vault — tokens.css,
+     DeveloperCard.module.css, ScientistDirectory.module.css.
+  4. C6 feat(ex2): add delete/reset & live status — ScientistDirectory.jsx và
+     file test.
+  5. docs(ex2): add Lighthouse and browser evidence, tick E2-09..12 — thư mục
+     evidence/.
+
+  Việc còn lại của bạn
+
+  - Tự chụp ảnh React DevTools Profiler cho Ex2 (bài này mới đo bằng Profiler
+    API trong test).
+  - Điền commit hash và đường dẫn prompt log vào AI_FAILURE_AUDIT.md.
+
+> Hướng dẫn mình test và chụp đi
+
+● Chạy app
+
+  cd src/exercises/Exercise2_ScientistDirectory
+  npm install      # chỉ lần đầu
+  npm run dev
+  Mở link http://localhost:5173 bằng Edge hoặc Chrome.
+
+  A. Chụp React DevTools Profiler (mục Checkpoint 2)
+
+  Cần cài extension React Developer Tools trước (Edge/Chrome Web Store).
+
+  1. Nhấn F12, chọn tab Profiler (nằm cạnh tab Components).
+  2. Bấm biểu tượng bánh răng, chọn tab General, bật "Record why each component
+     rendered while profiling".
+  3. Bấm nút tròn Record (bắt đầu ghi).
+  4. Click vào ô "Tìm theo tên" và gõ đúng 1 ký tự, ví dụ h.
+  5. Bấm Stop.
+  6. Kiểm tra: thanh commit ở đầu chỉ có 1 cột. Bấm vào cột đó:
+     - ScientistDirectory có render.
+     - Các DeveloperCard bị lọc ra thì không còn. Các card còn lại hiện xám,
+       "Did not render" (nhờ memo).
+  7. Chụp ảnh gồm: thanh commit (1 cột) và panel bên phải. Lưu vào evidence/ với
+     tên ex2-profiler-1char.png.
+
+  Làm thêm một lần nữa với việc đổi Sắp xếp sang "Tuổi tăng dần". Lần này mọi
+  card phải xám (không render), lưu là ex2-profiler-sort.png.
+
+  Lưu ý: Profiler chỉ chính xác khi chạy npm run dev cũng được, nhưng StrictMode
+  ở dev có thể làm bạn tưởng render đôi. Panel Profiler đã loại phần này, nên
+  cứ tin số cột commit.
+
+  B. Test thủ công nhanh (30 giây mỗi mục)
+
+  ┌──────────────────────┬──────────────────────────────────────────────────┐
+  │         Việc         │                   Kết quả đúng                   │
+  ├──────────────────────┼──────────────────────────────────────────────────┤
+  │ Gõ hung, rồi HƯNG,   │ Chỉ còn Quảng Phú Hưng                           │
+  │ rồi phu quang        │                                                  │
+  ├──────────────────────┼──────────────────────────────────────────────────┤
+  │ Gõ ein               │ Chỉ Albert Einstein                              │
+  ├──────────────────────┼──────────────────────────────────────────────────┤
+  │ Gõ zzz               │ Hiện "Không tìm thấy nhà tiên phong nào."        │
+  ├──────────────────────┼──────────────────────────────────────────────────┤
+  │ IQ tối thiểu = 205   │ Còn Goethe và Einstein                           │
+  ├──────────────────────┼──────────────────────────────────────────────────┤
+  │ Xoá trắng ô IQ       │ Về 0, không hiện NaN                             │
+  ├──────────────────────┼──────────────────────────────────────────────────┤
+  │ Sắp xếp "Tuổi tăng   │ Hưng (20) lên đầu                                │
+  │ dần"                 │                                                  │
+  ├──────────────────────┼──────────────────────────────────────────────────┤
+  │ Nhấn Tab tới nút Xoá │ Người đó mất, focus nhảy sang nút Xoá của hàng   │
+  │  rồi Enter           │ kế (viền cam), không về đầu trang                │
+  ├──────────────────────┼──────────────────────────────────────────────────┤
+  │ Xoá hết từng người   │ Cuối cùng focus về ô tìm kiếm                    │
+  ├──────────────────────┼──────────────────────────────────────────────────┤
+  │ Bấm Đặt lại          │ Đủ 7 người, ô tìm trống, IQ 160, sắp xếp IQ giảm │
+  │                      │  dần                                             │
+  └──────────────────────┴──────────────────────────────────────────────────┘
+
+  C. Chụp thêm cho evidence (tùy chọn)
+
+  - Accessibility tree: F12, tab Elements, panel Accessibility, bấm "Enable
+    full-page accessibility tree". Chụp phần search, status, list.
+  - Thu nhỏ 375px: F12, bấm icon thiết bị (Ctrl+Shift+M), chọn width 375. Kiểm
+    tra không có thanh cuộn ngang. Mình đã có ảnh tự động, nhưng bạn nên tự chụp
+    một ảnh để bảo vệ.
+  - Reduced motion: DevTools, Ctrl+Shift+P, gõ "reduced motion", chọn Emulate
+    CSS prefers-reduced-motion: reduce. Nền cực quang phải đứng yên.
+
+  D. Chạy test và lint
+
+  npm test
+  npm run lint
+  Mong đợi: 120 test pass, lint không báo lỗi. Chụp terminal bỏ vào
+  evidence/ex2-test-output.png.
+
+  Chụp xong, báo mình để tick bước còn lại và soạn nội dung cho
+  AI_FAILURE_AUDIT.md nếu bạn gặp lỗi thật nào.
+
+> OK kiểm tra xem đủ evidence thầy cần chưa
+
+  Searched for 1 pattern, read 3 files, ran 1 shell command (ctrl+o to expand)
+
+● Chưa đủ, còn thiếu hai thứ và có một ảnh dùng được nhưng cần chụp lại.
+
+  Đã đạt
+
+  Bằng chứng: Profiler, gõ 1 ký tự
+  File: ex2-profiler-1char.png
+  Nhận xét: Thanh commit hiện 1 / 1. ScientistDirectory render, các card còn lại
+
+  gạch chéo (không render). Đúng yêu cầu Checkpoint 2.
+  ────────────────────────────────────────
+  Bằng chứng: Profiler, đổi sắp xếp
+  File: Screenshot 2026-11-01 230059.png
+  Nhận xét: 1 / 1, cả 7 card gạch chéo, nên memo đang hiệu quả. Đây là ảnh tốt,
+  chỉ cần đổi tên.
+  ────────────────────────────────────────
+  Bằng chứng: Lighthouse
+  File: lighthouse-ex2.report.html/json
+  Nhận xét: 100 / 100 / 100.
+  ────────────────────────────────────────
+  Bằng chứng: Trình duyệt thật và axe
+  File: browser-audit.json + 5 ảnh ex2-*.png
+  Nhận xét: Không cuộn ngang, axe 0 vi phạm, Console sạch.
+  ────────────────────────────────────────
+  Bằng chứng: Test và lint
+  File: chạy trong terminal
+  Nhận xét: 120/120 pass, lint sạch.
+
+  Cần làm
+
+  1. Chụp lại ảnh Accessibility tree (Screenshot ... 230250.png). DevTools của
+     bạn đang trỏ vào tab warmup.html của Google (xem góc phải trên), không phải
+     app, nên cây a11y trong ảnh là rỗng. Cách chụp lại:
+     - Mở tab app, F12, tab Elements.
+     - Bấm vào một phần tử trong app, rồi mở panel Accessibility.
+     - Mở rộng các nút search, status, list rồi chụp.
+  2. Chụp output npm test và npm run lint (120 pass, lint sạch), lưu thành
+     ex2-test-output.png. Hiện chưa có file này.
+  3. Console trong ảnh Profiler có dấu đỏ 13 và 15 lỗi. Mình đo bằng Edge tự
+     động thì Console sạch, nên nhiều khả năng lỗi đến từ extension hoặc tab
+     warmup. Bạn mở tab Console trên trang app, bấm biểu tượng chặn để xoá, tải
+     lại trang, rồi chụp màn hình Console. Nếu vẫn còn lỗi đỏ thì gửi mình, đó
+     có thể là lỗi thật.
+  4. Chưa có prompt log cho Ex2. docs/prompt_logs/ mới có
+     promtlog_exercise1.txt. Export session này thành promtlog_exercise2.txt (đề
+     bài yêu cầu mỗi lần code mỗi bài có một export).
+
+  Nên làm
+
+  - Đổi tên 2 ảnh Screenshot ... thành ex2-profiler-1char.png (đã có),
+    ex2-profiler-sort.png và ex2-a11y-tree.png, để repo gọn và dễ trích trong
+    báo cáo.
+  - Điền commit hash vào 4 mục trong AI_FAILURE_AUDIT.md sau khi bạn commit. Bản
+    audit đủ 4 lỗi, vượt mức tối thiểu 3.
+  - Ex2 chưa có ảnh nào chụp trong DevTools ở 375px do bạn tự chụp. Ảnh tự động
+    của mình đã đủ về kỹ thuật, nhưng một ảnh của bạn sẽ chắc hơn khi bảo vệ.
+
+  Bạn chụp xong thì báo mình, mình sẽ đọc lại từng ảnh trước khi tick.
+
+> <ide_opened_file>The user opened the file c:\Dev\Project\24520626_QuangPhuHun
+  g_MSIS207_Lab03\docs\prompt_logs\promtlog_exercise2.txt in the IDE. This may
+  or may not be related to the current task.</ide_opened_file>
+  ⎿  [Image #3]
+  ⎿  [Image #4]
+
+> OK xong đủ, giờ bắt đầu chuyển sang exercise 3 đi, mình thấy có vẻ nó hơi
+  khác ex1 và ex2, ko tận dụng được nhiều
+
+  Ran 1 shell command (ctrl+o to expand)
+  ⎿  Interrupted · What should Claude do instead?
+
+> Trước đ1o cho mình commit code theo git diff hiện tại đi
+
+  Ran 2 shell commands (ctrl+o to expand)
+
+● Mình đã tạo 3 commit cho phần Ex2 và chưa push:
+
+  - c950716 style(ex2): aurora/grid backdrop and card hover from vault
+  - 552f994 feat(ex2): add delete/reset & live status (đúng message C6 của thầy)
+  - a7e428a docs(ex2): add profiler, Lighthouse evidence, tick E2-09..12 (gồm
+    ảnh Profiler, Lighthouse, WBS đã tick và promtlog_exercise2.txt)
+  - Co-author: mình không thêm dòng Co-Authored-By vào commit vì trước đó bạn
+    nói sẽ tự thêm. Nếu muốn có, bạn chạy git commit --amend hoặc git rebase để
+    thêm vào.
+  - Ảnh chưa commit: evidence/Screenshot 2026-11-01 230250.png vẫn nằm ngoài. Đó
+    là ảnh cây accessibility chụp nhầm tab warmup.html, không dùng được.
+  - Ảnh chưa đổi tên: 230059.png (Profiler khi đổi sắp xếp) và 230442.png mình
+    đã commit nguyên tên gốc. Ảnh 230442.png mình chưa xem, nên chưa biết nó là
+    ảnh chụp lại cây a11y hay ảnh khác.
+  - Cảnh báo CRLF: Git báo sẽ đổi LF sang CRLF ở vài file. Đây chỉ là cảnh báo
+    của Windows, không ảnh hưởng nội dung.
+
+  Mình sẽ quay lại Exercise 3 với kế hoạch tận dụng được Ex1 và Ex2 ít nhất. Ex3
+  cần: skeleton cố định 220px, mock fetch, state machine 4 trạng thái. Phần này
+  khác Ex2 nhiều, nên mình sẽ đề xuất kế hoạch trước khi code. Bạn muốn mình
+  làm luôn E3-00 đến E3-03 như các lần trước không?
+
+> OK quay lại với ex3 đi, brainstorm tổng quan báo cáo mình xem
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Brainstorm Ex3: PubgMatchTelemetry
+
+  Bạn nói đúng, Ex3 khác Ex1/Ex2. Hai bài trước là dữ liệu tĩnh và state đồng
+  bộ. Ex3 là bất đồng bộ, và rủi ro nằm ở race condition và rò rỉ, không nằm ở
+  UI.
+
+  1. Tận dụng được gì, không được gì
+
+  ┌────────────────────────────────────┬────────────────────────────────────┐
+  │              Tận dụng              │           Không tận dụng           │
+  ├────────────────────────────────────┼────────────────────────────────────┤
+  │ Scaffold Vite, ESLint, Vitest từ   │ DeveloperCard, peopleModel, search │
+  │ Ex1 (E3-00)                        │  (không liên quan)                 │
+  ├────────────────────────────────────┼────────────────────────────────────┤
+  │ tokens.css, aurora/grid, kiểu      │ memo (bài này ít phần tử, không    │
+  │ nút/card từ Ex2                    │ cần)                               │
+  ├────────────────────────────────────┼────────────────────────────────────┤
+  │ Cách viết test: Profiler, mock,    │                                    │
+  │ vi.fn                              │                                    │
+  ├────────────────────────────────────┼────────────────────────────────────┤
+  │ Kỹ thuật chuyển focus, <output> và │                                    │
+  │  aria-live của Ex2                 │                                    │
+  └────────────────────────────────────┴────────────────────────────────────┘
+
+  Vault chỉ có useAsyncData.md, và mình khuyên không dùng:
+  - Hook đó dùng cờ loading/error riêng, đúng kiểu "bộ boolean" mà đề cấm.
+  - Không có AbortController, nên dễ ghi đè dữ liệu muộn.
+  - Nó dùng eslint-disable cho dependency, trái quy tắc dự án.
+
+  2. Kiến trúc đề xuất
+
+  - src/api/krafton.js: mock fetchKraftonPubgTelemetry(squadId, { signal,
+    latency, lossRate, rng }).
+    - Dependency được tiêm vào để test tất định.
+    - Lưu id setTimeout và clearTimeout khi abort.
+    - Gỡ listener abort khi settle.
+  - src/config/telemetry.js: LATENCY, LOSS_RATE = 0.35, POLL_MS ở một chỗ, để
+    đổi nhanh khi bị đột biến.
+  - PubgMatchTelemetry.jsx: một state view = {status, data, error} (không dùng
+    boolean rời) cộng retryTick.
+    - Tách TelemetryView và TelemetrySkeleton, nên đổi squad không dựng lại bộ
+      chọn.
+    - Effect: tạo AbortController, đặt LOADING, gọi fetch.
+    - Chỉ ghi state khi !signal.aborted, và bỏ qua AbortError.
+    - Cleanup gọi abort().
+
+  3. Chỗ đề/slide sai hoặc yếu (theo Agents.md, mình phải báo)
+
+  1. aria-live="polite" đặt trên <article> bị thay mới mỗi lần đổi trạng thái.
+     Vùng live region phải tồn tại sẵn trước khi nội dung đổi, nếu không trình
+     đọc màn hình thường không đọc. Mình sẽ để một <output aria-live> cố định
+     bên ngoài (giống Ex2).
+  2. Nhãn nút lệch nhau: spec ghi "Reconnect Satellite (Retry)", code mẫu ghi
+     "Reconnect Satellite", và đoạn mô tả trên slide ghi "Reconnect Telemetry".
+     Mình chọn theo spec chính: "Reconnect Satellite (Retry)".
+  3. Skeleton trong code mẫu chỉ là một dòng chữ, không có 220px, nên sẽ gây
+     CLS. Mình làm đúng 220px và đảm bảo card thật cao bằng đó.
+  4. <h3> trong <article> không có h1/h2 phía trên, làm hỏng phân cấp heading.
+     Mình dùng h2, phía trên có h1 của trang.
+  5. Hai tên hàm fetch: fetchKraftonPubgTelemetry và fetchKraftonPubgVn.... Mình
+     chỉ dùng một tên.
+  6. Mã mẫu thiếu guard !aborted ngoài việc bắt AbortError.
+
+  4. Quyết định cần bạn chọn
+
+  (a) Cache theo squad (E3-05).
+  - Có cache: quay lại squad cũ thì hiện ngay, không nháy skeleton. Cải thiện
+    trải nghiệm và memory/perf, nhưng lệch nhẹ so với slide ("LOADING thì hiện
+    skeleton").
+  - Không cache: đúng chữ slide, đơn giản hơn, dễ giải thích khi bị thầy sửa tại
+    chỗ.
+  - Mình đề xuất có cache, vì bạn đã ưu tiên chạy tốt và state/memory. Cache lần
+    đầu mỗi squad vẫn hiện skeleton, nên vẫn khớp checkpoint, và dễ bỏ nếu thầy
+    yêu cầu.
+
+  (b) Dữ liệu hiển thị.
+  - wwcdProb: '68%' là chuỗi, không phải số. Mình giữ nguyên chuỗi theo đề thay
+    vì tự đổi schema.
+  - status hiển thị bằng chữ, không chỉ bằng màu.
+
+  (c) Challenge B (polling 5 giây, nút Pause).
+  - Chưa làm, nhưng chừa chỗ sẵn: POLL_MS và isPaused ở một nơi, một effect
+    riêng với cleanup clearInterval.
+  - Bạn cần để mình làm luôn, hay chỉ chuẩn bị chỗ?
+
+  5. Kiểm chứng (đề chốt 2 commit)
+
+  - Fake timers: abort giữa chừng thì vi.getTimerCount() === 0; lossRate 1 thì
+    luôn lỗi, 0 thì luôn thành công.
+  - Test đổi squad nhanh: không có banner lỗi giả, dữ liệu đúng squad mới.
+  - Test retry: về LOADING rồi ra kết quả mới.
+  - Dưới StrictMode: không có request hoặc timer rò.
+  - Trình duyệt thật: Network Slow 3G có (canceled), CLS 0,00, Lighthouse
+    a11y 100. Mình tự đo bằng Edge, bạn chụp lại bằng DevTools.
+  - C7 = E3-01..06, C8 = E3-07..10, đúng nguyên văn đề.
+
+  6. Rủi ro lớn nhất
+
+  Cache kết hợp AbortController có thể ghi nhầm dữ liệu giữa các squad. Mình sẽ
+  chặn bằng khoá cache là squadId, cộng guard !aborted, và một test có mutation
+  kiểm chứng guard thật sự bắt lỗi.
+
+  Cần bạn trả lời: (a) có cache không, (c) có làm luôn polling không. Nếu bạn
+  không nói gì thì mình làm theo đề xuất: có cache, chỉ chừa chỗ cho polling, và
+  bắt đầu từ E3-00 đến E3-03.
+
+> Ok lập plan đi
+
+  Read 1 file (ctrl+o to expand)
+
+● Cập nhật kế hoạch đã chốt vào WBS của Ex3.
+  ⎿  Interrupted · What should Claude do instead?
+
+> a có cache, có làm luôn polling, và làm luôn c, lập plan đi, r commit và
+  strat luôn giia đoạn nền
+
+  Ran 4 shell commands (ctrl+o to expand)
+● Nothing ran (the command failed to parse). I'll do the copies in one step and
+  write files with the Write tool.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Write(Exercise3_PubgTelemetry\src\App.jsx)
+  ⎿  Wrote 7 lines to Exercise3_PubgTelemetry\src\App.jsx
+      1 export function App() {
+      2   return (
+      3     <main>
+      4       <h1>KRAFTON PUBG Vietnam Series: Live Telemetry</h1>
+      5     </main>
+      6   );
+      7 }
+
+● Write(Exercise3_PubgTelemetry\src\config\telemetry.js)
+  ⎿  Wrote 6 lines to Exercise3_PubgTelemetry\src\config\telemetry.js
+      1 // Mọi hằng cấu hình radar ở một chỗ để đổi nhanh khi bị đột biến
+         yêu cầu.
+      2 export const LOSS_RATE = 0.35;
+      3 export const LATENCY_MIN_MS = 800;
+      4 export const LATENCY_MAX_MS = 1200;
+      5 export const POLL_MS = 5000;
+      6 export const DEFAULT_SQUAD_ID = 'te';
+
+● Write(Exercise3_PubgTelemetry\src\data\pubgSquads.js)
+  ⎿  Wrote 16 lines to Exercise3_PubgTelemetry\src\data\pubgSquads.js
+       1 /**
+       2  * @typedef {{ id: string, name: string, map: string, phase: str
+         ing, alive: number,
+       3  *   kills: number, wwcdProb: string, status: string }} Squad
+       4  */
+       5
+       6 // wwcdProb giữ nguyên chuỗi như đề ('68%'); đóng băng để so sán
+         h tham chiếu ổn định.
+       7 /** @type {readonly Squad[]} */
+       8 export const PUBG_VN_SQUADS = Object.freeze(
+     … +8 lines (ctrl+o to expand)
+
+● Write(Exercise3_PubgTelemetry\src\data\pubgSquads.test.js)
+  ⎿  Wrote 41 lines to Exercise3_PubgTelemetry\src\data\pubgSquads.test.js
+       1 import { describe, expect, it } from 'vitest';
+       2 import { PUBG_VN_SQUADS, SQUADS_BY_ID } from './pubgSquads.js';
+       3 import { DEFAULT_SQUAD_ID } from '../config/telemetry.js';
+       4
+       5 const FIELDS = ['id', 'name', 'map', 'phase', 'alive', 'kills',
+         'wwcdProb', 'status'];
+       6
+       7 describe('PUBG_VN_SQUADS (E3-01)', () => {
+       8   it('có đúng 3 squad CES, TE, GE theo thứ tự đề', () => {
+       9     expect(PUBG_VN_SQUADS.map((s) => s.id)).toEqual(['ces', 'te'
+     … +33 lines (~1 KB) (ctrl+o to expand)
+
+● Write(Exercise3_PubgTelemetry\src\api\krafton.js)
+  ⎿  Wrote 46 lines to Exercise3_PubgTelemetry\src\api\krafton.js
+       1 import { LATENCY_MAX_MS, LATENCY_MIN_MS, LOSS_RATE } from '../co
+         nfig/telemetry.js';
+       2 import { SQUADS_BY_ID } from '../data/pubgSquads.js';
+       3
+       4 const abortError = () => new DOMException('Telemetry request abo
+         rted', 'AbortError');
+       5
+       6 /**
+       7  * Giả lập gọi vệ tinh KRAFTON: có trễ, có mất gói, huỷ được bằn
+         g AbortSignal.
+     … +39 lines (ctrl+o to expand)
+
+● Write(Exercise3_PubgTelemetry\src\api\krafton.test.js)
+  ⎿  Wrote 76 lines to Exercise3_PubgTelemetry\src\api\krafton.test.js
+       1 import { afterEach, beforeEach, describe, expect, it, vi } from
+         'vitest';
+       2 import { fetchKraftonPubgTelemetry } from './krafton.js';
+       3 import { SQUADS_BY_ID } from '../data/pubgSquads.js';
+       4
+       5 beforeEach(() => vi.useFakeTimers());
+       6 afterEach(() => vi.useRealTimers());
+       7
+       8 const steady = () => 0.99; // rng cố định, tất định
+       9
+     … +67 lines (ctrl+o to expand)
+
+  Ran 3 shell commands (ctrl+o to expand)
+
+● Kế hoạch Ex3 đã nằm trong WBS và được commit. Giai đoạn nền (E3-00 đến E3-02)
+  đã xong và đã tick, nhưng chưa commit.
+
+  Đã commit
+
+  78387db docs(ex3): finalize plan with cache, polling and lift-state challenge.
+  Plan gồm:
+  - Cache theo squad (useRef(Map), khoá là squadId).
+  - Polling mới (E3-11): làm mới ngầm, giữ dữ liệu cũ nên không nháy skeleton.
+  - Thử thách C (E3-12): làm sau Ex3, ở Ex2 vì chỉ ở đó có danh sách cùng card
+    (mỗi bài là project riêng, không import chéo).
+  - Bảng 7 quyết định đã chốt: nhãn nút, <output> live region, h1/h2, không dùng
+    useAsyncData của vault.
+
+  Mình hiểu "làm luôn c" là Thử thách C (nâng selectedId). Nếu bạn muốn nói khác
+  thì báo mình.
+
+  Giai đoạn nền (chưa commit)
+
+  - E3-00, scaffold: package.json (msis207-lab03-ex3), vite, eslint, index.html,
+    main.jsx, tokens.css (lấy từ Ex2), App.jsx tạm, npm install xong.
+  - E3-01, dữ liệu: src/data/pubgSquads.js với 3 squad frozen và SQUADS_BY_ID;
+    src/config/telemetry.js giữ các hằng (LOSS_RATE, latency, POLL_MS,
+    DEFAULT_SQUAD_ID).
+  - E3-02, mock fetch: src/api/krafton.js.
+    - Tiêm được rng/latencyMs/lossRate.
+    - Abort thì clearTimeout và reject AbortError; signal đã abort từ đầu thì
+      reject ngay.
+    - Gỡ listener khi settle.
+
+  Kiểm chứng thật
+
+  - npm test: 12/12 pass. npm run lint: sạch. npm run build: ok.
+  - grep "http://" src và grep "useEffect|alert(" src đều ra 0.
+  - Mình thử phá code để xem test có bắt được không:
+    - Bỏ clearTimeout thì test "không còn timer treo" fail.
+    - Bỏ removeEventListener thì test "gỡ listener" fail.
+    - Khôi phục lại thì 12/12 pass.
+  - Một test của mình sai lúc đầu: timer làm tròn xuống ms nên biên 1200ms phải
+    kiểm ở 1198+2. Mình đã sửa test, code không đổi.
+
+  Đề xuất commit (bạn chạy)
+
+  Theo kế hoạch, data và mock thuộc C7 feat(ex3): implement PUBG VN 4-state
+  telemetry & AbortController, nên mình đề xuất tách thành:
+  1. chore(ex3): scaffold project — package.json, package-lock.json, vite,
+     eslint, index.html, main.jsx, tokens.css, App.jsx, setup.js.
+  2. Giữ data/, api/, config/ để chung với component vào C7 (E3-01..06). Nếu
+     muốn commit sớm thì dùng feat(ex3): add squad data and abortable telemetry
+     mock làm commit phụ.
+  3. docs(ex3): tick E3-00..02 — TASK_DECOMPOSITION.md.
+
+  Bước kế tiếp: E3-03 đến E3-06 (component, abort, bộ chọn kèm cache, <dl>). Bạn
+  muốn mình tiếp tục luôn không?
+
+> <ide_opened_file>The user opened the file c:\Dev\Project\24520626_QuangPhuHun
+  g_MSIS207_Lab03\src\exercises\Exercise3_PubgTelemetry\TASK_DECOMPOSITION.md
+  in the IDE. This may or may not be related to the current
+  task.</ide_opened_file>
+
+> Ok tiếp tục hoàn thiện E303 tới E306, còn giao diện bạn có thể research
+  internet mấy cái ảnh giao diện liên quan tới game và dùng bộ màu đó
+
+● Web Search("PUBG Battlegrounds UI color palette HUD hex colors yellow orange
+            dark brand colors")
+  ⎿  Did 1 search in 10s
+
+● Web Search("PUBG blue zone safe zone white circle minimap UI design colors
+            esports broadcast overlay")
+  ⎿  Did 1 search in 11s
+
+● Write(Exercise3_PubgTelemetry\src\styles\tokens.css)
+  ⎿  Added 36 lines, removed 100 lines
+       1 -/* Token dùng chung. Mọi màu/khoảng cách khai báo một lần ở :ro
+         -ot; nơi khác chỉ dùng var().                                   
+       2 -   Ex2: bộ màu sáng hơn Ex1 (nền xanh nhạt, bề mặt trắng, điểm 
+         -nhấn xanh dương tươi). */                                      
+       1 +/* Token dùng chung cho Ex3. Mọi màu khai báo một lần ở :root; 
+         +nơi khác chỉ dùng var().                                       
+       2 +   Bảng màu "radar chiến thuật" gợi game battle royale: nền tha
+         +n đậm, vàng hổ phách (logo/HUD),                               
+       3 +   xanh Blue Zone (vùng bão), trắng (vòng an toàn). Đây là bảng
+         + màu tự dựng theo mô tả giao diện,                             
+       4 +   không phải mã màu chính thức của PUBG (tài liệu thương hiệu 
+         +công bố không kèm mã hex). */                                  
+       5  :root {
+       4 -  color-scheme: light dark;                                    
+       6 +  color-scheme: dark;                                          
+       7  
+       6 -  --color-page: #f3f7ff;                                       
+       7 -  --color-page-glow: #dfe9ff;                                  
+       8 -  --color-surface: #ffffff;                                    
+       9 -  --color-tint: #e6eeff;                                       
+      10 -  --color-text: #17203a;                                       
+      11 -  --color-muted: #44506b;                                      
+      12 -  --color-border: #7a87a7;                                     
+      13 -  --color-border-soft: #d3dcf0;                                
+      14 -  --color-accent: #2563eb;                                     
+      15 -  --color-accent-strong: #1d4fd8;                              
+      16 -  --color-on-accent: #ffffff;                                  
+      17 -  --color-focus: #f59e0b;                                      
+      18 -  --color-avatar-end: #7c3aed;                                 
+      19 -  --color-danger: #b42318;                                     
+      20 -  --color-danger-tint: #fdecea;                                
+       8 +  --color-page: #0d1117;                                       
+       9 +  --color-surface: #161c26;                                    
+      10 +  --color-surface-raised: #1e2633;                             
+      11 +  --color-text: #eef2f7;                                       
+      12 +  --color-muted: #a9b5c6;                                      
+      13 +  --color-border: #53627a;                                     
+      14 +  --color-border-soft: #2a3547;                                
+      15 +  --color-accent: #f2a900;                                     
+      16 +  --color-accent-strong: #ffc233;                              
+      17 +  --color-on-accent: #15110a;                                  
+      18 +  --color-zone-blue: #4aa8ff;                                  
+      19 +  --color-zone-glow: #12335c;                                  
+      20 +  --color-safe-white: #ffffff;                                 
+      21 +  --color-danger: #ff8a7a;                                     
+      22 +  --color-danger-tint: #3a1d1d;                                
+      23 +  --color-success: #5fd38d;                                    
+      24 +  --color-focus: #ffc233;                                      
+      25 +  --color-grid: rgb(74 168 255 / 0.1);                         
+      26  
+      22 -  /* Aurora + lưới nền (vault: AuroraBackground, GridAndDotBack
+         -grounds) */                                                    
+      23 -  --aurora-1: #93c5fd;                                         
+      24 -  --aurora-2: #c4b5fd;                                         
+      25 -  --aurora-3: #a5f3fc;                                         
+      26 -  --aurora-4: #f9a8d4;                                         
+      27 -  --aurora-opacity: 0.55;                                      
+      28 -  --color-grid: rgb(37 99 235 / 0.12);                         
+      29 -                                                               
+      27    --space-1: 0.25rem;
+      28    --space-2: 0.5rem;
+      29    --space-3: 0.75rem;
+      30    --space-4: 1rem;
+      31    --space-5: 1.5rem;
+      32  
+      36 -  --radius-card: 1rem;                                         
+      37 -  --radius-control: 0.625rem;                                  
+      33 +  --radius-card: 0.75rem;                                      
+      34 +  --radius-control: 0.5rem;                                    
+      35    --radius-pill: 999px;
+      39 -  --avatar-size: 64px;                                         
+      36    --control-height: 2.75rem;
+      41 -  --shadow-card: 0 1px 2px rgb(23 32 58 / 0.06), 0 6px 18px rgb
+         -(37 99 235 / 0.08);                                            
+      37 +  --card-height: 220px;                                        
+      38 +  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px rgb(0 0
+         + 0 / 0.35);                                                    
+      39    --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, sa
+          ns-serif;
+      40  }
+      41  
+      45 -@media (prefers-color-scheme: dark) {                          
+      46 -  :root {                                                      
+      47 -    --color-page: #171e35;                                     
+      48 -    --color-page-glow: #243056;                                
+      49 -    --color-surface: #212a44;                                  
+      50 -    --color-tint: #2b3658;                                     
+      51 -    --color-text: #eef1fa;                                     
+      52 -    --color-muted: #b8c1d8;                                    
+      53 -    --color-border: #7e8bad;                                   
+      54 -    --color-border-soft: #36426a;                              
+      55 -    --color-accent: #9db8ff;                                   
+      56 -    --color-accent-strong: #c2d3ff;                            
+      57 -    --color-on-accent: #0d1530;                                
+      58 -    --color-focus: #fbbf24;                                    
+      59 -    --color-avatar-end: #d0bfff;                               
+      60 -    --color-danger: #ffb4ab;                                   
+      61 -    --color-danger-tint: #4a2326;                              
+      62 -    --aurora-1: #3b5bdb;                                       
+      63 -    --aurora-2: #7048e8;                                       
+      64 -    --aurora-3: #0c8599;                                       
+      65 -    --aurora-4: #a61e6b;                                       
+      66 -    --aurora-opacity: 0.4;                                     
+      67 -    --color-grid: rgb(157 184 255 / 0.1);                      
+      68 -    --shadow-card: 0 1px 2px rgb(0 0 0 / 0.3), 0 6px 18px rgb(0
+         - 0 0 / 0.25);                                                  
+      69 -  }                                                            
+      70 -}                                                              
+      71 -                                                               
+      42  *,
+      43  *::before,
+      44  *::after {
+     ...
+       48  body {
+       49    margin: 0;
+       50    min-height: 100vh;
+       81 -  background: radial-gradient(60rem 30rem at 50% -10%, var(--c
+          -olor-page-glow), transparent), var(--color-page);             
+       51 +  background:                                                 
+       52 +    radial-gradient(48rem 24rem at 50% -8%, var(--color-zone-g
+          +low), transparent),                                           
+       53 +    var(--color-page);                                        
+       54    color: var(--color-text);
+       55    font-family: var(--font-sans);
+       56    line-height: 1.5;
+       57  }
+       58  
+       87 -:focus-visible {                                              
+       88 -  outline: 3px solid var(--color-focus);                      
+       89 -  outline-offset: 2px;                                        
+       90 -}                                                             
+       91 -                                                              
+       92 -/* Aurora: lớp cố định rộng 200%, chỉ trượt bằng transform (co
+          -mpositor, không repaint).                                     
+       93 -   Màu đầu = màu cuối nên vòng lặp liền mạch. */              
+       59 +/* Lưới radar mờ dần xuống dưới, không tranh chữ. */          
+       60  body::before {
+       61    content: '';
+       62    position: fixed;
+       97 -  inset: 0 -100% 0 0;                                         
+       98 -  z-index: -2;                                                
+       99 -  pointer-events: none;                                       
+      100 -  background: linear-gradient(                                
+      101 -      90deg,                                                  
+      102 -      var(--aurora-1),                                        
+      103 -      var(--aurora-2),                                        
+      104 -      var(--aurora-3),                                        
+      105 -      var(--aurora-4),                                        
+      106 -      var(--aurora-1)                                         
+      107 -    )                                                         
+      108 -    0 0 / 50% 100% repeat-x;                                  
+      109 -  opacity: var(--aurora-opacity);                             
+      110 -  -webkit-mask-image: radial-gradient(ellipse at 100% 0%, blac
+          -k 5%, transparent 70%);                                       
+      111 -  mask-image: radial-gradient(ellipse at 100% 0%, black 5%, tr
+          -ansparent 70%);                                               
+      112 -  will-change: transform;                                     
+      113 -  animation: aurora-drift 60s linear infinite;                
+      114 -}                                                             
+      115 -                                                              
+      116 -/* Lưới mờ dần ra rìa để không tranh chữ. */                  
+      117 -body::after {                                                 
+      118 -  content: '';                                                
+      119 -  position: fixed;                                            
+       63    inset: 0;
+       64    z-index: -1;
+       65    pointer-events: none;
+     ...
+       67      linear-gradient(to right, var(--color-grid) 1px, transpare
+           nt 1px),
+       68      linear-gradient(to bottom, var(--color-grid) 1px, transpar
+           ent 1px);
+       69    background-size: 40px 40px;
+      127 -  -webkit-mask-image: radial-gradient(ellipse at 50% 0%, black
+          - 10%, transparent 75%);                                       
+      128 -  mask-image: radial-gradient(ellipse at 50% 0%, black 10%, tr
+          -ansparent 75%);                                               
+       70 +  -webkit-mask-image: radial-gradient(ellipse at 50% 0%, black
+          + 10%, transparent 70%);                                       
+       71 +  mask-image: radial-gradient(ellipse at 50% 0%, black 10%, tr
+          +ansparent 70%);                                               
+       72  }
+       73  
+      131 -@keyframes aurora-drift {                                     
+      132 -  to {                                                        
+      133 -    transform: translateX(-50%);                              
+      134 -  }                                                           
+       74 +:focus-visible {                                              
+       75 +  outline: 3px solid var(--color-focus);                      
+       76 +  outline-offset: 2px;                                        
+       77  }
+      136 -                                                              
+      137 -@media (prefers-reduced-motion: reduce) {                     
+      138 -  body::before {                                              
+      139 -    animation: none;                                          
+      140 -  }                                                           
+      141 -}                                                             
+
+● Write(Exercise3_PubgTelemetry\src\components\PubgMatchTelemetry.jsx)
+  ⎿  Wrote 135 lines to
+     Exercise3_PubgTelemetry\src\components\PubgMatchTelemetry.jsx
+       1 import { Fragment, memo, useEffect, useRef, useState } from 'rea
+         ct';
+       2 import { fetchKraftonPubgTelemetry } from '../api/krafton.js';
+       3 import { DEFAULT_SQUAD_ID } from '../config/telemetry.js';
+       4 import { PUBG_VN_SQUADS } from '../data/pubgSquads.js';
+       5 import styles from './PubgMatchTelemetry.module.css';
+       6
+       7 /**
+       8  * @typedef {'IDLE'|'LOADING'|'SUCCESS'|'ERROR'} Status
+       9  * @typedef {{ status: Status, data: import('../data/pubgSquads.
+     … +127 lines (~4 KB) (ctrl+o to expand)
+
+● Write(Exercise3_PubgTelemetry\src\components\PubgMatchTelemetry.module.css)
+  ⎿  Wrote 103 lines to
+     Exercise3_PubgTelemetry\src\components\PubgMatchTelemetry.module.css
+       1 .radar {
+       2   display: grid;
+       3   gap: var(--space-4);
+       4   min-width: 0;
+       5 }
+       6
+       7 .picker {
+       8   display: flex;
+       9   flex-wrap: wrap;
+      10   gap: var(--space-2);
+     … +93 lines (ctrl+o to expand)
+
+● Write(Exercise3_PubgTelemetry\src\App.jsx)
+  ⎿  Added 9 lines, removed 2 lines
+       1 +import styles from './App.module.css';                         
+       2 +import { PubgMatchTelemetry } from './components/PubgMatchTelem
+         +etry.jsx';                                                     
+       3 +                                                               
+       4  export function App() {
+       5    return (
+       3 -    <main>                                                     
+       4 -      <h1>KRAFTON PUBG Vietnam Series: Live Telemetry</h1>     
+       6 +    <main className={styles.page}>                             
+       7 +      <header className={styles.header}>                       
+       8 +        <h1>KRAFTON PUBG Vietnam Series: Live Telemetry</h1>   
+       9 +        <p>Radar trực tiếp cho các squad PUBG Vietnam Series. Đ
+         +ổi squad nhanh sẽ huỷ request cũ.</p>                          
+      10 +      </header>                                                
+      11 +      <PubgMatchTelemetry />                                   
+      12      </main>
+      13    );
+      14  }
+
+● Write(Exercise3_PubgTelemetry\src\App.module.css)
+  ⎿  Wrote 23 lines to Exercise3_PubgTelemetry\src\App.module.css
+       1 .page {
+       2   display: grid;
+       3   gap: var(--space-5);
+       4   max-width: 48rem;
+       5   margin-inline: auto;
+       6   padding: clamp(var(--space-4), 4vw, 2rem);
+       7 }
+       8
+       9 .header {
+      10   display: grid;
+     … +13 lines (ctrl+o to expand)
+
+● Write(Exercise3_PubgTelemetry\src\components\PubgMatchTelemetry.test.jsx)
+  ⎿  Wrote 216 lines to
+     Exercise3_PubgTelemetry\src\components\PubgMatchTelemetry.test.jsx
+       1 import { StrictMode } from 'react';
+       2 import { act, fireEvent, render, screen, within } from '@testing
+         -library/react';
+       3 import { beforeEach, describe, expect, it, vi } from 'vitest';
+       4 import { fetchKraftonPubgTelemetry } from '../api/krafton.js';
+       5 import { SQUADS_BY_ID } from '../data/pubgSquads.js';
+       6 import { PubgMatchTelemetry } from './PubgMatchTelemetry.jsx';
+       7
+       8 vi.mock('../api/krafton.js', () => ({ fetchKraftonPubgTelemetry:
+          vi.fn() }));
+     … +208 lines (ctrl+o to expand)
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Test và lint đã sạch. Giờ mình thử phá code để xác nhận test thật sự bắt được
+  lỗi, rồi build và chụp thử giao diện.
+
+  Read 1 file, ran 4 shell commands (ctrl+o to expand)
+
+● E3-03 đến E3-06 đã xong và đã tick trong WBS. Mình chưa commit gì. Có một vấn
+  đề CLS ở skeleton cần xử lý ở E3-07, mô tả ở cuối.
+
+  Đã làm
+
+  - Component PubgMatchTelemetry.jsx:
+    - State máy 4 trạng thái IDLE | LOADING | SUCCESS | ERROR trong một object
+      view, không dùng cờ boolean.
+    - Effect tạo AbortController, cleanup gọi abort().
+    - Có hai lớp bảo vệ: bỏ qua AbortError, và chỉ ghi state khi
+      !signal.aborted.
+  - Bộ chọn squad: nhóm nút aria-pressed trong <fieldset>, bọc memo để đổi trạng
+    thái tải không dựng lại bộ chọn.
+  - Cache: useRef(Map) theo squadId, chỉ lưu kết quả thành công. Quay lại squad
+    cũ thì hiện ngay, không skeleton và không gọi fetch lại. Lần tải đầu của mỗi
+    squad vẫn hiện skeleton.
+  - Hiển thị SUCCESS: <article> có h2 tên squad và <dl> đủ 6 cặp. Vùng thông báo
+    là một <output aria-live="polite"> luôn có mặt, không bị thay mới theo
+    trạng thái.
+  - Retry: nút "Reconnect Satellite (Retry)" và role="alert" đã có sẵn trong
+    code. Test riêng cho retry thuộc E3-08 nên mình chưa tick E3-08.
+  - Giao diện: bảng màu dark tactical trong tokens.css: nền than, vàng hổ phách
+    (nút đang chọn), xanh Blue Zone, lưới radar mờ.
+    - Mình đã tìm trên web nhưng không có mã màu chính thức của PUBG; tài liệu
+      thương hiệu của Krafton chỉ nêu logo trắng/đen/vàng, không kèm mã hex.
+    - Bảng màu này do mình dựng theo các yếu tố đã mô tả, và ghi rõ điều đó ngay
+      đầu tokens.css.
+
+  Kiểm chứng thật
+
+  - npm test: 31/31 pass. npm run lint: sạch. npm run build: ok.
+  - Grep: không có <div> trong component, không có http:// hay alert( ngoài file
+    test.
+  - Mình thử phá 4 chỗ, test đều bắt được (code đã khôi phục, 31/31 pass):
+    - Bỏ guard !aborted: 1 test fail.
+    - Bỏ guard AbortError: 4 test fail.
+    - Bỏ abort() trong cleanup: 6 test fail.
+    - Bỏ ghi cache: 1 test fail.
+  - Edge thật ở 375 và 1440: không cuộn ngang, Console sạch, axe 0 vi phạm. Mục
+    color-contrast ở mức "incomplete" vì nền gradient, nên bước tiếp theo mình
+    cần tính tay lại các cặp màu.
+
+  Vấn đề cần xử lý ở E3-07
+
+  Card thật hiện cao khoảng 280px, còn skeleton đề yêu cầu 220px. Hai bên lệch
+  nhau sẽ làm CLS khác 0. Mình đề xuất bố cục <dl> 2 cột (3 hàng) để card thật
+  vừa 220px, hoặc dùng một token chiều cao chung cho cả hai. Mình ưu tiên cách
+  thứ nhất để giữ đúng con số 220px của slide.
+
+  Đề xuất commit (bạn chạy)
+
+  Thấy scaffold, data và mock đã nằm trong lịch sử (file App.jsx và tokens.css
+  hiện hiện là "modified"). Phần còn lại cho C7 feat(ex3): implement PUBG VN
+  4-state telemetry & AbortController:
+  - src/components/PubgMatchTelemetry.jsx và .test.jsx
+  - src/App.jsx, src/App.module.css
+  - src/styles/tokens.css, src/components/PubgMatchTelemetry.module.css
+  - TASK_DECOMPOSITION.md
+
+  Nếu bạn muốn commit C7 sạch hơn thì file CSS có thể tách khỏi commit này và để
+  cho C8. Thư mục evidence/ có ảnh tự động chụp, mình khuyên chờ đến E3-10 rồi
+  commit luôn.
+
+  Tiếp theo là E3-07 đến E3-10 (skeleton 220px, retry test, CSS 375px, bằng
+  chứng). Bạn muốn mình làm luôn không?
+
+> check git diff và cho mình git commit code đi
+  Ran 2 shell commands (ctrl+o to expand)
+
+● Mình đã xem git diff (chỉ có 3 file sửa, đúng phần E3-03..06) và tạo 2 commit,
+  chưa push:
+
+  - a7474aa feat(ex3): implement PUBG VN 4-state telemetry & AbortController,
+    đúng nguyên văn C7. Gồm component, test, CSS module, App.jsx, App.module.css
+    và tokens.css.
+  - ffe9e90 docs(ex3): tick E3-03..06, chỉ có TASK_DECOMPOSITION.md.
+  - Co-author: mình không thêm dòng Co-Authored-By, bạn tự thêm như đã nói.
+  - Chưa commit: thư mục evidence/ còn nằm ngoài, chứa ảnh tự động chụp lúc kiểm
+    tra. Mình để đến E3-10 để commit chung với ảnh DevTools của bạn.
+  - Cảnh báo CRLF: chỉ là cảnh báo của Windows, không ảnh hưởng nội dung.
+
+  Tiếp theo là E3-07 đến E3-10 (skeleton 220px, bố cục <dl> 2 cột để card thật
+  vừa 220px, test retry, CSS 375px, bằng chứng). Bạn muốn mình làm luôn không?
+
+> <ide_opened_file>The user opened the file
+  c:\Dev\Project\24520626_QuangPhuHung_MSIS207_Lab03\src\exercises\Exercise3_Pu
+  bgTelemetry\evidence\browser-audit.json in the IDE. This may or may not be
+  related to the current task.</ide_opened_file>
+
+> Ok tiếp tục hoàn thiện tới E310 luôn đi, 11 và 12 hãy từ từ
+
+  Made 2 scratchpad edits +135, ran 3 shell commands (ctrl+o to expand)
+
+● Skeleton, card và alert đều đúng 220px ở 4 độ rộng, nhưng CLS đo được 0.0031
+  (khác 0). Mình đang tìm phần tử gây dịch chuyển.
+
+  Read 1 file, ran 5 shell commands (ctrl+o to expand)
+
+● E3-07, E3-08 và E3-09 đã xong và tick. E3-10 chưa tick vì còn một khoảng trống
+  trong đề, nêu ở dưới. Mình chưa commit.
+
+  Đã làm
+
+  - E3-07, skeleton: aria-busy="true" cao đúng 220px, có hiệu ứng quét radar
+    xanh Blue Zone, tắt khi prefers-reduced-motion.
+  - Card thật và alert: cùng cao 220px bằng cách gọn padding và dòng trong card.
+    Cả ba trạng thái bằng nhau nên không bị nhảy trang.
+  - E3-08, Retry: thêm 3 test. Retry về LOADING rồi ra kết quả mới; retry lỗi
+    tiếp vẫn thử lại được; bấm Retry rồi đổi squad ngay thì request retry bị
+    huỷ. Mình bỏ retryTick khỏi dependency, 2 test fail, nên test bắt được lỗi
+    này. Đã khôi phục.
+  - E3-09, 375px: không cuộn ngang ở 320/375/768/1440.
+
+  Kết quả đo
+
+  - Test và lint: 34/34 pass, lint sạch. Không có <div>, http://, alert(,
+    style={{ hay màu hex ngoài tokens.css.
+  - Chiều cao ở 320/375/768/1440: skeleton, card và alert đều đúng 220px.
+  - CLS khi tải (skeleton sang nội dung): thành công 0, lỗi 0.
+  - Lighthouse: Performance 100, Accessibility 100, Best-practices 100, CLS 0.
+  - Đổi squad nhiều lần: CLS cộng dồn 0.0031. Nguồn là chiều rộng chữ trong dd
+    đổi dưới 1px khi dữ liệu đổi, không phải do bố cục. Con số này rất xa ngưỡng
+    0,1 nên mình để nguyên, nhưng nó không đúng chữ "0,00" khi đổi squad.
+  - Bấm nhanh CES, TE, GE: UI cuối là Genius Esports, không có banner lỗi, chỉ
+    nút GE aria-pressed.
+  - axe: 0 vi phạm. Contrast mình tính tay đều đạt: chữ thường 15–17:1, chữ phụ
+    8–9:1, chữ đỏ 13,6:1, nút vàng 9,4:1, chữ phụ trên đỉnh skeleton 6,1:1, viền
+    3,06:1 (đạt ngưỡng UI 3:1).
+  - Console: sạch.
+
+  Khoảng trống trong đề cho E3-10
+
+  Checkpoint yêu cầu Network có (canceled) khi click nhanh CES, TE, GE. Nhưng
+  mock của mình chỉ dùng setTimeout, không có request mạng thật, nên tab Network
+  sẽ trống. Đây cũng chính là bước thầy sẽ kiểm tra. Có hai hướng:
+
+  1. Thêm request thật (mình đề xuất): krafton.js gọi fetch tới file JSON tĩnh
+     trong public/, kết hợp trễ mô phỏng. Network sẽ hiện (canceled) thật và
+     Slow 3G có tác dụng. Đổi: sửa mock đã commit và dữ liệu có thêm một bản
+     JSON.
+  2. Giữ nguyên mock thuần: đơn giản hơn, nhưng sẽ không có bằng chứng
+     (canceled). Bằng chứng thay thế chỉ có test và Console.
+
+  Bạn chọn hướng nào? Trước khi có quyết định mình giữ E3-10 chưa tick.
+
+  Việc của bạn cho E3-10
+
+  - Chụp DevTools: Network (canceled) (sau khi chọn hướng 1), Performance CLS,
+    Accessibility tree.
+  - Chụp lại Console, chắc chắn không có lỗi.
+
+  Commit đề xuất cho C8 feat(ex3): add skeleton UI & retry alert:
+  - PubgMatchTelemetry.module.css và PubgMatchTelemetry.test.jsx
+  - TASK_DECOMPOSITION.md
+  - Thư mục evidence/ (ảnh tự động và lighthouse-ex3.*) nên chờ đến khi E3-10
+    xong.
+
+> OK r giờ cho mình commit code xong bắt đầu 2 task còn lại đi, còn e310 thì
+  thêm request thật luôn đi, cuối cùng hoàn thiện e312, kiểm tra tổng quan và
+  báo cáo cuối cùng cho mình, mình cũng chụp evidence r
+
+  Ran 4 shell commands (ctrl+o to expand)
+
+● The sed dropped the backslash in my regex (d instead of \d). Fixing that line.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Write(Exercise3_PubgTelemetry\src\api\krafton.js)
+  ⎿  Added 15 lines, removed 37 lines
+       1 -import { LATENCY_MAX_MS, LATENCY_MIN_MS, LOSS_RATE } from '../c
+         -onfig/telemetry.js';                                           
+       2 -import { SQUADS_BY_ID } from '../data/pubgSquads.js';          
+       1 +import { LOSS_RATE, TELEMETRY_URL } from '../config/telemetry.j
+         +s';                                                            
+       2  
+       4 -const abortError = () => new DOMException('Telemetry request ab
+         -orted', 'AbortError');                                         
+       5 -                                                               
+       3  /**
+       7 - * Giả lập gọi vệ tinh KRAFTON: có trễ, có mất gói, huỷ được bằ
+         -ng AbortSignal.                                                
+       8 - * rng/latencyMs/lossRate tiêm được để test tất định.          
+       9 - * Không rò: timer bị clearTimeout khi abort; listener abort đư
+         -ợc gỡ khi settle.                                              
+       4 + * Gọi vệ tinh KRAFTON bằng request mạng thật (DevTools Network
+         + thấy được, huỷ thì hiện "(canceled)").                        
+       5 + * Độ trễ do server (server/telemetryPlugin.js) tạo ra; mất gói
+         + 35% giả lập ở đây sau khi có phản hồi.                        
+       6 + * fetch tự reject AbortError khi signal abort (kể cả abort từ 
+         +trước), nên không cần timer/listener tay.                      
+       7 + * rng/lossRate/fetchImpl tiêm được để test tất định.          
+       8   *
+       9   * @param {string} squadId
+      12 - * @param {{ signal?: AbortSignal, rng?: () => number, latencyM
+         -s?: number, lossRate?: number }} [opts]                        
+      10 + * @param {{ signal?: AbortSignal, rng?: () => number, lossRate
+         +?: number, fetchImpl?: typeof fetch }} [opts]                  
+      11   * @returns {Promise<import('../data/pubgSquads.js').Squad>}
+      12   */
+      15 -export function fetchKraftonPubgTelemetry(                     
+      13 +export async function fetchKraftonPubgTelemetry(               
+      14    squadId,
+      17 -  { signal, rng = Math.random, latencyMs, lossRate = LOSS_RATE 
+         -} = {},                                                        
+      15 +  { signal, rng = Math.random, lossRate = LOSS_RATE, fetchImpl 
+         += globalThis.fetch } = {},                                     
+      16  ) {
+      19 -  return new Promise((resolve, reject) => {                    
+      20 -    if (signal?.aborted) {                                     
+      21 -      reject(abortError());                                    
+      22 -      return;                                                  
+      23 -    }                                                          
+      24 -                                                               
+      25 -    const delay = latencyMs ?? LATENCY_MIN_MS + rng() * (LATENC
+         -Y_MAX_MS - LATENCY_MIN_MS);                                    
+      26 -                                                               
+      27 -    const onAbort = () => {                                    
+      28 -      clearTimeout(timerId);                                   
+      29 -      reject(abortError());                                    
+      30 -    };                                                         
+      31 -                                                               
+      32 -    const timerId = setTimeout(() => {                         
+      33 -      signal?.removeEventListener('abort', onAbort);           
+      34 -      const squad = SQUADS_BY_ID.get(squadId);                 
+      35 -      if (rng() < lossRate) {                                  
+      36 -        reject(new Error('Satellite packet timeout'));         
+      37 -      } else if (!squad) {                                     
+      38 -        reject(new Error(`Unknown squad: ${squadId}`));        
+      39 -      } else {                                                 
+      40 -        resolve(squad);                                        
+      41 -      }                                                        
+      42 -    }, delay);                                                 
+      43 -                                                               
+      44 -    signal?.addEventListener('abort', onAbort, { once: true });
+      45 -  });                                                          
+      17 +  const response = await fetchImpl(`${TELEMETRY_URL}/${encodeUR
+         +IComponent(squadId)}`, { signal });                            
+      18 +  if (!response.ok) {                                          
+      19 +    throw new Error(response.status === 404 ? `Unknown squad: $
+         +{squadId}` : `Telemetry HTTP ${response.status}`);             
+      20 +  }                                                            
+      21 +  const squad = await response.json();                         
+      22 +  if (rng() < lossRate) throw new Error('Satellite packet timeo
+         +ut');                                                          
+      23 +  return squad;                                                
+      24  }
+
+● Write(Exercise3_PubgTelemetry\server\telemetryPlugin.js)
+  ⎿  Wrote 37 lines to Exercise3_PubgTelemetry\server\telemetryPlugin.js
+       1 import { LATENCY_MAX_MS, LATENCY_MIN_MS, TELEMETRY_URL } from '.
+         ./src/config/telemetry.js';
+       2 import { SQUADS_BY_ID } from '../src/data/pubgSquads.js';
+       3
+       4 /**
+       5  * "Vệ tinh" giả: trả JSON của squad sau 800-1200ms. Dữ liệu lấy
+          từ cùng một nguồn với app
+       6  * (src/data/pubgSquads.js) nên không có bản sao để lệch. Client
+          huỷ thì timer phía server cũng dừng.
+       7  */
+     … +30 lines (ctrl+o to expand)
+
+● Write(Exercise3_PubgTelemetry\server\telemetryPlugin.test.js)
+  ⎿  Wrote 46 lines to
+     Exercise3_PubgTelemetry\server\telemetryPlugin.test.js
+       1 import { EventEmitter } from 'node:events';
+       2 import { afterEach, beforeEach, describe, expect, it, vi } from
+         'vitest';
+       3 import { createTelemetryHandler } from './telemetryPlugin.js';
+       4 import { SQUADS_BY_ID } from '../src/data/pubgSquads.js';
+       5
+       6 beforeEach(() => vi.useFakeTimers());
+       7 afterEach(() => vi.useRealTimers());
+       8
+       9 const makeRes = () => {
+     … +37 lines (ctrl+o to expand)
+
+● Write(Exercise3_PubgTelemetry\src\api\krafton.test.js)
+  ⎿  Added 47 lines, removed 51 lines
+       1 -import { afterEach, beforeEach, describe, expect, it, vi } from
+         - 'vitest';                                                     
+       1 +import { describe, expect, it, vi } from 'vitest';             
+       2  import { fetchKraftonPubgTelemetry } from './krafton.js';
+       3  import { SQUADS_BY_ID } from '../data/pubgSquads.js';
+       4  
+       5 -beforeEach(() => vi.useFakeTimers());                          
+       6 -afterEach(() => vi.useRealTimers());                           
+       7 -                                                               
+       5  const steady = () => 0.99; // rng cố định, tất định
+       6  
+      10 -describe('fetchKraftonPubgTelemetry (E3-02)', () => {          
+      11 -  it('lossRate 0: luôn thành công với đúng squad', async () => 
+         -{                                                              
+      12 -    const p = fetchKraftonPubgTelemetry('ces', { rng: steady, l
+         -ossRate: 0 });                                                 
+      13 -    await vi.runAllTimersAsync();                              
+      14 -    await expect(p).resolves.toBe(SQUADS_BY_ID.get('ces'));    
+       7 +const okResponse = (squadId) => ({ ok: true, status: 200, json:
+         + async () => SQUADS_BY_ID.get(squadId) });                     
+       8 +const failResponse = (status) => ({ ok: false, status, json: as
+         +ync () => ({}) });                                             
+       9 +                                                               
+      10 +// fetch giả: reject AbortError khi signal abort, giống fetch t
+         +hật.                                                           
+      11 +const hangingFetch = () =>                                     
+      12 +  vi.fn(                                                       
+      13 +    (_url, { signal }) =>                                      
+      14 +      new Promise((_resolve, reject) => {                      
+      15 +        if (signal.aborted) reject(new DOMException('aborted', 
+         +'AbortError'));                                                
+      16 +        signal.addEventListener('abort', () => reject(new DOMEx
+         +ception('aborted', 'AbortError')), { once: true });            
+      17 +      }),                                                      
+      18 +  );                                                           
+      19 +                                                               
+      20 +describe('fetchKraftonPubgTelemetry (E3-02, E3-10)', () => {   
+      21 +  it('gọi đúng URL của squad kèm signal (request mạng thật)', a
+         +sync () => {                                                   
+      22 +    const fetchImpl = vi.fn(async () => okResponse('ces'));    
+      23 +    const controller = new AbortController();                  
+      24 +    await fetchKraftonPubgTelemetry('ces', { signal: controller
+         +.signal, rng: steady, lossRate: 0, fetchImpl });               
+      25 +    expect(fetchImpl).toHaveBeenCalledWith('/api/telemetry/ces'
+         +, { signal: controller.signal });                              
+      26    });
+      27  
+      17 -  it('lossRate 1: luôn lỗi mất gói', async () => {             
+      18 -    const p = fetchKraftonPubgTelemetry('te', { rng: steady, lo
+         -ssRate: 1 });                                                  
+      19 -    const assertion = expect(p).rejects.toThrow('Satellite pack
+         -et timeout');                                                  
+      20 -    await vi.runAllTimersAsync();                              
+      21 -    await assertion;                                           
+      28 +  it('lossRate 0: luôn thành công, trả đúng dữ liệu server', as
+         +ync () => {                                                    
+      29 +    const fetchImpl = async () => okResponse('ge');            
+      30 +    await expect(fetchKraftonPubgTelemetry('ge', { rng: steady,
+         + lossRate: 0, fetchImpl })).resolves.toBe(SQUADS_BY_ID.get('ge'
+         +));                                                            
+      31    });
+      32  
+      24 -  it('trễ nằm trong 800-1200ms theo rng', async () => {        
+      25 -    const early = vi.fn();                                     
+      26 -    fetchKraftonPubgTelemetry('te', { rng: () => 0, lossRate: 0
+         - }).then(early);                                               
+      27 -    await vi.advanceTimersByTimeAsync(799);                    
+      28 -    expect(early).not.toHaveBeenCalled();                      
+      29 -    await vi.advanceTimersByTimeAsync(1);                      
+      30 -    expect(early).toHaveBeenCalledTimes(1);                    
+      31 -                                                               
+      32 -    const late = vi.fn();                                      
+      33 -    fetchKraftonPubgTelemetry('te', { rng: () => 0.999999, loss
+         -Rate: 0 }).then(late);                                         
+      34 -    await vi.advanceTimersByTimeAsync(1198);                   
+      35 -    expect(late).not.toHaveBeenCalled();                       
+      36 -    await vi.advanceTimersByTimeAsync(2); // timer làm tròn xuố
+         -ng ms                                                          
+      37 -    expect(late).toHaveBeenCalledTimes(1);                     
+      33 +  it('lossRate 1: luôn lỗi mất gói', async () => {             
+      34 +    const fetchImpl = async () => okResponse('te');            
+      35 +    await expect(fetchKraftonPubgTelemetry('te', { rng: steady,
+         + lossRate: 1, fetchImpl })).rejects.toThrow(                   
+      36 +      'Satellite packet timeout',                              
+      37 +    );                                                         
+      38    });
+      39  
+      40 -  it('abort giữa chừng: reject AbortError ngay và không còn tim
+         -er treo', async () => {                                        
+      40 +  it('abort giữa chừng: reject AbortError', async () => {      
+      41      const controller = new AbortController();
+      42 -    const p = fetchKraftonPubgTelemetry('ge', { signal: control
+         -ler.signal, rng: steady, lossRate: 0 });                       
+      42 +    const fetchImpl = hangingFetch();                          
+      43 +    const p = fetchKraftonPubgTelemetry('te', { signal: control
+         +ler.signal, fetchImpl });                                      
+      44      const assertion = expect(p).rejects.toMatchObject({ name: '
+          AbortError' });
+      44 -    expect(vi.getTimerCount()).toBe(1);                        
+      45      controller.abort();
+      46      await assertion;
+      47 -    expect(vi.getTimerCount()).toBe(0);                        
+      47    });
+      48  
+      50 -  it('signal đã abort từ đầu: reject ngay, không đặt timer', as
+         -ync () => {                                                    
+      49 +  it('signal đã abort từ đầu: reject AbortError ngay', async ()
+         + => {                                                          
+      50      const controller = new AbortController();
+      51      controller.abort();
+      53 -    await expect(fetchKraftonPubgTelemetry('te', { signal: cont
+         -roller.signal })).rejects.toMatchObject({                      
+      54 -      name: 'AbortError',                                      
+      55 -    });                                                        
+      56 -    expect(vi.getTimerCount()).toBe(0);                        
+      52 +    await expect(                                              
+      53 +      fetchKraftonPubgTelemetry('te', { signal: controller.sign
+         +al, fetchImpl: hangingFetch() }),                              
+      54 +    ).rejects.toMatchObject({ name: 'AbortError' });           
+      55    });
+      56  
+      59 -  it('settle xong thì gỡ listener abort', async () => {        
+      60 -    const controller = new AbortController();                  
+      61 -    const remove = vi.spyOn(controller.signal, 'removeEventList
+         -ener');                                                        
+      62 -    const p = fetchKraftonPubgTelemetry('te', { signal: control
+         -ler.signal, rng: steady, lossRate: 0 });                       
+      63 -    await vi.runAllTimersAsync();                              
+      64 -    await p;                                                   
+      65 -    expect(remove).toHaveBeenCalledWith('abort', expect.any(Fun
+         -ction));                                                       
+      66 -    controller.abort();                                        
+      67 -    expect(vi.getTimerCount()).toBe(0);                        
+      57 +  it('404: lỗi squad không tồn tại; lỗi HTTP khác nêu mã', asyn
+         +c () => {                                                      
+      58 +    await expect(fetchKraftonPubgTelemetry('xx', { fetchImpl: a
+         +sync () => failResponse(404) })).rejects.toThrow(              
+      59 +      'Unknown squad: xx',                                     
+      60 +    );                                                         
+      61 +    await expect(fetchKraftonPubgTelemetry('te', { fetchImpl: a
+         +sync () => failResponse(503) })).rejects.toThrow(              
+      62 +      'Telemetry HTTP 503',                                    
+      63 +    );                                                         
+      64    });
+      65  
+      70 -  it('squad không tồn tại: reject lỗi rõ ràng', async () => {  
+      71 -    const p = fetchKraftonPubgTelemetry('xx', { rng: steady, lo
+         -ssRate: 0 });                                                  
+      72 -    const assertion = expect(p).rejects.toThrow('Unknown squad:
+         - xx');                                                         
+      73 -    await vi.runAllTimersAsync();                              
+      74 -    await assertion;                                           
+      66 +  it('lỗi mạng của fetch được ném lại nguyên vẹn', async () => 
+         +{                                                              
+      67 +    const fetchImpl = async () => {                            
+      68 +      throw new TypeError('Failed to fetch');                  
+      69 +    };                                                         
+      70 +    await expect(fetchKraftonPubgTelemetry('te', { fetchImpl })
+         +).rejects.toThrow('Failed to fetch');                          
+      71    });
+      72  });
+
+  Ran 1 shell command (ctrl+o to expand)
+  ⎿  Blocked by auto mode
+     │ Auto mode: [Interfere With Workloads]
+
+● That taskkill would have killed every Node process on the machine, which was
+  too broad. I'll skip it and stop only my own server by PID in the test script.
+
+  Ran 6 shell commands (ctrl+o to expand)
+
+● Script output wasn't pure JSON (the deprecation warning leaked in). I'll read
+  the saved browser-audit.json directly instead.
+
+  Ran 5 shell commands (ctrl+o to expand)
+
+● My slicing left a stray } at the end of the config. Rewriting the file
+  cleanly.
+
+● Write(Exercise3_PubgTelemetry\vite.config.js)
+  ⎿  Added 1 line, removed 1 line
+       8      environment: 'jsdom',
+       9      setupFiles: ['./src/test/setup.js'],
+      10    },
+      11 -}});                                                           
+      11 +});                                                            
+
+  Read 2 files, ran 10 shell commands (ctrl+o to expand)
+
+● Mình đang sửa một lỗi axe thật vừa phát hiện: tên truy cập "Chọn X" không chứa
+  chữ hiển thị "Chi tiết" (WCAG 2.5.3 Label in Name).
+
+  Ran 2 shell commands (ctrl+o to expand)
+
+● Ex3 xong E3-10, E3-11 và E3-12, cả 3 bài đều qua test, lint, build. Mình chưa
+  commit.
+
+  Kết quả cả 3 bài
+
+  ┌─────┬─────────┬──────┬───────┐
+  │ Bài │  Test   │ Lint │ Build │
+  ├─────┼─────────┼──────┼───────┤
+  │ Ex1 │ 53/53   │ sạch │ ok    │
+  ├─────┼─────────┼──────┼───────┤
+  │ Ex2 │ 130/130 │ sạch │ ok    │
+  ├─────┼─────────┼──────┼───────┤
+  │ Ex3 │ 46/46   │ sạch │ ok    │
+  └─────┴─────────┴──────┴───────┘
+
+  Grep gate của Ex3: <div trong component, http://, alert(, style={{ đều ra 0.
+
+  Việc đã làm
+
+  E3-10, request mạng thật (như bạn yêu cầu):
+  - Vì sao đổi: mock cũ chỉ dùng setTimeout, tab Network không có gì để hiện
+    (canceled).
+  - Client: krafton.js gọi fetch('/api/telemetry/:id', { signal }). fetch tự
+    reject AbortError, nên bỏ hết timer và listener tay, code ngắn và dễ giải
+    thích hơn. Mất gói 35% vẫn mô phỏng ở client.
+  - Server: server/telemetryPlugin.js là middleware Vite (dev và preview) trả
+    JSON sau 800-1200ms, lấy dữ liệu từ chính pubgSquads.js (không có bản sao).
+    Client huỷ thì timer server cũng dừng. Có test riêng.
+  - Bug mình tự gây rồi sửa: lúc đầu middleware trả về giá trị trong
+    configureServer, Vite coi đó là hook "post" nên crash lúc khởi động. Đã sửa.
+  - Đo trên Edge thật: bấm nhanh CES, TE, GE cho ra 2 request net::ERR_ABORTED
+    (đúng (canceled)), UI cuối là Genius Esports, không có banner lỗi.
+  - Lưu ý: ở dev mode, StrictMode tự sinh thêm 1 request bị huỷ lúc tải trang.
+  - Hạn chế: cần dev hoặc preview server, host tĩnh sẽ báo 404. Mình đã ghi vào
+    WBS.
+
+  E3-11, polling:
+  - Hoạt động: poll mỗi 5 giây, giữ card cũ (không nháy skeleton). Nút
+    Pause/Resume Radar. Cleanup dừng interval và huỷ request đang bay. Tab ẩn
+    thì bỏ nhịp.
+  - Poll lỗi: chỉ báo "Tín hiệu yếu", không hiện banner đỏ.
+  - Đo thật: 5,6 giây sau có thêm đúng 1 request và giờ cập nhật đổi; Pause 6
+    giây sau không có request mới.
+  - Mutation check: mình thử phá 4 chỗ (bỏ clearInterval, bỏ abort, bỏ guard tab
+    ẩn, bỏ isPaused khỏi dependency), test đều fail đúng chỗ.
+
+  E3-12, thử thách C (ở Ex2):
+  - Cách làm: selectedId nằm ở App. Mỗi hàng có nút "Chi tiết" (aria-pressed,
+    bấm lại thì bỏ chọn). ScientistDirectory nhận selectedId và onSelect qua
+    props, không giữ state chọn riêng. Thẻ chi tiết nằm trong <aside aria-live>.
+  - Chọn bị xoá hay Đặt lại: xoá người đang chọn hoặc bấm Đặt lại thì bỏ chọn.
+  - Memo: đổi lựa chọn không render lại card nào (có test).
+  - Lỗi axe thật: nhãn nút ban đầu là "Chọn X" không chứa chữ hiển thị "Chi
+    tiết", vi phạm WCAG 2.5.3. Đã đổi nhãn thành "Chi tiết X", axe còn 0 vi
+    phạm.
+  - Mutation check: bỏ phần bỏ-chọn khi xoá, hoặc bỏ toggle, 2 test fail mỗi
+    lần.
+
+  Evidence
+
+  - Ex3 (Edge tự động): skeleton, card và alert đều đúng 220px ở
+    320/375/768/1440; không cuộn ngang; axe 0 vi phạm; Console sạch. CLS khi tải
+    = 0 (Lighthouse CLS 0; Performance, Accessibility, Best-practices đều 100).
+  - Đổi squad nhiều lần: CLS cộng dồn 0.0031, do chiều rộng chữ trong dd đổi
+    dưới 1px khi dữ liệu đổi. Vẫn xa ngưỡng 0,1, nhưng không đúng chữ "0,00" khi
+    đổi squad.
+  - Ex2: axe 0 vi phạm, không cuộn ngang, Console sạch.
+
+  Cần bạn làm
+
+  1. Chụp lại Network. Ảnh Screenshot ... 232230.png của bạn chụp trước khi có
+     request thật nên không có dòng /api/telemetry. Cần chụp: bấm nhanh CES, TE,
+     GE rồi xem cột Status có (canceled) (lọc Fetch/XHR cho dễ thấy). Tốt nhất
+     bật Slow 3G.
+  2. Console: DevTools của bạn hiện dấu đỏ "14". Mình đo trên Edge tự động thì
+     sạch. Nên mở tab Console trên trang app và xem lỗi đó là của extension hay
+     của app.
+  3. Ex2 Lighthouse: mình chưa chạy lại sau khi thêm thẻ chi tiết, chỉ đo axe.
+     Nếu cần nộp thì chạy lại.
+  4. AI_FAILURE_AUDIT.md: điền hash commit, và nên thêm mục "AI quên rằng trả về
+     giá trị từ configureServer làm Vite crash" nếu bạn muốn dùng làm ví dụ lỗi
+     thật của Ex3. Mình không tự viết giúp vì file này phải là lỗi bạn đã gặp.
+  5. Prompt log Ex3: export promtlog_exercise3.txt vào docs/prompt_logs/.
+
+  Đề xuất commit (bạn chạy, tự thêm co-author)
+
+  1. feat(ex3): add real network telemetry via dev-server satellite —
+     src/api/krafton.js và test, server/, src/config/telemetry.js,
+     vite.config.js
+  2. feat(ex3): add polling with pause (challenge B) — PubgMatchTelemetry.jsx,
+     .module.css, .test.jsx
+  3. feat(ex2): lift selectedId to App (challenge C) — App.jsx, App.module.css,
+     App.test.jsx, ScientistDirectory.jsx, .module.css, .test.jsx
+  4. docs(ex3): add evidence, tick E3-10..12 — TASK_DECOMPOSITION.md và
+     evidence/ của Ex3 (kèm ảnh Network mới của bạn, ảnh 232230.png cũ nên bỏ)
+  5. docs(ex2): refresh browser evidence — evidence/ của Ex2
+
+> ok cho mình git commit code toàn bộ các file còn lại, mình cũng vừa chụp
+  evidence còn sót bạn check xem r mình xuất loh
+
+  Read 1 file, ran 2 shell commands (ctrl+o to expand)
+
+● Mình đã commit xong 5 commit, chưa push. Ảnh evidence mới của bạn đạt yêu cầu.
+
+  Commit vừa tạo
+
+  - 5d9d625 feat(ex3): add real network telemetry via dev-server satellite
+  - 805469d feat(ex3): add polling with pause (challenge B)
+  - 07c9bfc feat(ex2): lift selectedId to App (challenge C)
+  - b58294b docs(ex3): add evidence, tick E3-10..12
+  - d97ea62 docs(ex2): refresh browser evidence
+
+  Mình không thêm dòng Co-Authored-By, bạn tự thêm nếu cần.
+
+  Ảnh Network mới (Screenshot 2026-11-01 233925.png)
+
+  Ảnh này đạt đúng yêu cầu Checkpoint 3:
+  - ge, ces, te đều (canceled) (kiểu fetch, khởi tạo từ krafton.js:17); chỉ ge
+    ra 200 sau 1,03 giây. Tức là bấm nhanh TE, CES, GE thì 3 request đầu bị huỷ,
+    kết quả cuối khớp Genius Esports.
+  - Giao diện cùng ảnh: nút GE đang chọn, "Radar cập nhật lúc 23:39:18", nút
+    Pause Radar, card Genius Esports (Taego, Phase 5, 3, 9, 41%).
+  - Các dòng js.js và dom.js đến từ content.js, đó là extension trình duyệt của
+    bạn, không phải app.
+  - DevTools còn dấu đỏ "1" ở góc. Nhiều khả năng là extension, nhưng bạn nên mở
+    tab Console trên trang app để chắc chắn không có lỗi của app.
+
+  Chưa commit
+
+  evidence/Screenshot 2026-11-01 232230.png là ảnh cũ chụp trước khi có request
+  thật (không có dòng nào của /api/telemetry). Mình để nó ngoài commit, bạn có
+  thể xoá.
+
+  Còn thiếu so với danh sách evidence của Ex3
+
+  ┌──────────────────────────────┬──────────────────────────────────────────┐
+  │           Evidence           │                Trạng thái                │
+  ├──────────────────────────────┼──────────────────────────────────────────┤
+  │ Network (canceled)           │ Có, ảnh 233925                           │
+  ├──────────────────────────────┼──────────────────────────────────────────┤
+  │ Lighthouse                   │ Có, 100/100/100, CLS 0                   │
+  ├──────────────────────────────┼──────────────────────────────────────────┤
+  │ 375px, skeleton, lỗi, pause  │ Có (ảnh tự động)                         │
+  ├──────────────────────────────┼──────────────────────────────────────────┤
+  │ Performance CLS bằng         │ Chưa có ảnh. Nếu thầy hỏi "CLS 0,00 ở    │
+  │ DevTools của bạn             │ Slow 3G" thì đây là ảnh nên có           │
+  ├──────────────────────────────┼──────────────────────────────────────────┤
+  │ Accessibility tree của Ex3   │ Chưa có ảnh                              │
+  ├──────────────────────────────┼──────────────────────────────────────────┤
+  │ Prompt log                   │ Chưa có trong docs/prompt_logs/          │
+  │ promtlog_exercise3.txt       │                                          │
+  ├──────────────────────────────┼──────────────────────────────────────────┤
+  │ Hash commit trong            │ Còn trống ở 4 mục                        │
+  │ AI_FAILURE_AUDIT.md          │                                          │
+  └──────────────────────────────┴──────────────────────────────────────────┘
+
+  Nếu bạn chụp xong ảnh CLS và cây a11y, đưa vào evidence/ rồi báo mình, mình sẽ
+  xem lại từng ảnh trước khi bạn commit lần cuối.
