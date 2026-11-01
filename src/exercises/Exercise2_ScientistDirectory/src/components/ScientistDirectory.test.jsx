@@ -181,3 +181,99 @@ describe('kiểm render (E2-08)', () => {
     expect(DeveloperCard).not.toHaveBeenCalled();
   });
 });
+
+describe('nút xoá (E2-09)', () => {
+  const deleteBtn = (name) => screen.getByRole('button', { name: `Xoá ${name}` });
+
+  it('mỗi người có một nút xoá, tên truy cập chứa tên người', () => {
+    render(<ScientistDirectory />);
+    expect(screen.getAllByRole('button', { name: /^Xoá / })).toHaveLength(7);
+    expect(deleteBtn('Albert Einstein')).toBeInTheDocument();
+  });
+
+  it('xoá giữa danh sách: chỉ người đó mất, thứ tự và card còn lại giữ nguyên', () => {
+    render(<ScientistDirectory />);
+    fireEvent.change(minIqBox(), { target: { value: '0' } });
+    const before = cardNames();
+    DeveloperCard.mockClear();
+    fireEvent.click(deleteBtn(before[3]));
+    expect(cardNames()).toEqual(before.filter((_, i) => i !== 3));
+    expect(DeveloperCard).not.toHaveBeenCalled();
+  });
+
+  it('không làm đổi mảng dữ liệu gốc', () => {
+    const data = Object.freeze([
+      Object.freeze({ id: 'a', name: 'Zed', age: 30, iq: 170, searchKey: 'zed', metrics: Object.freeze({ age: 30, iq: 170 }) }),
+      Object.freeze({ id: 'b', name: 'Amy', age: 20, iq: 190, searchKey: 'amy', metrics: Object.freeze({ age: 20, iq: 190 }) }),
+    ]);
+    render(<ScientistDirectory initialData={data} />);
+    fireEvent.click(deleteBtn('Zed'));
+    expect(data).toHaveLength(2);
+    expect(cardNames()).toEqual(['Amy']);
+  });
+
+  it('focus chuyển sang nút xoá của hàng kế, không rơi về body', () => {
+    render(<ScientistDirectory />);
+    const names = cardNames();
+    deleteBtn(names[0]).focus();
+    fireEvent.click(deleteBtn(names[0]));
+    expect(deleteBtn(names[1])).toHaveFocus();
+  });
+
+  it('xoá hàng cuối thì focus lùi về hàng trước; hết hàng thì về ô tìm kiếm', () => {
+    render(<ScientistDirectory />);
+    fireEvent.change(minIqBox(), { target: { value: '205' } });
+    deleteBtn('Albert Einstein').focus();
+    fireEvent.click(deleteBtn('Albert Einstein'));
+    expect(deleteBtn('Johann Goethe')).toHaveFocus();
+    fireEvent.click(deleteBtn('Johann Goethe'));
+    expect(searchBox()).toHaveFocus();
+  });
+});
+
+describe('nút đặt lại (E2-10)', () => {
+  it('khôi phục người đã xoá và cả ba điều khiển về mặc định', () => {
+    render(<ScientistDirectory />);
+    type('ein');
+    fireEvent.change(minIqBox(), { target: { value: '10' } });
+    fireEvent.change(sortBox(), { target: { value: 'age-asc' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Xoá Albert Einstein' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Đặt lại' }));
+    expect(searchBox()).toHaveValue('');
+    expect(minIqBox()).toHaveValue(160);
+    expect(sortBox()).toHaveValue('iq-desc');
+    fireEvent.change(minIqBox(), { target: { value: '0' } });
+    expect(screen.getAllByRole('article')).toHaveLength(7);
+  });
+
+  it('reset chỉ gây đúng 1 commit', () => {
+    const commits = [];
+    render(
+      <Profiler id="d" onRender={(_id, phase) => commits.push(phase)}>
+        <ScientistDirectory />
+      </Profiler>,
+    );
+    type('ein');
+    commits.length = 0;
+    fireEvent.click(screen.getByRole('button', { name: 'Đặt lại' }));
+    expect(commits).toHaveLength(1);
+  });
+});
+
+describe('trạng thái trực tiếp (E2-11)', () => {
+  it('role=status, aria-live=polite, N khớp số card', () => {
+    render(<ScientistDirectory />);
+    const status = screen.getByRole('status');
+    expect(status).toHaveAttribute('aria-live', 'polite');
+    expect(status).toHaveTextContent('Found 7 pioneers');
+    expect(screen.getAllByRole('article')).toHaveLength(7);
+  });
+
+  it('N cập nhật theo bộ lọc và sau khi xoá', () => {
+    render(<ScientistDirectory />);
+    type('ein');
+    expect(screen.getByRole('status')).toHaveTextContent('Found 1 pioneers');
+    fireEvent.click(screen.getByRole('button', { name: 'Xoá Albert Einstein' }));
+    expect(screen.getByRole('status')).toHaveTextContent('Không tìm thấy');
+  });
+});
