@@ -1,0 +1,35 @@
+{
+  "viewports": [
+    {
+      "width": 375,
+      "sw": 375,
+      "cw": 375,
+      "skel": true,
+      "hscroll": false
+    },
+    {
+      "width": 1440,
+      "sw": 1440,
+      "cw": 1440,
+      "skel": true,
+      "hscroll": false
+    }
+  ],
+  "typing": [
+    {
+      "width": 375,
+      "txt": "KRAFTON PUBG Vietnam Series: Live Telemetry\n\nRadar trực tiếp cho các squad PUBG Vietnam Series. Đổi squad nhanh sẽ huỷ request cũ.\n\nChọn squad\nCerberus Esports\nThe Expendables\nGenius Esports\nRadar đã cập nhật\nThe Expendables\nMap\nMiramar\nPhase\nPhase 7\nAlive\n4\nKills\n18\nWWCD\n82%\nStatus\nHolding High Gro"
+    },
+    {
+      "width": 1440,
+      "txt": "KRAFTON PUBG Vietnam Series: Live Telemetry\n\nRadar trực tiếp cho các squad PUBG Vietnam Series. Đổi squad nhanh sẽ huỷ request cũ.\n\nChọn squad\nCerberus Esports\nThe Expendables\nGenius Esports\nRadar đã cập nhật\nThe Expendables\nMap\nMiramar\nPhase\nPhase 7\nAlive\n4\nKills\n18\nWWCD\n82%\nStatus\nHolding High Gro"
+    }
+  ],
+  "axe": {
+    "violations": [],
+    "incomplete": [
+      "color-contrast"
+    ]
+  },
+  "console": []
+}
