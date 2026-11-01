@@ -1,0 +1,141 @@
+/* Token dùng chung. Mọi màu/khoảng cách khai báo một lần ở :root; nơi khác chỉ dùng var().
+   Ex2: bộ màu sáng hơn Ex1 (nền xanh nhạt, bề mặt trắng, điểm nhấn xanh dương tươi). */
+:root {
+  color-scheme: light dark;
+
+  --color-page: #f3f7ff;
+  --color-page-glow: #dfe9ff;
+  --color-surface: #ffffff;
+  --color-tint: #e6eeff;
+  --color-text: #17203a;
+  --color-muted: #44506b;
+  --color-border: #7a87a7;
+  --color-border-soft: #d3dcf0;
+  --color-accent: #2563eb;
+  --color-accent-strong: #1d4fd8;
+  --color-on-accent: #ffffff;
+  --color-focus: #f59e0b;
+  --color-avatar-end: #7c3aed;
+  --color-danger: #b42318;
+  --color-danger-tint: #fdecea;
+
+  /* Aurora + lưới nền (vault: AuroraBackground, GridAndDotBackgrounds) */
+  --aurora-1: #93c5fd;
+  --aurora-2: #c4b5fd;
+  --aurora-3: #a5f3fc;
+  --aurora-4: #f9a8d4;
+  --aurora-opacity: 0.55;
+  --color-grid: rgb(37 99 235 / 0.12);
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+
+  --radius-card: 1rem;
+  --radius-control: 0.625rem;
+  --radius-pill: 999px;
+  --avatar-size: 64px;
+  --control-height: 2.75rem;
+  --shadow-card: 0 1px 2px rgb(23 32 58 / 0.06), 0 6px 18px rgb(37 99 235 / 0.08);
+  --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-page: #171e35;
+    --color-page-glow: #243056;
+    --color-surface: #212a44;
+    --color-tint: #2b3658;
+    --color-text: #eef1fa;
+    --color-muted: #b8c1d8;
+    --color-border: #7e8bad;
+    --color-border-soft: #36426a;
+    --color-accent: #9db8ff;
+    --color-accent-strong: #c2d3ff;
+    --color-on-accent: #0d1530;
+    --color-focus: #fbbf24;
+    --color-avatar-end: #d0bfff;
+    --color-danger: #ffb4ab;
+    --color-danger-tint: #4a2326;
+    --aurora-1: #3b5bdb;
+    --aurora-2: #7048e8;
+    --aurora-3: #0c8599;
+    --aurora-4: #a61e6b;
+    --aurora-opacity: 0.4;
+    --color-grid: rgb(157 184 255 / 0.1);
+    --shadow-card: 0 1px 2px rgb(0 0 0 / 0.3), 0 6px 18px rgb(0 0 0 / 0.25);
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: radial-gradient(60rem 30rem at 50% -10%, var(--color-page-glow), transparent), var(--color-page);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  line-height: 1.5;
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+/* Aurora: lớp cố định rộng 200%, chỉ trượt bằng transform (compositor, không repaint).
+   Màu đầu = màu cuối nên vòng lặp liền mạch. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0 -100% 0 0;
+  z-index: -2;
+  pointer-events: none;
+  background: linear-gradient(
+      90deg,
+      var(--aurora-1),
+      var(--aurora-2),
+      var(--aurora-3),
+      var(--aurora-4),
+      var(--aurora-1)
+    )
+    0 0 / 50% 100% repeat-x;
+  opacity: var(--aurora-opacity);
+  -webkit-mask-image: radial-gradient(ellipse at 100% 0%, black 5%, transparent 70%);
+  mask-image: radial-gradient(ellipse at 100% 0%, black 5%, transparent 70%);
+  will-change: transform;
+  animation: aurora-drift 60s linear infinite;
+}
+
+/* Lưới mờ dần ra rìa để không tranh chữ. */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to right, var(--color-grid) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--color-grid) 1px, transparent 1px);
+  background-size: 40px 40px;
+  -webkit-mask-image: radial-gradient(ellipse at 50% 0%, black 10%, transparent 75%);
+  mask-image: radial-gradient(ellipse at 50% 0%, black 10%, transparent 75%);
+}
+
+@keyframes aurora-drift {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body::before {
+    animation: none;
+  }
+}
