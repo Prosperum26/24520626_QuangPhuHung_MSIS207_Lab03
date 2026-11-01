@@ -1,6 +1,6 @@
 import { StrictMode } from 'react';
 import { act, fireEvent, render, screen, within } from '@testing-library/react';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { fetchKraftonPubgTelemetry } from '../api/krafton.js';
 import { SQUADS_BY_ID } from '../data/pubgSquads.js';
 import { PubgMatchTelemetry } from './PubgMatchTelemetry.jsx';
@@ -44,7 +44,7 @@ describe('bốn trạng thái (E3-03)', () => {
     await flush(() => last().resolve());
     expect(screen.getByRole('article', { name: 'The Expendables' })).toBeInTheDocument();
     expect(screen.queryByLabelText('Đang tải telemetry')).not.toBeInTheDocument();
-    expect(screen.getByRole('status')).toHaveTextContent('Radar đã cập nhật');
+    expect(screen.getByRole('status')).toHaveTextContent(/Radar cập nhật lúc \d/);
   });
 
   it('ERROR: hiện role=alert với thông điệp và nút Retry, không dùng window.alert', async () => {
@@ -254,5 +254,117 @@ describe('nút Retry (E3-08)', () => {
     await flush(() => last().resolve());
     expect(heading()).toHaveTextContent('Genius Esports');
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+});
+
+describe('polling và Pause Radar (E3-11)', () => {
+  const POLL = 5000;
+  const status = () => screen.getByRole('status');
+  const pauseBtn = () => screen.getByRole('button', { name: /^(Pause|Resume) Radar$/ });
+  const tick = (ms) => act(async () => vi.advanceTimersByTimeAsync(ms));
+  const settle = async () => {
+    render(<PubgMatchTelemetry />);
+    await act(async () => last().resolve());
+  };
+
+  beforeEach(() => vi.useFakeTimers());
+  afterEach(() => vi.useRealTimers());
+
+  it('đủ 5 giây thì poll đúng 1 lần, giữ nguyên card (không quay lại skeleton)', async () => {
+    await settle();
+    expect(requests).toHaveLength(1);
+    await tick(POLL - 1);
+    expect(requests).toHaveLength(1);
+    await tick(1);
+    expect(requests).toHaveLength(2);
+    expect(requests[1].squadId).toBe('te');
+    expect(screen.queryByLabelText('Đang tải telemetry')).not.toBeInTheDocument();
+    expect(heading()).toHaveTextContent('The Expendables');
+    await act(async () => last().resolve());
+    expect(heading()).toHaveTextContent('The Expendables');
+  });
+
+  it('Pause: không poll nữa; Resume: poll lại sau 5 giây', async () => {
+    await settle();
+    fireEvent.click(pauseBtn());
+    expect(pauseBtn()).toHaveTextContent('Resume Radar');
+    await tick(POLL * 3);
+    expect(requests).toHaveLength(1);
+    fireEvent.click(pauseBtn());
+    expect(pauseBtn()).toHaveTextContent('Pause Radar');
+    await tick(POLL);
+    expect(requests).toHaveLength(2);
+  });
+
+  it('mỗi render không tạo interval mới: đúng 1 setInterval cho squad này', async () => {
+    const spy = vi.spyOn(globalThis, 'setInterval');
+    await settle();
+    fireEvent.click(pauseBtn());
+    fireEvent.click(pauseBtn());
+    // mount (1) + sau pause/resume (1) = 2, không tăng theo số lần render
+    expect(spy).toHaveBeenCalledTimes(2);
+    spy.mockRestore();
+  });
+
+  it('unmount: dừng interval và huỷ poll đang bay, không còn timer treo', async () => {
+    const { unmount } = render(<PubgMatchTelemetry />);
+    await act(async () => last().resolve());
+    await tick(POLL);
+    const inflight = last();
+    unmount();
+    expect(inflight.signal.aborted).toBe(true);
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
+  it('đổi squad khi poll đang bay: huỷ poll cũ, kết quả muộn không ghi đè', async () => {
+    useControlledFetch({ honourSignal: false });
+    await settle();
+    await tick(POLL);
+    const stalePoll = last();
+    await act(async () => pick('Genius Esports'));
+    expect(stalePoll.signal.aborted).toBe(true);
+    await act(async () => last().resolve());
+    await act(async () => stalePoll.resolve());
+    expect(heading()).toHaveTextContent('Genius Esports');
+  });
+
+  it('poll lỗi: giữ dữ liệu cũ, báo tín hiệu yếu, không hiện banner lỗi', async () => {
+    await settle();
+    await tick(POLL);
+    await act(async () => last().reject(new Error('lost')));
+    expect(heading()).toHaveTextContent('The Expendables');
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    expect(status()).toHaveTextContent('Tín hiệu yếu');
+    await tick(POLL);
+    await act(async () => last().resolve());
+    expect(status()).toHaveTextContent(/Radar cập nhật lúc/);
+  });
+
+  it('tab ẩn: bỏ qua nhịp poll; tab hiện lại thì poll tiếp', async () => {
+    await settle();
+    Object.defineProperty(document, 'hidden', { configurable: true, value: true });
+    await tick(POLL * 2);
+    expect(requests).toHaveLength(1);
+    Object.defineProperty(document, 'hidden', { configurable: true, value: false });
+    await tick(POLL);
+    expect(requests).toHaveLength(2);
+  });
+
+  it('request poll trước chưa xong thì không chồng thêm request mới', async () => {
+    await settle();
+    await tick(POLL);
+    await tick(POLL * 2);
+    expect(requests).toHaveLength(2);
+  });
+
+  it('StrictMode: không rò interval sau khi unmount', async () => {
+    const { unmount } = render(
+      <StrictMode>
+        <PubgMatchTelemetry />
+      </StrictMode>,
+    );
+    await act(async () => requests.at(-1).resolve());
+    unmount();
+    expect(vi.getTimerCount()).toBe(0);
   });
 });

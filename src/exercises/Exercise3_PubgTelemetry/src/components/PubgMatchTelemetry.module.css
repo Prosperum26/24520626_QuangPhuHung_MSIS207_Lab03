@@ -22,7 +22,8 @@
   font-weight: 600;
 }
 
-.pick {
+.pick,
+.pause {
   min-height: var(--control-height);
   padding: 0 var(--space-4);
   background: var(--color-surface);
@@ -34,7 +35,8 @@
   cursor: pointer;
 }
 
-.pick:hover {
+.pick:hover,
+.pause:hover {
   border-color: var(--color-accent);
 }
 
@@ -44,8 +46,16 @@
   color: var(--color-on-accent);
 }
 
+.bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin: 0;
+}
+
 .status {
-  display: block;
   color: var(--color-muted);
   font-size: 0.875rem;
 }
