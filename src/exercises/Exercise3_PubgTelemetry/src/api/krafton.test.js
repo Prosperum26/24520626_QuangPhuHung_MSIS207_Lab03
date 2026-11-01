@@ -1,76 +1,72 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { fetchKraftonPubgTelemetry } from './krafton.js';
 import { SQUADS_BY_ID } from '../data/pubgSquads.js';
 
-beforeEach(() => vi.useFakeTimers());
-afterEach(() => vi.useRealTimers());
-
 const steady = () => 0.99; // rng cố định, tất định
 
-describe('fetchKraftonPubgTelemetry (E3-02)', () => {
-  it('lossRate 0: luôn thành công với đúng squad', async () => {
-    const p = fetchKraftonPubgTelemetry('ces', { rng: steady, lossRate: 0 });
-    await vi.runAllTimersAsync();
-    await expect(p).resolves.toBe(SQUADS_BY_ID.get('ces'));
+const okResponse = (squadId) => ({ ok: true, status: 200, json: async () => SQUADS_BY_ID.get(squadId) });
+const failResponse = (status) => ({ ok: false, status, json: async () => ({}) });
+
+// fetch giả: reject AbortError khi signal abort, giống fetch thật.
+const hangingFetch = () =>
+  vi.fn(
+    (_url, { signal }) =>
+      new Promise((_resolve, reject) => {
+        if (signal.aborted) reject(new DOMException('aborted', 'AbortError'));
+        signal.addEventListener('abort', () => reject(new DOMException('aborted', 'AbortError')), { once: true });
+      }),
+  );
+
+describe('fetchKraftonPubgTelemetry (E3-02, E3-10)', () => {
+  it('gọi đúng URL của squad kèm signal (request mạng thật)', async () => {
+    const fetchImpl = vi.fn(async () => okResponse('ces'));
+    const controller = new AbortController();
+    await fetchKraftonPubgTelemetry('ces', { signal: controller.signal, rng: steady, lossRate: 0, fetchImpl });
+    expect(fetchImpl).toHaveBeenCalledWith('/api/telemetry/ces', { signal: controller.signal });
+  });
+
+  it('lossRate 0: luôn thành công, trả đúng dữ liệu server', async () => {
+    const fetchImpl = async () => okResponse('ge');
+    await expect(fetchKraftonPubgTelemetry('ge', { rng: steady, lossRate: 0, fetchImpl })).resolves.toBe(SQUADS_BY_ID.get('ge'));
   });
 
   it('lossRate 1: luôn lỗi mất gói', async () => {
-    const p = fetchKraftonPubgTelemetry('te', { rng: steady, lossRate: 1 });
-    const assertion = expect(p).rejects.toThrow('Satellite packet timeout');
-    await vi.runAllTimersAsync();
-    await assertion;
+    const fetchImpl = async () => okResponse('te');
+    await expect(fetchKraftonPubgTelemetry('te', { rng: steady, lossRate: 1, fetchImpl })).rejects.toThrow(
+      'Satellite packet timeout',
+    );
   });
 
-  it('trễ nằm trong 800-1200ms theo rng', async () => {
-    const early = vi.fn();
-    fetchKraftonPubgTelemetry('te', { rng: () => 0, lossRate: 0 }).then(early);
-    await vi.advanceTimersByTimeAsync(799);
-    expect(early).not.toHaveBeenCalled();
-    await vi.advanceTimersByTimeAsync(1);
-    expect(early).toHaveBeenCalledTimes(1);
-
-    const late = vi.fn();
-    fetchKraftonPubgTelemetry('te', { rng: () => 0.999999, lossRate: 0 }).then(late);
-    await vi.advanceTimersByTimeAsync(1198);
-    expect(late).not.toHaveBeenCalled();
-    await vi.advanceTimersByTimeAsync(2); // timer làm tròn xuống ms
-    expect(late).toHaveBeenCalledTimes(1);
-  });
-
-  it('abort giữa chừng: reject AbortError ngay và không còn timer treo', async () => {
+  it('abort giữa chừng: reject AbortError', async () => {
     const controller = new AbortController();
-    const p = fetchKraftonPubgTelemetry('ge', { signal: controller.signal, rng: steady, lossRate: 0 });
+    const fetchImpl = hangingFetch();
+    const p = fetchKraftonPubgTelemetry('te', { signal: controller.signal, fetchImpl });
     const assertion = expect(p).rejects.toMatchObject({ name: 'AbortError' });
-    expect(vi.getTimerCount()).toBe(1);
     controller.abort();
     await assertion;
-    expect(vi.getTimerCount()).toBe(0);
   });
 
-  it('signal đã abort từ đầu: reject ngay, không đặt timer', async () => {
+  it('signal đã abort từ đầu: reject AbortError ngay', async () => {
     const controller = new AbortController();
     controller.abort();
-    await expect(fetchKraftonPubgTelemetry('te', { signal: controller.signal })).rejects.toMatchObject({
-      name: 'AbortError',
-    });
-    expect(vi.getTimerCount()).toBe(0);
+    await expect(
+      fetchKraftonPubgTelemetry('te', { signal: controller.signal, fetchImpl: hangingFetch() }),
+    ).rejects.toMatchObject({ name: 'AbortError' });
   });
 
-  it('settle xong thì gỡ listener abort', async () => {
-    const controller = new AbortController();
-    const remove = vi.spyOn(controller.signal, 'removeEventListener');
-    const p = fetchKraftonPubgTelemetry('te', { signal: controller.signal, rng: steady, lossRate: 0 });
-    await vi.runAllTimersAsync();
-    await p;
-    expect(remove).toHaveBeenCalledWith('abort', expect.any(Function));
-    controller.abort();
-    expect(vi.getTimerCount()).toBe(0);
+  it('404: lỗi squad không tồn tại; lỗi HTTP khác nêu mã', async () => {
+    await expect(fetchKraftonPubgTelemetry('xx', { fetchImpl: async () => failResponse(404) })).rejects.toThrow(
+      'Unknown squad: xx',
+    );
+    await expect(fetchKraftonPubgTelemetry('te', { fetchImpl: async () => failResponse(503) })).rejects.toThrow(
+      'Telemetry HTTP 503',
+    );
   });
 
-  it('squad không tồn tại: reject lỗi rõ ràng', async () => {
-    const p = fetchKraftonPubgTelemetry('xx', { rng: steady, lossRate: 0 });
-    const assertion = expect(p).rejects.toThrow('Unknown squad: xx');
-    await vi.runAllTimersAsync();
-    await assertion;
+  it('lỗi mạng của fetch được ném lại nguyên vẹn', async () => {
+    const fetchImpl = async () => {
+      throw new TypeError('Failed to fetch');
+    };
+    await expect(fetchKraftonPubgTelemetry('te', { fetchImpl })).rejects.toThrow('Failed to fetch');
   });
 });

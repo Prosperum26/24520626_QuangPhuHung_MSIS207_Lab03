@@ -1,46 +1,24 @@
-import { LATENCY_MAX_MS, LATENCY_MIN_MS, LOSS_RATE } from '../config/telemetry.js';
-import { SQUADS_BY_ID } from '../data/pubgSquads.js';
-
-const abortError = () => new DOMException('Telemetry request aborted', 'AbortError');
+import { LOSS_RATE, TELEMETRY_URL } from '../config/telemetry.js';
 
 /**
- * Giả lập gọi vệ tinh KRAFTON: có trễ, có mất gói, huỷ được bằng AbortSignal.
- * rng/latencyMs/lossRate tiêm được để test tất định.
- * Không rò: timer bị clearTimeout khi abort; listener abort được gỡ khi settle.
+ * Gọi vệ tinh KRAFTON bằng request mạng thật (DevTools Network thấy được, huỷ thì hiện "(canceled)").
+ * Độ trễ do server (server/telemetryPlugin.js) tạo ra; mất gói 35% giả lập ở đây sau khi có phản hồi.
+ * fetch tự reject AbortError khi signal abort (kể cả abort từ trước), nên không cần timer/listener tay.
+ * rng/lossRate/fetchImpl tiêm được để test tất định.
  *
  * @param {string} squadId
- * @param {{ signal?: AbortSignal, rng?: () => number, latencyMs?: number, lossRate?: number }} [opts]
+ * @param {{ signal?: AbortSignal, rng?: () => number, lossRate?: number, fetchImpl?: typeof fetch }} [opts]
  * @returns {Promise<import('../data/pubgSquads.js').Squad>}
  */
-export function fetchKraftonPubgTelemetry(
+export async function fetchKraftonPubgTelemetry(
   squadId,
-  { signal, rng = Math.random, latencyMs, lossRate = LOSS_RATE } = {},
+  { signal, rng = Math.random, lossRate = LOSS_RATE, fetchImpl = globalThis.fetch } = {},
 ) {
-  return new Promise((resolve, reject) => {
-    if (signal?.aborted) {
-      reject(abortError());
-      return;
-    }
-
-    const delay = latencyMs ?? LATENCY_MIN_MS + rng() * (LATENCY_MAX_MS - LATENCY_MIN_MS);
-
-    const onAbort = () => {
-      clearTimeout(timerId);
-      reject(abortError());
-    };
-
-    const timerId = setTimeout(() => {
-      signal?.removeEventListener('abort', onAbort);
-      const squad = SQUADS_BY_ID.get(squadId);
-      if (rng() < lossRate) {
-        reject(new Error('Satellite packet timeout'));
-      } else if (!squad) {
-        reject(new Error(`Unknown squad: ${squadId}`));
-      } else {
-        resolve(squad);
-      }
-    }, delay);
-
-    signal?.addEventListener('abort', onAbort, { once: true });
-  });
+  const response = await fetchImpl(`${TELEMETRY_URL}/${encodeURIComponent(squadId)}`, { signal });
+  if (!response.ok) {
+    throw new Error(response.status === 404 ? `Unknown squad: ${squadId}` : `Telemetry HTTP ${response.status}`);
+  }
+  const squad = await response.json();
+  if (rng() < lossRate) throw new Error('Satellite packet timeout');
+  return squad;
 }
