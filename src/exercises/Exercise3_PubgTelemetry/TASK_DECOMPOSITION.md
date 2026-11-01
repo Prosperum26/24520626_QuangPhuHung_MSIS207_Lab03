@@ -45,6 +45,8 @@ Radar trực tiếp cho các đội PUBG Vietnam Series: máy trạng thái `IDL
 | E3-08 | Lỗi `<section role="alert">` + nút Retry tăng `retryTick` | `src/components/PubgMatchTelemetry.jsx` | Test: retry chạy lại effect, về LOADING rồi kết quả mới | [ ] |
 | E3-09 | CSS Modules + 375px | `src/components/PubgMatchTelemetry.module.css` | 0 cuộn ngang | [ ] |
 | E3-10 | StrictMode: xác nhận không rò request/timer; lưu bằng chứng | `evidence/` | Ảnh Network (canceled), Performance CLS, Lighthouse a11y | [ ] |
+| E3-11 | Thử thách B: polling `POLL_MS = 5000`, nút "Pause Radar", effect riêng `[squadId, isPaused]`, `clearInterval` + abort request đang bay, tab ẩn thì tạm dừng | `src/config/telemetry.js`, `src/components/PubgMatchTelemetry.jsx` | Test fake timers: 5s đúng 1 request; pause thì 0; unmount thì `vi.getTimerCount() === 0`; không tạo interval mới mỗi render | [ ] |
+| E3-12 | Thử thách C (Ex1 + Ex2): nâng `selectedId` lên `App` của Ex2, bấm hàng đổi `DeveloperCard` chi tiết. Làm sau khi xong Ex3 | `Exercise2_ScientistDirectory/src/App.jsx`, `ScientistDirectory.jsx` | Test: bấm hàng thì card chi tiết đổi; component con không giữ state chọn riêng | [ ] |
 
 ## 4. Commit
 
@@ -52,6 +54,8 @@ Radar trực tiếp cho các đội PUBG Vietnam Series: máy trạng thái `IDL
 |---|---|---|
 | C7 | `feat(ex3): implement PUBG VN 4-state telemetry & AbortController` | E3-01 đến E3-06 |
 | C8 | `feat(ex3): add skeleton UI & retry alert` | E3-07 đến E3-10 |
+| Phụ | `feat(ex3): add polling with pause (challenge B)` | E3-11 |
+| Phụ | `feat(ex2): lift selectedId to App (challenge C)` | E3-12 |
 
 ## 5. Cổng Checkpoint 3 (phút 155)
 
@@ -72,3 +76,17 @@ Radar trực tiếp cho các đội PUBG Vietnam Series: máy trạng thái `IDL
 - **Cache theo squad**: giữ kết quả thành công gần nhất trong `useRef(new Map())`; khi quay lại squad đã có, hiển thị dữ liệu cũ thay vì skeleton nháy. Slide yêu cầu skeleton ở `LOADING`: lần tải đầu của mỗi squad vẫn hiện skeleton. Quyết định ở E3-05; nếu thấy lệch đề thì bỏ cache.
 - **Render ít nhất**: tách `TelemetryView` (SUCCESS) và `TelemetrySkeleton` (LOADING) để đổi trạng thái không dựng lại phần chọn squad.
 - **Polling (thử thách B)**: `POLL_MS = 5000` và `isPaused` ở một chỗ; effect riêng dependency `[squadId, isPaused]`; cleanup `clearInterval` và abort fetch đang bay; tab ẩn thì tạm dừng. Chỉ làm khi cần.
+
+## 8. Quyết định đã chốt (kế hoạch)
+
+| Vấn đề | Quyết định | Lý do |
+|---|---|---|
+| Cache theo squad | **Có**: `useRef(new Map())`, khoá là `squadId`, chỉ lưu kết quả thành công; lần tải đầu mỗi squad vẫn hiện skeleton | Quay lại squad cũ không nháy; dễ bỏ nếu thầy yêu cầu đúng chữ slide |
+| Polling | **Làm luôn** (E3-11), poll làm mới ngầm: giữ dữ liệu cũ trên màn hình, không quay về skeleton | Tránh nháy mỗi 5 giây và CLS |
+| Thử thách C | Làm sau Ex3 (E3-12), ở Ex2 vì chỉ ở đó có danh sách cùng card | Mỗi bài là project riêng, không import chéo |
+| Nhãn nút lỗi | "Reconnect Satellite (Retry)" | Theo spec chính (slide có 3 nhãn khác nhau) |
+| Vùng live | `<output aria-live="polite">` cố định ngoài nội dung thay thế | Live region phải có sẵn trước khi đổi |
+| Heading | `h1` trang, `h2` tên squad | Slide dùng `h3` không có cấp trên |
+| Hook dùng chung | Không dùng `useAsyncData` của vault | Dùng boolean rời, không abort, có `eslint-disable` |
+
+Thứ tự thực hiện: nền (E3-00..02) → component và abort (E3-03..06, C7) → skeleton, retry, CSS, bằng chứng (E3-07..10, C8) → polling (E3-11) → thử thách C (E3-12).
