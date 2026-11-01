@@ -130,7 +130,7 @@
           "id": "color-contrast",
           "nodes": [
             "h1 :: Element's background color could not be determined due to a background gradient",
-            "._header_w9ffh_9 > p :: Element's background color could not be determined due to a background gradient",
+            "._header_ruuuj_9 > p :: Element's background color could not be determined due to a background gradient",
             "label[for=\"_r_0_\"] :: Element's background color could not be determined due to a background gradient",
             "label[for=\"_r_1_\"] :: Element's background color could not be determined due to a background gradient"
           ]
@@ -145,7 +145,7 @@
           "id": "color-contrast",
           "nodes": [
             "h1 :: Element's background color could not be determined due to a background gradient",
-            "._header_w9ffh_9 > p :: Element's background color could not be determined due to a background gradient",
+            "._header_ruuuj_9 > p :: Element's background color could not be determined due to a background gradient",
             "label[for=\"_r_0_\"] :: Element's background color could not be determined due to a background gradient",
             "label[for=\"_r_1_\"] :: Element's background color could not be determined due to a background gradient"
           ]
