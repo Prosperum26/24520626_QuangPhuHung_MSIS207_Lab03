@@ -68,10 +68,10 @@ DEFAULT_MIN_IQ, DEFAULT_SORT
 | E2-06 | Ô Min IQ: `type=number`, `valueAsNumber`, `Number.isNaN` → 0 | `ScientistDirectory.jsx` | Test: gõ rỗng không `NaN`; `minIq` luôn là number | [x] |
 | E2-07 | `<select>` sắp xếp có label; `.toSorted()` | `ScientistDirectory.jsx` | Test: mảng `people` gốc không đổi thứ tự | [x] |
 | E2-08 | Kiểm render: 1 ký tự gõ = đúng 1 render pass | Profiler | Ảnh Profiler trong `evidence/`; `grep useEffect` = 0 | [x] |
-| E2-09 | Nút xoá từng người (tên truy cập có tên người), xoá bất biến, chuyển focus có chủ đích | `ScientistDirectory.jsx` | Test: xoá giữa danh sách, key còn lại giữ nguyên; focus không về `<body>` | [ ] |
-| E2-10 | Nút Reset khôi phục toàn bộ | `ScientistDirectory.jsx` | Test: sau reset mọi điều khiển và danh sách về mặc định | [ ] |
-| E2-11 | `<output role="status" aria-live="polite">` "Found N pioneers" + trạng thái rỗng bằng chữ | `ScientistDirectory.jsx` | Test: N khớp; rỗng có thông báo | [ ] |
-| E2-12 | `ScientistDirectory.module.css`, `App.jsx`, 375px; đo Edge/axe/Lighthouse lưu `evidence/` | `*.module.css`, `src/App.jsx`, `evidence/` | 0 cuộn ngang; axe 0 vi phạm; Lighthouse a11y 100; Console sạch | [ ] |
+| E2-09 | Nút xoá từng người (tên truy cập có tên người), xoá bất biến, chuyển focus có chủ đích | `ScientistDirectory.jsx` | Test: xoá giữa danh sách, key còn lại giữ nguyên; focus không về `<body>` | [x] |
+| E2-10 | Nút Reset khôi phục toàn bộ | `ScientistDirectory.jsx` | Test: sau reset mọi điều khiển và danh sách về mặc định | [x] |
+| E2-11 | `<output role="status" aria-live="polite">` "Found N pioneers" + trạng thái rỗng bằng chữ | `ScientistDirectory.jsx` | Test: N khớp; rỗng có thông báo | [x] |
+| E2-12 | `ScientistDirectory.module.css`, `App.jsx`, 375px; đo Edge/axe/Lighthouse lưu `evidence/` | `*.module.css`, `src/App.jsx`, `evidence/` | 0 cuộn ngang; axe 0 vi phạm; Lighthouse a11y 100; Console sạch | [x] |
 
 ## 5. Commit (đề chốt 3 commit; AI không commit)
 

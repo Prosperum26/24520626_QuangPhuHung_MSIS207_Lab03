@@ -1,0 +1,237 @@
+
+  Ran 3 shell commands (ctrl+o to expand)
+  ⎿  Read ..\..\..\Users\PHUHUN~1\AppData\Local\Temp\claude\c--Dev-Project-24520
+     626-QuangPhuHung-MSIS207-Lab03\fb1fa485-762b-441b-980f-c439f74905b9\scratch
+     pad\browser\ex2.mjs (59 lines)
+  ⎿  Read src\exercises\Exercise2_ScientistDirectory\src\components\ScientistDir
+     ectory.jsx (86 lines)
+  ⎿  Read src\exercises\Exercise2_ScientistDirectory\src\components\ScientistDir
+     ectory.test.jsx (184 lines)
+  ⎿  Read src\exercises\Exercise2_ScientistDirectory\src\App.module.css (24
+     lines)
+  ⎿  Read src\exercises\Exercise2_ScientistDirectory\src\App.jsx (15 lines)
+  ⎿  SessionStart:compact hook error
+  ⎿  [bash C:\Users\Phu Hung\.claude\plugins\cache\anthropic-plugin-directory\cl
+     aude-memory\1.0.0-0afb7b2da7cc/hooks/scripts/memory-context.sh]:
+     C:/Users/Phu: line 1: syntax error near unexpected token `('
+
+● Now write the component.
+
+  Ran 6 shell commands (ctrl+o to expand)
+
+● Đang sửa lại chỗ comment bị chèn nhầm, rồi chạy kiểm tra trình duyệt thật.
+
+  Read 1 file, ran 4 shell commands (ctrl+o to expand)
+
+● The Lighthouse report file was not found (path issue in my node one-liner).
+  Checking what was written.
+
+  Ran 2 shell commands (ctrl+o to expand)
+
+● Exercise 2 giờ đã xong hết E2-00 đến E2-12, và giao diện đã được nâng cấp.
+  Mình chưa commit gì.
+
+  Giao diện (lấy từ AI Code Vault)
+
+  Mình chỉ đọc 3 file, đều status: Stable. Cả ba gốc dùng Tailwind hoặc
+  framer-motion, nên mình viết lại bằng CSS thuần (không thêm thư viện).
+
+  - 📦 Web/Frontend/React/UI_Patterns/AuroraBackground.md → nền cực quang trôi
+    chậm, chỉ dùng transform nên không repaint, tắt khi prefers-reduced-motion.
+  - 📦 Web/Frontend/React/UI_Patterns/GridAndDotBackgrounds.md → lưới mờ dần ra
+    rìa.
+  - 📦 Web/Frontend/React/UI_Patterns/CardHoverEffect.md → card nhấc lên và phát
+    sáng viền khi hover hoặc focus.
+  - Thêm vài chỗ nhỏ: avatar nền gradient, form có kính mờ, nút "Đặt lại" nổi
+    bật. Mọi màu mới nằm trong tokens.css.
+
+  Tính năng mới
+
+  - E2-09, xoá:
+    - Mỗi người có nút Xoá <tên>, xoá bằng prev.filter.
+    - Focus nhảy sang hàng kế (hoặc hàng trước) ngay trong handler, không dùng
+      effect. Hết hàng thì về ô tìm kiếm.
+  - E2-10, đặt lại: khôi phục danh sách và cả 3 điều khiển trong đúng 1 commit
+    render.
+  - E2-11, trạng thái:
+    - <output aria-live="polite"> hiện "Found N pioneers", rỗng thì hiện câu
+      thông báo.
+    - Mình không viết role="status" tường minh vì <output> đã có sẵn role này và
+      jsx-a11y cấm ghi thừa. Test vẫn tìm được bằng role status.
+
+  Kết quả kiểm chứng
+
+  - npm test: 120/120 pass (thêm 9 test).
+  - npm run lint: sạch. npm run build: ok.
+  - Edge thật ở 320/375/768/1440, cả sáng và tối: không cuộn ngang, 7 card,
+    Console sạch.
+  - axe: 0 vi phạm. Mục color-contrast ở tiêu đề và label chỉ ở mức "incomplete"
+    vì nền gradient, nên mình chưa đo được bằng công cụ. Lần trước mình tính
+    tay các cặp màu này đều ≥ 6.6:1, nhưng bộ màu aurora mới chưa tính lại.
+  - Lighthouse: Performance 100, Accessibility 100, Best-practices 100, lưu ở
+    evidence/lighthouse-ex2.report.*.
+  - WBS Ex2 đã tick E2-09..12.
+  - Lưu ý: grep "http://" src ra 4 dòng, toàn bộ nằm trong file test (dữ liệu
+    kiểm tra việc từ chối URL http), không có trong code chạy. grep "<div" và
+    useEffect ra 0.
+
+  Đề xuất chia commit (bạn tự chạy và thêm co-author)
+
+  1. docs(ex2): update WBS — chỉ sửa TASK_DECOMPOSITION.md.
+  2. C4 feat(ex2): normalize smartPeople schema with stable IDs, C5 feat(ex2):
+     add search, IQ filter & toSorted. Hai commit này đã có sẵn trong lịch sử.
+  3. style(ex2): aurora/grid backdrop and card hover from vault — tokens.css,
+     DeveloperCard.module.css, ScientistDirectory.module.css.
+  4. C6 feat(ex2): add delete/reset & live status — ScientistDirectory.jsx và
+     file test.
+  5. docs(ex2): add Lighthouse and browser evidence, tick E2-09..12 — thư mục
+     evidence/.
+
+  Việc còn lại của bạn
+
+  - Tự chụp ảnh React DevTools Profiler cho Ex2 (bài này mới đo bằng Profiler
+    API trong test).
+  - Điền commit hash và đường dẫn prompt log vào AI_FAILURE_AUDIT.md.
+
+> Hướng dẫn mình test và chụp đi
+
+● Chạy app
+
+  cd src/exercises/Exercise2_ScientistDirectory
+  npm install      # chỉ lần đầu
+  npm run dev
+  Mở link http://localhost:5173 bằng Edge hoặc Chrome.
+
+  A. Chụp React DevTools Profiler (mục Checkpoint 2)
+
+  Cần cài extension React Developer Tools trước (Edge/Chrome Web Store).
+
+  1. Nhấn F12, chọn tab Profiler (nằm cạnh tab Components).
+  2. Bấm biểu tượng bánh răng, chọn tab General, bật "Record why each component
+     rendered while profiling".
+  3. Bấm nút tròn Record (bắt đầu ghi).
+  4. Click vào ô "Tìm theo tên" và gõ đúng 1 ký tự, ví dụ h.
+  5. Bấm Stop.
+  6. Kiểm tra: thanh commit ở đầu chỉ có 1 cột. Bấm vào cột đó:
+     - ScientistDirectory có render.
+     - Các DeveloperCard bị lọc ra thì không còn. Các card còn lại hiện xám,
+       "Did not render" (nhờ memo).
+  7. Chụp ảnh gồm: thanh commit (1 cột) và panel bên phải. Lưu vào evidence/ với
+     tên ex2-profiler-1char.png.
+
+  Làm thêm một lần nữa với việc đổi Sắp xếp sang "Tuổi tăng dần". Lần này mọi
+  card phải xám (không render), lưu là ex2-profiler-sort.png.
+
+  Lưu ý: Profiler chỉ chính xác khi chạy npm run dev cũng được, nhưng StrictMode
+  ở dev có thể làm bạn tưởng render đôi. Panel Profiler đã loại phần này, nên
+  cứ tin số cột commit.
+
+  B. Test thủ công nhanh (30 giây mỗi mục)
+
+  ┌──────────────────────┬──────────────────────────────────────────────────┐
+  │         Việc         │                   Kết quả đúng                   │
+  ├──────────────────────┼──────────────────────────────────────────────────┤
+  │ Gõ hung, rồi HƯNG,   │ Chỉ còn Quảng Phú Hưng                           │
+  │ rồi phu quang        │                                                  │
+  ├──────────────────────┼──────────────────────────────────────────────────┤
+  │ Gõ ein               │ Chỉ Albert Einstein                              │
+  ├──────────────────────┼──────────────────────────────────────────────────┤
+  │ Gõ zzz               │ Hiện "Không tìm thấy nhà tiên phong nào."        │
+  ├──────────────────────┼──────────────────────────────────────────────────┤
+  │ IQ tối thiểu = 205   │ Còn Goethe và Einstein                           │
+  ├──────────────────────┼──────────────────────────────────────────────────┤
+  │ Xoá trắng ô IQ       │ Về 0, không hiện NaN                             │
+  ├──────────────────────┼──────────────────────────────────────────────────┤
+  │ Sắp xếp "Tuổi tăng   │ Hưng (20) lên đầu                                │
+  │ dần"                 │                                                  │
+  ├──────────────────────┼──────────────────────────────────────────────────┤
+  │ Nhấn Tab tới nút Xoá │ Người đó mất, focus nhảy sang nút Xoá của hàng   │
+  │  rồi Enter           │ kế (viền cam), không về đầu trang                │
+  ├──────────────────────┼──────────────────────────────────────────────────┤
+  │ Xoá hết từng người   │ Cuối cùng focus về ô tìm kiếm                    │
+  ├──────────────────────┼──────────────────────────────────────────────────┤
+  │ Bấm Đặt lại          │ Đủ 7 người, ô tìm trống, IQ 160, sắp xếp IQ giảm │
+  │                      │  dần                                             │
+  └──────────────────────┴──────────────────────────────────────────────────┘
+
+  C. Chụp thêm cho evidence (tùy chọn)
+
+  - Accessibility tree: F12, tab Elements, panel Accessibility, bấm "Enable
+    full-page accessibility tree". Chụp phần search, status, list.
+  - Thu nhỏ 375px: F12, bấm icon thiết bị (Ctrl+Shift+M), chọn width 375. Kiểm
+    tra không có thanh cuộn ngang. Mình đã có ảnh tự động, nhưng bạn nên tự chụp
+    một ảnh để bảo vệ.
+  - Reduced motion: DevTools, Ctrl+Shift+P, gõ "reduced motion", chọn Emulate
+    CSS prefers-reduced-motion: reduce. Nền cực quang phải đứng yên.
+
+  D. Chạy test và lint
+
+  npm test
+  npm run lint
+  Mong đợi: 120 test pass, lint không báo lỗi. Chụp terminal bỏ vào
+  evidence/ex2-test-output.png.
+
+  Chụp xong, báo mình để tick bước còn lại và soạn nội dung cho
+  AI_FAILURE_AUDIT.md nếu bạn gặp lỗi thật nào.
+
+> OK kiểm tra xem đủ evidence thầy cần chưa
+
+  Searched for 1 pattern, read 3 files, ran 1 shell command (ctrl+o to expand)
+
+● Chưa đủ, còn thiếu hai thứ và có một ảnh dùng được nhưng cần chụp lại.
+
+  Đã đạt
+
+  Bằng chứng: Profiler, gõ 1 ký tự
+  File: ex2-profiler-1char.png
+  Nhận xét: Thanh commit hiện 1 / 1. ScientistDirectory render, các card còn lại
+
+  gạch chéo (không render). Đúng yêu cầu Checkpoint 2.
+  ────────────────────────────────────────
+  Bằng chứng: Profiler, đổi sắp xếp
+  File: Screenshot 2026-11-01 230059.png
+  Nhận xét: 1 / 1, cả 7 card gạch chéo, nên memo đang hiệu quả. Đây là ảnh tốt,
+  chỉ cần đổi tên.
+  ────────────────────────────────────────
+  Bằng chứng: Lighthouse
+  File: lighthouse-ex2.report.html/json
+  Nhận xét: 100 / 100 / 100.
+  ────────────────────────────────────────
+  Bằng chứng: Trình duyệt thật và axe
+  File: browser-audit.json + 5 ảnh ex2-*.png
+  Nhận xét: Không cuộn ngang, axe 0 vi phạm, Console sạch.
+  ────────────────────────────────────────
+  Bằng chứng: Test và lint
+  File: chạy trong terminal
+  Nhận xét: 120/120 pass, lint sạch.
+
+  Cần làm
+
+  1. Chụp lại ảnh Accessibility tree (Screenshot ... 230250.png). DevTools của
+     bạn đang trỏ vào tab warmup.html của Google (xem góc phải trên), không phải
+     app, nên cây a11y trong ảnh là rỗng. Cách chụp lại:
+     - Mở tab app, F12, tab Elements.
+     - Bấm vào một phần tử trong app, rồi mở panel Accessibility.
+     - Mở rộng các nút search, status, list rồi chụp.
+  2. Chụp output npm test và npm run lint (120 pass, lint sạch), lưu thành
+     ex2-test-output.png. Hiện chưa có file này.
+  3. Console trong ảnh Profiler có dấu đỏ 13 và 15 lỗi. Mình đo bằng Edge tự
+     động thì Console sạch, nên nhiều khả năng lỗi đến từ extension hoặc tab
+     warmup. Bạn mở tab Console trên trang app, bấm biểu tượng chặn để xoá, tải
+     lại trang, rồi chụp màn hình Console. Nếu vẫn còn lỗi đỏ thì gửi mình, đó
+     có thể là lỗi thật.
+  4. Chưa có prompt log cho Ex2. docs/prompt_logs/ mới có
+     promtlog_exercise1.txt. Export session này thành promtlog_exercise2.txt (đề
+     bài yêu cầu mỗi lần code mỗi bài có một export).
+
+  Nên làm
+
+  - Đổi tên 2 ảnh Screenshot ... thành ex2-profiler-1char.png (đã có),
+    ex2-profiler-sort.png và ex2-a11y-tree.png, để repo gọn và dễ trích trong
+    báo cáo.
+  - Điền commit hash vào 4 mục trong AI_FAILURE_AUDIT.md sau khi bạn commit. Bản
+    audit đủ 4 lỗi, vượt mức tối thiểu 3.
+  - Ex2 chưa có ảnh nào chụp trong DevTools ở 375px do bạn tự chụp. Ảnh tự động
+    của mình đã đủ về kỹ thuật, nhưng một ảnh của bạn sẽ chắc hơn khi bảo vệ.
+
+  Bạn chụp xong thì báo mình, mình sẽ đọc lại từng ảnh trước khi tick.
