@@ -277,3 +277,39 @@ describe('trạng thái trực tiếp (E2-11)', () => {
     expect(screen.getByRole('status')).toHaveTextContent('Không tìm thấy');
   });
 });
+
+describe('nâng state chọn người (thử thách C, E3-12)', () => {
+  const selectBtn = (name) => screen.getByRole('button', { name: `Chi tiết ${name}` });
+
+  it('không giữ state chọn riêng: selectedId do cha điều khiển, bấm gọi onSelect(id)', () => {
+    const onSelect = vi.fn();
+    render(<ScientistDirectory selectedId={null} onSelect={onSelect} />);
+    fireEvent.click(selectBtn('Albert Einstein'));
+    expect(onSelect).toHaveBeenCalledWith('sp-2');
+    expect(selectBtn('Albert Einstein')).toHaveAttribute('aria-pressed', 'false');
+  });
+
+  it('hàng đang chọn có aria-pressed=true; bấm lại thì bỏ chọn (onSelect(null))', () => {
+    const onSelect = vi.fn();
+    render(<ScientistDirectory selectedId="sp-2" onSelect={onSelect} />);
+    expect(selectBtn('Albert Einstein')).toHaveAttribute('aria-pressed', 'true');
+    fireEvent.click(selectBtn('Albert Einstein'));
+    expect(onSelect).toHaveBeenCalledWith(null);
+  });
+
+  it('xoá người đang chọn thì bỏ chọn; xoá người khác thì giữ nguyên', () => {
+    const onSelect = vi.fn();
+    render(<ScientistDirectory selectedId="sp-2" onSelect={onSelect} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Xoá Johann Goethe' }));
+    expect(onSelect).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole('button', { name: 'Xoá Albert Einstein' }));
+    expect(onSelect).toHaveBeenCalledWith(null);
+  });
+
+  it('đổi lựa chọn không render lại card nào (nút chọn nằm ngoài card đã memo)', () => {
+    const { rerender } = render(<ScientistDirectory selectedId={null} />);
+    DeveloperCard.mockClear();
+    rerender(<ScientistDirectory selectedId="sp-1" />);
+    expect(DeveloperCard).not.toHaveBeenCalled();
+  });
+});

@@ -21,3 +21,35 @@
   margin: 0;
   color: var(--color-muted);
 }
+
+.layout {
+  display: grid;
+  gap: var(--space-5);
+  align-items: start;
+  min-width: 0;
+}
+
+.detail {
+  min-width: 0;
+}
+
+.placeholder {
+  margin: 0;
+  padding: var(--space-5);
+  background: var(--color-surface);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-card);
+  color: var(--color-muted);
+}
+
+/* Rộng: thẻ chi tiết nằm cạnh danh sách và dính khi cuộn. */
+@media (min-width: 64rem) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr) 20rem;
+  }
+
+  .detail {
+    position: sticky;
+    top: var(--space-4);
+  }
+}

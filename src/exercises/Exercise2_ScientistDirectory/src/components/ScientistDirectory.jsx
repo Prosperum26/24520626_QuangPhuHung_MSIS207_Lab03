@@ -15,10 +15,17 @@ const SORT_OPTIONS = Object.freeze([
   { value: 'age-asc', label: 'Tuổi tăng dần' },
 ]);
 
+const noop = () => {};
+
 /**
- * @param {{ initialData?: readonly import('./peopleModel.js').Person[] }} props
+ * `selectedId` và `onSelect` được nâng lên App (thử thách C): component này không giữ state chọn riêng.
+ * @param {{
+ *   initialData?: readonly import('./peopleModel.js').Person[],
+ *   selectedId?: string | null,
+ *   onSelect?: (id: string | null) => void,
+ * }} props
  */
-export function ScientistDirectory({ initialData = SMART_PEOPLE }) {
+export function ScientistDirectory({ initialData = SMART_PEOPLE, selectedId = null, onSelect = noop }) {
   const searchId = useId();
   const minIqId = useId();
   const sortId = useId();
@@ -43,8 +50,10 @@ export function ScientistDirectory({ initialData = SMART_PEOPLE }) {
   const handleDelete = (event, id) => {
     const row = event.currentTarget.closest('li');
     const neighbour = row?.nextElementSibling ?? row?.previousElementSibling;
-    (neighbour?.querySelector('button') ?? searchRef.current)?.focus();
+    (neighbour?.querySelector('[data-action="delete"]') ?? searchRef.current)?.focus();
     setPeople((prev) => prev.filter((person) => person.id !== id));
+    // Người đang được chọn bị xoá thì bỏ chọn, nếu không App sẽ giữ một id không còn trong danh sách.
+    if (id === selectedId) onSelect(null);
   };
 
   // Một lần setState liên tiếp được React gộp thành một commit.
@@ -53,6 +62,7 @@ export function ScientistDirectory({ initialData = SMART_PEOPLE }) {
     setQuery('');
     setMinIq(DEFAULT_MIN_IQ);
     setSortBy(DEFAULT_SORT);
+    onSelect(null);
   };
 
   return (
@@ -98,7 +108,7 @@ export function ScientistDirectory({ initialData = SMART_PEOPLE }) {
 
       <ul className={styles.list} aria-label="Danh sách nhà khoa học">
         {visible.map((person) => (
-          <li key={person.id} className={styles.item}>
+          <li key={person.id} className={person.id === selectedId ? styles.selected : styles.item}>
             <PersonCard
               fullName={person.name}
               role={ROLE}
@@ -106,14 +116,26 @@ export function ScientistDirectory({ initialData = SMART_PEOPLE }) {
               metrics={person.metrics}
               skills={NO_SKILLS}
             />
-            <button
-              type="button"
-              className={styles.delete}
-              aria-label={`Xoá ${person.name}`}
-              onClick={(event) => handleDelete(event, person.id)}
-            >
-              Xoá
-            </button>
+            <p className={styles.rowActions}>
+              <button
+                type="button"
+                className={styles.select}
+                aria-pressed={person.id === selectedId}
+                aria-label={`Chi tiết ${person.name}`}
+                onClick={() => onSelect(person.id === selectedId ? null : person.id)}
+              >
+                Chi tiết
+              </button>
+              <button
+                type="button"
+                className={styles.delete}
+                data-action="delete"
+                aria-label={`Xoá ${person.name}`}
+                onClick={(event) => handleDelete(event, person.id)}
+              >
+                Xoá
+              </button>
+            </p>
           </li>
         ))}
       </ul>
