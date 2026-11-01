@@ -34,9 +34,9 @@ Radar trực tiếp cho các đội PUBG Vietnam Series: máy trạng thái `IDL
 
 | ID | Task | File | Gate | Trạng thái |
 |---|---|---|---|---|
-| E3-00 | Khởi tạo project Vite riêng: sao chép `package.json` (đổi `name`), `vite.config.js`, `eslint.config.js`, `index.html`, `src/main.jsx`, `src/test/setup.js` từ Ex1, rồi `npm install` | `package.json`, `vite.config.js`, `eslint.config.js`, `index.html`, `src/main.jsx`, `src/test/setup.js` | `npm test` và `npm run lint` chạy được | [ ] |
-| E3-01 | Dữ liệu `PUBG_VN_SQUADS` + typedef | `src/data/pubgSquads.js` | Test: 3 squad đủ trường | [ ] |
-| E3-02 | Mock `fetchKraftonPubgTelemetry` có latency, lossRate, tôn trọng `signal`, **dọn timer và listener khi abort** (§7) | `src/api/krafton.js` | Test: abort giữa chừng → `AbortError`; lossRate 1 → luôn lỗi; 0 → luôn thành công; sau abort `vi.getTimerCount() === 0` | [ ] |
+| E3-00 | Khởi tạo project Vite riêng: sao chép `package.json` (đổi `name`), `vite.config.js`, `eslint.config.js`, `index.html`, `src/main.jsx`, `src/test/setup.js` từ Ex1, rồi `npm install` | `package.json`, `vite.config.js`, `eslint.config.js`, `index.html`, `src/main.jsx`, `src/test/setup.js` | `npm test` và `npm run lint` chạy được | [x] |
+| E3-01 | Dữ liệu `PUBG_VN_SQUADS` + typedef | `src/data/pubgSquads.js` | Test: 3 squad đủ trường | [x] |
+| E3-02 | Mock `fetchKraftonPubgTelemetry` có latency, lossRate, tôn trọng `signal`, **dọn timer và listener khi abort** (§7) | `src/api/krafton.js` | Test: abort giữa chừng → `AbortError`; lossRate 1 → luôn lỗi; 0 → luôn thành công; sau abort `vi.getTimerCount() === 0` | [x] |
 | E3-03 | Component + `ViewState`, effect `LOADING → SUCCESS/ERROR` | `src/components/PubgMatchTelemetry.jsx` | Test: đủ 3 trạng thái hiển thị đúng | [ ] |
 | E3-04 | Cleanup `controller.abort()` + guard `AbortError` | `src/components/PubgMatchTelemetry.jsx` | Test: đổi squad khi đang tải → không hiện lỗi giả, dữ liệu đúng squad mới | [ ] |
 | E3-05 | Bộ chọn squad (CES, TE, GE); cache theo squad bằng `useRef(Map)` (§7) | `src/components/PubgMatchTelemetry.jsx` | Click nhanh CES→TE→GE: Network có `(canceled)`; quay lại squad cũ không nháy skeleton | [ ] |
