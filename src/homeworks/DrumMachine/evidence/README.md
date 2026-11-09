@@ -40,7 +40,13 @@ Kết quả: `evidence/lighthouse-a11y.report.json` và `.report.html`. Ghi đi�
 | Accessibility tree (4.1.2) | DevTools > Elements > Accessibility: pad có tên "Kick A", role button, pressed true/false | | `a11y-tree.png` |
 | Hit log (4.1.3) | Gõ dồn 3 phím: `<output>` đọc một câu "3 cú gõ, cuối cùng: ..." sau khoảng 0,5 giây | | `hit-log.png` |
 | UniKey | Bật UniKey kiểu Telex, gõ W A S D: pad vẫn kêu (dùng `e.code`) | | ghi chú |
-| Gõ trong ô nhập không kích hoạt pad | Hiện chưa có ô nhập; kiểm lại sau H1-12 (Controls) | | |
+| Gõ trong ô chọn không kích hoạt pad | Focus vào ô "Bộ trống" (select), gõ A: pad không kêu. Sau đó bấm "Tắt tiếng" (checkbox) rồi gõ A: pad vẫn kêu | | |
+| Đổi bộ trống | Chọn Electronic 808, gõ 7 pad: tiếng khác Acoustic; hi-hat (D) vẫn cắt open hat (W) | | ghi chú |
+| Âm lượng và tắt tiếng | Kéo thanh Âm lượng: tiếng nhỏ dần, thanh Mức âm thấp đi; bật Tắt tiếng: im, Mức âm về Im lặng. Trình đọc màn hình không đọc từng bước khi kéo | | |
+| Looper: ghi và lặp | Bấm Ghi, gõ khoảng 4 hit, bấm Ghi lần nữa: loop tự lặp. Để chạy 1 phút, nhịp không trôi (nghe cùng một khuôn) | | ghi chú |
+| Looper: chồng lớp | Bấm Chồng lớp khi đang lặp, gõ thêm một hit: vòng sau có thêm hit, vòng hiện tại không bị đúp. Bấm lại để tắt | | |
+| Looper: chế độ và tốc độ | Chọn Một lần: hết vòng thì dừng, Phát chơi lại. Kéo Tốc độ khi đang lặp: nhanh/chậm lên mà nhịp không nhảy vị trí | | |
+| Looper: bàn phím | Tab qua Ghi, Phát, Chồng lớp, Xoá, radio, thanh Tốc độ; nút bị vô hiệu có viền nét đứt; trạng thái đọc ở vùng status | | `looper.png` |
 | Giảm chuyển động (2.3.3) | DevTools > Rendering > Emulate `prefers-reduced-motion: reduce`: không còn animation, pad vẫn lún khi bấm | | `reduced-motion.png` |
 | Console | Mở Console, gõ mỗi pad một lần: không có lỗi hay cảnh báo | | `console.png` |
 | Âm thanh | Nghe đủ 7 pad; giữ phím không bắn lặp; hi-hat (D) cắt tiếng open hat (W) | | ghi chú |
