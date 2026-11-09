@@ -189,6 +189,15 @@ describe('audioEngine', () => {
     expect(engine.getLevelDb()).toBe(SILENCE_DB);
   });
 
+  it('now() tạo context khi cần và trả currentTime; sau dispose trả 0', () => {
+    const { ctx, engine } = setup();
+    ctx.currentTime = 4.2;
+    expect(engine.now()).toBe(4.2);
+    expect(ctx.resume).toHaveBeenCalled();
+    engine.dispose();
+    expect(engine.now()).toBe(0);
+  });
+
   it('when được truyền vào start()', async () => {
     const { ctx, engine } = setup();
     await engine.loadKit('acoustic');

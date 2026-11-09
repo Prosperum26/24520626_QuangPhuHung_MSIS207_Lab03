@@ -188,7 +188,9 @@ export function createAudioEngine({
     return rms > 0 ? Math.max(SILENCE_DB, 20 * Math.log10(rms)) : SILENCE_DB;
   }
 
-  const now = () => (ctx ? ctx.currentTime : 0);
+  // Giờ audio. Tạo context nếu cần: nút Record là thao tác người dùng nên hợp lệ, và đồng hồ
+  // phải có từ lúc bắt đầu ghi (nếu không, giờ nhảy từ 0 khi context được tạo ở hit đầu).
+  const now = () => getContext()?.currentTime ?? 0;
 
   function dispose() {
     disposed = true;
