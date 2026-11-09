@@ -1,0 +1,13 @@
+/* Khung tối thiểu cho H1-05; hoàn thiện ở H1-08. */
+.machine {
+  max-width: 40rem;
+  margin-inline: auto;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
+  gap: 0.75rem;
+  padding: 0;
+  list-style: none;
+}

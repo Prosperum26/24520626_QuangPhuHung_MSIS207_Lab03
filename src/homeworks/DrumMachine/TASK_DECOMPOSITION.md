@@ -51,7 +51,7 @@ Máy trạng thái looper: `empty -> recording -> playing <-> overdubbing`, `pla
 | H1-02 | `useDrumKeyboard`: `e.code`, `e.repeat`, bỏ qua input, cleanup | `src/useDrumKeyboard.js` | Test: giữ phím không bắn lặp; gõ trong input không kích hoạt; unmount gỡ listener | [x] |
 | H1-03 | Audio engine/hook phát chồng, không pop | `src/useDrumAudio.js` | Test: nhấn nhanh nhiều lần vẫn phát; không lỗi Console | [x] |
 | H1-04 | `<Pad>` là `<button type="button" aria-pressed>` | `src/Pad.jsx` | Accessibility tree: nút có tên và trạng thái pressed | [x] |
-| H1-05 | `<DrumMachine>` ghép pad, keyboard, audio; trạng thái active có thời hạn (timer có cleanup) | `src/DrumMachine.jsx` | Test: phím W làm pad W `aria-pressed=true` rồi về false | [ ] |
+| H1-05 | `<DrumMachine>` ghép pad, keyboard, audio; trạng thái active có thời hạn (timer có cleanup) | `src/DrumMachine.jsx` | Test: phím W làm pad W `aria-pressed=true` rồi về false | [x] |
 | H1-06 | Hit log `<output aria-live="polite">` (giới hạn độ dài, không spam đọc) | `src/HitLog.jsx` | Screen reader/ảnh a11y tree; test nội dung log | [ ] |
 | H1-07 | Decibel meter trực quan (không chỉ màu; có text/aria) | `src/LevelMeter.jsx` | Có nhãn chữ; tương phản >= 3:1 | [ ] |
 | H1-08 | CSS Modules: focus-visible, tương phản 4.5:1, vùng bấm, 375px, reduced-motion | `src/**/*.module.css` | Tab hết trang; 0 cuộn ngang ở 375px | [ ] |
