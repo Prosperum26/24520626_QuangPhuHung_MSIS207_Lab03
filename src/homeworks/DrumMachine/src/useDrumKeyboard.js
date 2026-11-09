@@ -2,7 +2,13 @@ import { useEffect } from 'react';
 
 // Ô đang gõ chữ: không cướp phím. closest() bắt được cả phần tử con của contenteditable,
 // việc kiểm tagName như slide thì bỏ sót.
-const TYPING_TARGET = 'input, textarea, select, [contenteditable]';
+// <input> chỉ tính khi nhận chữ: checkbox, radio, range, nút không nhận chữ, nếu chặn cả chúng thì
+// bấm "Tắt tiếng" xong (focus còn ở checkbox) phím A S D sẽ thôi chơi được. <select> giữ nguyên vì
+// nó dùng phím chữ để nhảy tới mục.
+const NON_TEXT_INPUTS = ['checkbox', 'radio', 'range', 'button', 'submit', 'reset', 'image', 'file', 'color']
+  .map((type) => `[type="${type}"]`)
+  .join(', ');
+const TYPING_TARGET = `input:not(${NON_TEXT_INPUTS}), textarea, select, [contenteditable]`;
 
 /**
  * Nghe phím tắt trên window bằng e.code.

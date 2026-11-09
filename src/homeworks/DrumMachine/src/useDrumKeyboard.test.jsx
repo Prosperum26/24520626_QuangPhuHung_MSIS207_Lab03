@@ -10,6 +10,11 @@ function Harness({ onTrigger, isEnabled }) {
     <div>
       <input aria-label="gõ" />
       <textarea aria-label="ghi chú" />
+      <input type="search" aria-label="tìm" />
+      <input type="number" aria-label="số" />
+      <input type="checkbox" aria-label="tick" />
+      <input type="radio" aria-label="chọn một" />
+      <input type="range" aria-label="trượt" />
       <select aria-label="chọn">
         <option>a</option>
       </select>
@@ -56,6 +61,23 @@ describe('useDrumKeyboard', () => {
       fireEvent.keyDown(el, { code: 'KeyA', bubbles: true });
     }
     expect(onTrigger).not.toHaveBeenCalled();
+  });
+
+  it('ô nhập chữ khác (search, number) cũng không kích hoạt', () => {
+    const onTrigger = vi.fn();
+    const { getByLabelText } = render(<Harness onTrigger={onTrigger} />);
+    fireEvent.keyDown(getByLabelText('tìm'), { code: 'KeyA' });
+    fireEvent.keyDown(getByLabelText('số'), { code: 'KeyA' });
+    expect(onTrigger).not.toHaveBeenCalled();
+  });
+
+  it('focus đang ở checkbox, radio, range (không gõ chữ) thì phím pad vẫn chơi được', () => {
+    const onTrigger = vi.fn();
+    const { getByLabelText } = render(<Harness onTrigger={onTrigger} />);
+    for (const label of ['tick', 'chọn một', 'trượt']) {
+      fireEvent.keyDown(getByLabelText(label), { code: 'KeyA' });
+    }
+    expect(onTrigger).toHaveBeenCalledTimes(3);
   });
 
   it('bỏ qua tổ hợp Ctrl/Meta/Alt (Ctrl+S, Ctrl+D của trình duyệt)', () => {
