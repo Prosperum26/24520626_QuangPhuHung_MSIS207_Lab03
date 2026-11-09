@@ -1,0 +1,22 @@
+/* Khung tối thiểu cho H1-04; tương phản, focus, 375px và reduced-motion hoàn thiện ở H1-08. */
+.pad {
+  display: grid;
+  place-items: center;
+  gap: 0.25rem;
+  width: 100%;
+  min-height: 6rem;
+  font: inherit;
+  cursor: pointer;
+}
+
+.pad[aria-pressed='true'] {
+  outline: 3px solid currentColor;
+}
+
+.label {
+  font-weight: 600;
+}
+
+.key {
+  font-family: monospace;
+}
