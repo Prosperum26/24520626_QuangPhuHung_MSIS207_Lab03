@@ -12,7 +12,7 @@ export default [
   reactHooks.configs.flat.recommended,
   jsxA11y.flatConfigs.recommended,
   {
-    files: ['**/*.{js,jsx}'],
+    files: ['**/*.{js,jsx,mjs}'],
     languageOptions: {
       ecmaVersion: 2024,
       sourceType: 'module',
