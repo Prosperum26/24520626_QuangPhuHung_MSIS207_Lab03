@@ -3,7 +3,7 @@ import { StrictMode } from 'react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { ACTIVE_MS, LOG_MAX, PADS } from './drumPads.js';
 
-const audio = vi.hoisted(() => ({ trigger: vi.fn(), error: null }));
+const audio = vi.hoisted(() => ({ trigger: vi.fn(), getLevelDb: () => -60, error: null }));
 vi.mock('./useDrumAudio.js', () => ({ useDrumAudio: () => audio }));
 
 const { DrumMachine } = await import('./DrumMachine.jsx');
@@ -86,8 +86,8 @@ describe('DrumMachine', () => {
     const { unmount } = render(<DrumMachine />);
     fireEvent.keyDown(window, { code: 'KeyA' });
     fireEvent.keyDown(window, { code: 'KeyS' });
-    // 2 timer tắt sáng của pad + 1 timer đọc của nhật ký
-    expect(vi.getTimerCount()).toBe(3);
+    // 2 timer tắt sáng của pad + 1 timer đọc của nhật ký + 1 requestAnimationFrame của meter
+    expect(vi.getTimerCount()).toBe(4);
     unmount();
     expect(vi.getTimerCount()).toBe(0);
   });

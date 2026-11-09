@@ -1,0 +1,26 @@
+/* Khung tối thiểu cho H1-07; hoàn thiện ở H1-D. */
+.meter {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.readout {
+  display: flex;
+  gap: 0.5rem;
+  margin: 0;
+}
+
+.bar {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 0.25rem;
+}
+
+.segment {
+  height: 1.5rem;
+  border: 2px solid currentColor;
+}
+
+.segment[data-lit='true'] {
+  background: currentColor;
+}

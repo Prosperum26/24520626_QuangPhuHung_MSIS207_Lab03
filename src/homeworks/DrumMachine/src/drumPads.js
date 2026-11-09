@@ -14,6 +14,18 @@ export const LOG_MAX = 8;
 /** Gộp các hit trong khoảng này thành một câu đọc, để trình đọc màn hình không đọc từng phím. */
 export const ANNOUNCE_MS = 500;
 
+/** Meter: cập nhật số tối đa ~12 lần/giây (đủ mượt, không render mỗi frame). */
+export const METER_INTERVAL_MS = 80;
+/** Số vạch của thanh meter. */
+export const METER_SEGMENTS = 12;
+/** Ngưỡng chữ của meter (dB, từ cao xuống thấp). Dưới ngưỡng cuối là "Im lặng". */
+export const METER_LEVELS = Object.freeze([
+  { minDb: -12, label: 'Rất lớn' },
+  { minDb: -24, label: 'Lớn' },
+  { minDb: -40, label: 'Vừa' },
+  { minDb: -59, label: 'Nhỏ' },
+]);
+
 /** @type {readonly Pad[]} */
 export const PADS = Object.freeze([
   { id: 'openhat', code: 'KeyW', label: 'Open Hat', chokeGroup: 'hat' },

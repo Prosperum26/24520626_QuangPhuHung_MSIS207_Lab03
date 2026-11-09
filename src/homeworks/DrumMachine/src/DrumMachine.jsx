@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { ACTIVE_MS, LOG_MAX, PADS, padMap } from './drumPads.js';
 import { HitLog } from './HitLog.jsx';
+import { LevelMeter } from './LevelMeter.jsx';
 import { Pad } from './Pad.jsx';
 import { useDrumAudio } from './useDrumAudio.js';
 import { useDrumKeyboard } from './useDrumKeyboard.js';
@@ -11,7 +12,7 @@ import styles from './DrumMachine.module.css';
  * handleTrigger duy nhất, nên âm thanh, trạng thái sáng và nhật ký luôn khớp nhau.
  */
 export function DrumMachine() {
-  const { trigger, error } = useDrumAudio();
+  const { trigger, getLevelDb, error } = useDrumAudio();
   const [activeIds, setActiveIds] = useState(() => new Set());
   const timersRef = useRef(new Map()); // padId -> id của timer tắt sáng
   const [hits, setHits] = useState([]); // mới nhất trước, tối đa LOG_MAX
@@ -69,6 +70,7 @@ export function DrumMachine() {
           ))}
         </ul>
       </section>
+      <LevelMeter getLevelDb={getLevelDb} />
       <HitLog hits={hits} />
     </div>
   );
