@@ -12,7 +12,11 @@ Chuyển Drum Kit phím `w/a/s/d/j/k/l` của deck cũ thành app React 19 đạ
 - `if (e.repeat) return;`; bỏ qua khi `target` là `INPUT/TEXTAREA/SELECT`.
 - Pad là `<button aria-pressed={isActive}>`; hit log `<output aria-live="polite">`; thanh decibel trực quan cho người khiếm thính.
 - Cleanup listener và âm thanh khi unmount.
-**Ngoài phạm vi:** ghi/phát lại (đã có ở Lab 1), lưu trữ, nhạc cụ khác.
+**Ngoài phạm vi đề:** lưu trữ, nhạc cụ khác, quantize/metronome, reverb, phím tắt cho looper.
+
+**Mở rộng tự chọn (H1-10 đến H1-15, cắt được mà không ảnh hưởng điểm):** 2 kit tổng hợp (Acoustic, Electronic 808), humanize, hi-hat choke, master volume/mute, meter đo âm thật, và looper (record, overdub, chế độ Loop/Once, tốc độ 0.5x-2x). Thiết kế đầy đủ: [spec](../../../docs/superpowers/specs/2026-11-09-hw1-drum-kit-design.md).
+
+**Giả định đã chốt:** 7 pad (không phải 9 như Lab 1); "chờ" = chế độ Once; tốc độ chỉ co giãn nhịp, không đổi cao độ; looper chỉ điều khiển bằng nút; kit Acoustic copy 7 sample từ Lab 1, kit 808 sinh bằng script Node.
 
 ## 2. Contract
 
@@ -22,9 +26,17 @@ Chuyển Drum Kit phím `w/a/s/d/j/k/l` của deck cũ thành app React 19 đạ
 /**
  * useDrumKeyboard(padMap, onTriggerPad, isEnabled = true) -> void
  *   - đăng ký keydown, cleanup removeEventListener
- * useDrumAudio() -> { trigger(padId): void, level: number }
+ * useDrumAudio() -> { trigger(padId, { when? }): void, now(): number, volume, setVolume, muted, setMuted,
+ *                      kit, setKit, getLevelDb(): number }
+ * (mở rộng H1-11; bản tối thiểu của WBS gốc chỉ cần trigger)
  */
+/** @typedef {{ t: number, padId: string }} LoopEvent */   // t: giây trong vòng, 0 <= t < loopLen
+// loopScheduler thuần: positionAt(anchor, nowAudio, speed, loopLen), eventsInWindow(events, loopLen, from, to), toAudioTime(anchor, loopT, speed)
 ```
+
+Invariant looper: `anchor = { audioTime, loopT }`, đổi tốc độ thì đặt lại anchor (không nhảy vị trí); cửa sổ lập lịch liên tục `[lastTo, now + lookahead)` nên hit overdub không phát đúp; events bất biến (`[...prev, e]`).
+
+Máy trạng thái looper: `empty -> recording -> playing <-> overdubbing`, `playing -> ready` (Stop hoặc hết vòng ở chế độ Once), `ready -> playing` (Play), Clear về `empty`. Hit không có hoặc `loopLen < MIN_LOOP_MS` thì Stop-recording về `empty`.
 
 - Bảng phím, tên âm, ngưỡng đặt ở **một module** (`drumPads.js`) để sửa phím chỉ một dòng khi bị đột biến.
 - Âm thanh: dùng file `.wav` hoặc tổng hợp bằng Web Audio; phát chồng được (polyphonic); `play().catch(...)` hoặc xử lý `AudioContext.resume()` sau thao tác người dùng.
@@ -44,10 +56,20 @@ Chuyển Drum Kit phím `w/a/s/d/j/k/l` của deck cũ thành app React 19 đạ
 | H1-07 | Decibel meter trực quan (không chỉ màu; có text/aria) | `src/LevelMeter.jsx` | Có nhãn chữ; tương phản >= 3:1 | [ ] |
 | H1-08 | CSS Modules: focus-visible, tương phản 4.5:1, vùng bấm, 375px, reduced-motion | `src/**/*.module.css` | Tab hết trang; 0 cuộn ngang ở 375px | [ ] |
 | H1-09 | Kiểm tự động + tay: Lighthouse a11y 100, tab bàn phím, UniKey | `evidence/` | JSON Lighthouse, ảnh a11y tree, ghi chú thử UniKey | [ ] |
+| H1-10 | (mở rộng) Script Node sinh kit 808 + copy kit Acoustic + `kits.js` (padId -> url theo kit) | `scripts/synth-kits.mjs`, `public/kits/{acoustic,electronic}/*.wav`, `src/kits.js` | Chạy script ra đủ 7 `.wav`; test: mỗi kit đủ 7 padId | [ ] |
+| H1-11 | (mở rộng, gộp luôn H1-03) `audioEngine` + `useDrumAudio`: graph source -> gain -> master -> analyser, `AudioContext` tạo lười + `resume()`, choke open hat bởi closed hat, humanize (rate ±3%, gain ±10%), volume/mute, `getLevelDb` | `src/audioEngine.js`, `src/useDrumAudio.js` | Test với `AudioContext` giả: N lần nhấn = N source, `onended` thì `disconnect`, choke dừng đúng node, mute đặt gain 0, dB có sàn -60 | [ ] |
+| H1-12 | (mở rộng) `Controls`: kit `<select>`, volume `<input type="range">` (`valueAsNumber` + `Number.isNaN`), mute; mọi ô có `<label htmlFor>` (`useId`) | `src/Controls.jsx` | Test: đổi kit gọi `setKit`; volume giữ kiểu số; a11y tree có tên | [ ] |
+| H1-13 | (mở rộng) `loopScheduler.js` + `looperConfig.js` (`TICK_MS=25`, `LOOKAHEAD_MS=100`, `MIN_LOOP_MS`, `SPEEDS`) | `src/loopScheduler.js`, `src/looperConfig.js` | Test thuần: speed 0.5/1/2; cửa sổ vòng quanh; đổi speed giữ liên tục; overdub không phát đúp | [ ] |
+| H1-14 | (mở rộng) `useLooper`: máy trạng thái, tick `setInterval` có cleanup, Loop/Once, tốc độ đổi lúc chạy, Clear | `src/useLooper.js` | Test từng chuyển trạng thái; Once dừng cuối vòng; Loop lặp; unmount hủy interval; StrictMode không nhân đôi | [ ] |
+| H1-15 | (mở rộng) `LooperPanel` (Record `aria-pressed`, Overdub, Play/Stop, Clear, radio Loop/Once, range tốc độ, `<progress>` có nhãn, `role="status"` cố định) ghép vào `DrumMachine` | `src/LooperPanel.jsx`, `src/DrumMachine.jsx` | a11y tree; status đổi theo trạng thái; 375px không cuộn ngang | [ ] |
+
+**Thứ tự thực hiện (mỗi lượt đúng một task):** H1-00, 01, 02, 10, 11 (đánh dấu cả H1-03), 04, 05, 06, 07, 12, 13, 14, 15, 08, 09. H1-08 và H1-09 làm sau cùng để CSS và Lighthouse phủ cả phần mở rộng.
 
 ## 4. Commit gợi ý
 
-`docs(hw1): add drum kit spec` · `feat(hw1): pad map and drum keyboard hook` · `feat(hw1): audio trigger with aria-pressed pads` · `feat(hw1): hit log and decibel meter` · `style(hw1): wcag 2.2 aa focus, contrast and 375px` · `test(hw1): lighthouse and keyboard evidence`
+`docs(hw1): add drum kit spec` · `feat(hw1): pad map and drum keyboard hook` · `feat(hw1): audio trigger with aria-pressed pads` · `feat(hw1): hit log and decibel meter` · `feat(hw1): synthesized kits and kit select` · `feat(hw1): looper with overdub, speed and loop mode` · `style(hw1): wcag 2.2 aa focus, contrast and 375px` · `test(hw1): lighthouse and keyboard evidence`
+
+AI không tự commit; bạn xem `git diff` rồi tự chạy `git commit`.
 
 ## 5. Cổng kiểm tra
 
@@ -62,3 +84,7 @@ DevTools: Lighthouse Accessibility = 100; chỉ dùng bàn phím vẫn chơi đ�
 
 - Dùng `e.key` thay `e.code`; quên `e.repeat`; `window.addEventListener` thiếu cleanup (nhân đôi listener dưới StrictMode).
 - Tạo `Audio` mới mỗi lần nhấn gây rò; `aria-pressed` không đồng bộ; hit log đọc từng phím gây ồn.
+- Looper dùng `setTimeout` để phát lại thì trôi nhịp; phải lập lịch theo `AudioContext.currentTime`.
+- Hit overdub bị phát đúp vì lọt vào cửa sổ lập lịch; đổi tốc độ không đặt lại anchor làm vị trí nhảy.
+- `AudioContext` bị suspended nếu chưa `resume()` sau thao tác người dùng; `rAF` của meter không cleanup.
+- Kiểm `target.tagName` bỏ sót `contenteditable` (slide); dùng `closest(...)`.
