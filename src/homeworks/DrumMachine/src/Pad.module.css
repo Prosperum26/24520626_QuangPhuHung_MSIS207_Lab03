@@ -57,9 +57,19 @@
   font-size: 0.8rem;
 }
 
-.pad:hover .shape {
-  translate: 0 -2px;
-  box-shadow: var(--rim), 0 calc(var(--drop) + 2px) 0 var(--ink);
+/* Chỉ thiết bị có chuột: trên màn cảm ứng :hover bị "dính" sau khi chạm. */
+@media (hover: hover) {
+  .pad:hover .shape {
+    translate: 0 -2px;
+    box-shadow: var(--rim), 0 calc(var(--drop) + 2px) 0 var(--ink);
+  }
+}
+
+/* Focus bàn phím: khung quanh cả ô vuông (vùng bấm), không bị hình nghiêng che. */
+.pad:focus-visible {
+  outline: 3px solid var(--ink);
+  outline-offset: 2px;
+  border-radius: 1rem;
 }
 
 /* Lúc bấm: hình lún xuống, bóng biến mất; vẫn thấy được khi tắt animation. */
@@ -191,6 +201,36 @@
 
 .pad[data-sound='crash'] .hit::after {
   animation: ring-wide 750ms ease-out;
+}
+
+/*
+ * Người dùng chọn giảm chuyển động: tắt toàn bộ animation và transition.
+ * Trạng thái bấm vẫn thấy được nhờ hình lún xuống và mất bóng (đổi tức thì, không chuyển động).
+ * !important: các luật animation theo từng âm có độ ưu tiên cao hơn (.pad[data-sound] .hit).
+ */
+@media (prefers-reduced-motion: reduce) {
+  .shape,
+  .hit,
+  .hit::after {
+    animation: none !important;
+    transition: none;
+  }
+}
+
+/*
+ * Chế độ tương phản cao (Windows): màu nền bị thay bằng màu hệ thống nên hình nhạc cụ mất màu.
+ * Giữ viền theo màu hệ thống và đánh dấu pad đang bấm bằng viền Highlight.
+ */
+@media (forced-colors: active) {
+  .shape {
+    border-color: CanvasText;
+    box-shadow: none;
+  }
+
+  .pad[aria-pressed='true'] .shape {
+    border-color: Highlight;
+    border-width: 6px;
+  }
 }
 
 @keyframes thump {

@@ -4,6 +4,9 @@
   max-width: 72rem;
   margin-inline: auto;
   padding: clamp(1.5rem, 5vw, 3.5rem) 1rem 4rem;
+  /* Sóng animation của pad sát mép (crash phóng 1.7 lần) không được tạo thanh cuộn ngang ở 375px.
+     clip không tạo vùng cuộn mới như hidden. */
+  overflow-x: clip;
 }
 
 .masthead {

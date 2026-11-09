@@ -57,6 +57,12 @@ h2 {
   letter-spacing: -0.01em;
 }
 
+/* Focus mặc định cho mọi phần tử tương tác khác (pad có kiểu riêng trong Pad.module.css). */
+:focus-visible {
+  outline: 3px solid var(--ink);
+  outline-offset: 2px;
+}
+
 /* Phím như một keycap nhỏ: viền dưới dày hơn. */
 kbd {
   display: inline-grid;
