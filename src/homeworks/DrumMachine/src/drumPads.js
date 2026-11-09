@@ -11,6 +11,9 @@ export const ACTIVE_MS = 120;
 /** Số hit tối đa giữ trong lịch sử hit log. */
 export const LOG_MAX = 8;
 
+/** Gộp các hit trong khoảng này thành một câu đọc, để trình đọc màn hình không đọc từng phím. */
+export const ANNOUNCE_MS = 500;
+
 /** @type {readonly Pad[]} */
 export const PADS = Object.freeze([
   { id: 'openhat', code: 'KeyW', label: 'Open Hat', chokeGroup: 'hat' },
@@ -24,3 +27,9 @@ export const PADS = Object.freeze([
 
 /** @type {ReadonlyMap<string, Pad>} khoá là e.code, ví dụ 'KeyW'. */
 export const padMap = new Map(PADS.map((pad) => [pad.code, pad]));
+
+/** @type {ReadonlyMap<string, Pad>} khoá là pad.id, ví dụ 'kick'. */
+export const padById = new Map(PADS.map((pad) => [pad.id, pad]));
+
+/** Chữ in trên phím: 'KeyW' -> 'W'. */
+export const keyLabel = (pad) => pad.code.replace(/^Key/, '');

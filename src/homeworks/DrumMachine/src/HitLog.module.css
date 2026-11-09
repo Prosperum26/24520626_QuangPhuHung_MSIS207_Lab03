@@ -1,0 +1,35 @@
+/* Khung tối thiểu cho H1-06; hoàn thiện ở H1-D. */
+.log {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.announcement {
+  min-height: 1.5em;
+}
+
+.list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.dot {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.empty {
+  margin: 0;
+}

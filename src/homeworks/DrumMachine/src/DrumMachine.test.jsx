@@ -1,7 +1,7 @@
-import { render, screen, fireEvent, act } from '@testing-library/react';
+import { render, screen, fireEvent, act, within } from '@testing-library/react';
 import { StrictMode } from 'react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { ACTIVE_MS, PADS } from './drumPads.js';
+import { ACTIVE_MS, LOG_MAX, PADS } from './drumPads.js';
 
 const audio = vi.hoisted(() => ({ trigger: vi.fn(), error: null }));
 vi.mock('./useDrumAudio.js', () => ({ useDrumAudio: () => audio }));
@@ -86,7 +86,8 @@ describe('DrumMachine', () => {
     const { unmount } = render(<DrumMachine />);
     fireEvent.keyDown(window, { code: 'KeyA' });
     fireEvent.keyDown(window, { code: 'KeyS' });
-    expect(vi.getTimerCount()).toBe(2);
+    // 2 timer tắt sáng của pad + 1 timer đọc của nhật ký
+    expect(vi.getTimerCount()).toBe(3);
     unmount();
     expect(vi.getTimerCount()).toBe(0);
   });
@@ -99,6 +100,18 @@ describe('DrumMachine', () => {
     );
     fireEvent.keyDown(window, { code: 'KeyJ' });
     expect(audio.trigger).toHaveBeenCalledTimes(1);
+  });
+
+  it('mỗi hit vào nhật ký, mới nhất trước, tối đa LOG_MAX', () => {
+    render(<DrumMachine />);
+    fireEvent.keyDown(window, { code: 'KeyA' });
+    fireEvent.click(pad(/Snare/));
+    let items = within(screen.getByRole('list', { name: /Lịch sử gõ/ })).getAllByRole('listitem');
+    expect(items.map((li) => li.textContent)).toEqual(['Snare S', 'Kick A']);
+
+    for (let n = 0; n < LOG_MAX + 3; n++) fireEvent.keyDown(window, { code: 'KeyL' });
+    items = within(screen.getByRole('list', { name: /Lịch sử gõ/ })).getAllByRole('listitem');
+    expect(items).toHaveLength(LOG_MAX);
   });
 
   it('có lỗi âm thanh thì hiện role="alert"', () => {
