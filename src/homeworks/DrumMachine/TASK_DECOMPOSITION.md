@@ -46,9 +46,9 @@ Máy trạng thái looper: `empty -> recording -> playing <-> overdubbing`, `pla
 
 | ID | Task | File | Gate | Trạng thái |
 |---|---|---|---|---|
-| H1-00 | Khởi tạo project Vite riêng: sao chép `package.json` (đổi `name`), `vite.config.js`, `eslint.config.js`, `index.html`, `src/main.jsx`, `src/test/setup.js` từ Ex1, rồi `npm install` | `package.json`, `vite.config.js`, `eslint.config.js`, `index.html`, `src/main.jsx`, `src/test/setup.js` | `npm test` và `npm run lint` chạy được | [ ] |
-| H1-01 | Spec + `src/drumPads.js` (mảng pad, `padMap`) | `src/drumPads.js` | Test: 7 pad, `e.code` duy nhất | [ ] |
-| H1-02 | `useDrumKeyboard`: `e.code`, `e.repeat`, bỏ qua input, cleanup | `src/useDrumKeyboard.js` | Test: giữ phím không bắn lặp; gõ trong input không kích hoạt; unmount gỡ listener | [ ] |
+| H1-00 | Khởi tạo project Vite riêng: sao chép `package.json` (đổi `name`), `vite.config.js`, `eslint.config.js`, `index.html`, `src/main.jsx`, `src/test/setup.js` từ Ex1, rồi `npm install` | `package.json`, `vite.config.js`, `eslint.config.js`, `index.html`, `src/main.jsx`, `src/test/setup.js` | `npm test` và `npm run lint` chạy được | [x] |
+| H1-01 | Spec + `src/drumPads.js` (mảng pad, `padMap`) | `src/drumPads.js` | Test: 7 pad, `e.code` duy nhất | [x] |
+| H1-02 | `useDrumKeyboard`: `e.code`, `e.repeat`, bỏ qua input, cleanup | `src/useDrumKeyboard.js` | Test: giữ phím không bắn lặp; gõ trong input không kích hoạt; unmount gỡ listener | [x] |
 | H1-03 | Audio engine/hook phát chồng, không pop | `src/useDrumAudio.js` | Test: nhấn nhanh nhiều lần vẫn phát; không lỗi Console | [ ] |
 | H1-04 | `<Pad>` là `<button type="button" aria-pressed>` | `src/Pad.jsx` | Accessibility tree: nút có tên và trạng thái pressed | [ ] |
 | H1-05 | `<DrumMachine>` ghép pad, keyboard, audio; trạng thái active có thời hạn (timer có cleanup) | `src/DrumMachine.jsx` | Test: phím W làm pad W `aria-pressed=true` rồi về false | [ ] |
