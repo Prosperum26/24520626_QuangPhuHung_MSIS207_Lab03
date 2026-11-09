@@ -1,0 +1,18 @@
+ĐẠT  14.43:1 (cần 4.5) Chữ chính trên nền trang  --ink #1d1a4e / --paper #eef3ff
+ĐẠT  16.03:1 (cần 4.5) Chữ chính trên panel  --ink #1d1a4e / --surface #ffffff
+ĐẠT   7.44:1 (cần 4.5) Chữ phụ trên nền trang  --ink-soft #4b4785 / --paper #eef3ff
+ĐẠT   8.27:1 (cần 4.5) Chữ phụ trên panel  --ink-soft #4b4785 / --surface #ffffff
+ĐẠT   6.24:1 (cần 4.5) Chữ trên pad/chip kick  --ink #1d1a4e / --kick #ff7a59
+ĐẠT  11.10:1 (cần 4.5) Chữ trên pad/chip snare  --ink #1d1a4e / --snare #ffd23f
+ĐẠT  10.15:1 (cần 4.5) Chữ trên pad/chip hihat  --ink #1d1a4e / --hihat #3ee6c1
+ĐẠT   8.68:1 (cần 4.5) Chữ trên pad/chip openhat  --ink #1d1a4e / --openhat #7cc6fe
+ĐẠT   7.98:1 (cần 4.5) Chữ trên pad/chip tom  --ink #1d1a4e / --tom #c9a7ff
+ĐẠT   8.37:1 (cần 4.5) Chữ trên pad/chip clap  --ink #1d1a4e / --clap #ff9ec7
+ĐẠT  12.22:1 (cần 4.5) Chữ trên pad/chip crash  --ink #1d1a4e / --crash #b8f35a
+ĐẠT  14.43:1 (cần 3) Viền pad, viền panel, viền focus trên nền trang  --ink #1d1a4e / --paper #eef3ff
+ĐẠT   8.27:1 (cần 3) Vạch meter đang tắt (viền) trên panel  --ink-soft #4b4785 / --surface #ffffff
+ĐẠT  10.15:1 (cần 3) Vạch meter bật (hihat) cạnh vạch tắt trên panel: viền ink  --ink #1d1a4e / --hihat #3ee6c1
+ĐẠT  11.10:1 (cần 3) Vạch meter bật (snare) cạnh vạch tắt trên panel: viền ink  --ink #1d1a4e / --snare #ffd23f
+ĐẠT   6.24:1 (cần 3) Vạch meter bật (kick) cạnh vạch tắt trên panel: viền ink  --ink #1d1a4e / --kick #ff7a59
+
+Tất cả cặp đạt.
