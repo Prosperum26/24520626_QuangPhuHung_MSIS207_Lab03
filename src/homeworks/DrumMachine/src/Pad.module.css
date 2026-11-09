@@ -83,8 +83,9 @@
 
 /* ---------- Hình theo nhạc cụ ---------- */
 
+/* Kích cỡ hình chênh nhau vừa phải (kick to nhất, clap nhỏ nhất) để hàng pad trông cân. */
 .pad[data-sound='kick'] {
-  --inset: 2%;
+  --inset: 4%;
 }
 
 /* Mặt trống kick: vòng tròn trong mờ */
@@ -98,12 +99,12 @@
 }
 
 .pad[data-sound='snare'] {
-  --inset: 12%;
+  --inset: 8%;
   --rim: inset 0 0 0 0.5rem rgb(255 255 255 / 0.55);
 }
 
 .pad[data-sound='tom'] {
-  --inset: 10% 15%;
+  --inset: 8% 12%;
   --radius: 44% 44% 38% 38% / 24% 24% 24% 24%;
 }
 
@@ -113,33 +114,22 @@
   --tilt: 45deg;
 }
 
-/* Cymbal nhìn nghiêng: elip dẹt có núm chuông ở giữa */
+/*
+ * Cymbal nhìn nghiêng: elip. Chiều cao elip phải đủ chứa tên + keycap (khoảng 60% ô),
+ * nếu dẹt hơn thì chữ tràn ra viền.
+ */
 .pad[data-sound='hihat'] {
-  --inset: 31% 5%;
+  --inset: 20% 3%;
 }
 
 .pad[data-sound='openhat'] {
-  --inset: 27% 4%;
-  --tilt: -9deg;
+  --inset: 18% 2%;
+  --tilt: -7deg;
 }
 
 .pad[data-sound='crash'] {
-  --inset: 22% 0%;
-  --tilt: 10deg;
-}
-
-.pad[data-sound='hihat'] .shape::before,
-.pad[data-sound='openhat'] .shape::before,
-.pad[data-sound='crash'] .shape::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 0.9rem;
-  height: 0.45rem;
-  border-radius: 50%;
-  background: var(--ink);
-  translate: -50% -50%;
+  --inset: 16% 0%;
+  --tilt: 7deg;
 }
 
 /* ---------- Animation riêng cho từng âm (chạy khi có .hit) ---------- */

@@ -1,15 +1,25 @@
+/*
+ * Khoảng cách bằng margin thay vì grid gap: vùng live <output> lúc rỗng vẫn phải nằm trong DOM
+ * (để trình đọc màn hình bắt được thay đổi), nhưng không được chiếm chỗ hay tạo khoảng trống.
+ */
 .log {
-  display: grid;
-  gap: 0.75rem;
   padding: 1.25rem;
   border: 2px solid var(--ink);
   border-radius: var(--radius-panel);
   background: var(--surface);
 }
 
+.log > * + * {
+  margin-top: 0.75rem;
+}
+
 .announcement {
-  min-height: 1.5em;
+  display: block;
   color: var(--ink-soft);
+}
+
+.announcement:empty {
+  margin-top: 0;
 }
 
 .list {
