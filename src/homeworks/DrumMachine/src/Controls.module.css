@@ -1,0 +1,64 @@
+.controls {
+  display: grid;
+  gap: 1rem;
+  padding: 1.25rem;
+  border: 2px solid var(--ink);
+  border-radius: var(--radius-panel);
+  background: var(--surface);
+}
+
+.field {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.field label,
+.check label {
+  font-weight: 600;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.row input {
+  flex: 1;
+  min-width: 0;
+}
+
+.value {
+  min-width: 3ch;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  text-align: right;
+}
+
+.check {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+/* Ô chọn và checkbox đủ lớn để bấm (WCAG 2.5.8 tối thiểu 24px). */
+.controls select {
+  min-height: 2.75rem;
+  padding: 0 0.75rem;
+  border: 2px solid var(--ink);
+  border-radius: 0.75rem;
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+}
+
+.controls input[type='checkbox'] {
+  width: 1.5rem;
+  height: 1.5rem;
+  accent-color: var(--ink);
+}
+
+.controls input[type='range'] {
+  min-height: 1.75rem;
+  accent-color: var(--ink);
+}

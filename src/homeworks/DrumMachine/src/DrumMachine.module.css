@@ -1,4 +1,4 @@
-/* Màn rộng: pad bên trái chiếm 2 hàng, meter và nhật ký xếp ở cột phải. */
+/* Màn rộng: pad (và looper) ở cột trái; điều khiển, meter, nhật ký ở cột phải. */
 .studio {
   display: grid;
   gap: 2rem;
@@ -9,10 +9,13 @@
   .studio {
     grid-template-columns: minmax(0, 2fr) minmax(16rem, 1fr);
   }
+}
 
-  .machine {
-    grid-row: span 2;
-  }
+.main,
+.side {
+  display: grid;
+  gap: 1.5rem;
+  min-width: 0;
 }
 
 .machine {

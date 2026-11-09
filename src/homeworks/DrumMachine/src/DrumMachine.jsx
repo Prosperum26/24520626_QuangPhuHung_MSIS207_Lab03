@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { ACTIVE_MS, LOG_MAX, PADS, padMap } from './drumPads.js';
+import { Controls } from './Controls.jsx';
 import { HitLog } from './HitLog.jsx';
 import { LevelMeter } from './LevelMeter.jsx';
 import { Pad } from './Pad.jsx';
@@ -12,7 +13,7 @@ import styles from './DrumMachine.module.css';
  * handleTrigger duy nhất, nên âm thanh, trạng thái sáng và nhật ký luôn khớp nhau.
  */
 export function DrumMachine() {
-  const { trigger, getLevelDb, error } = useDrumAudio();
+  const { trigger, getLevelDb, error, kit, setKit, volume, setVolume, muted, setMuted } = useDrumAudio();
   const [activeIds, setActiveIds] = useState(() => new Set());
   const timersRef = useRef(new Map()); // padId -> id của timer tắt sáng
   const [hits, setHits] = useState([]); // mới nhất trước, tối đa LOG_MAX
@@ -59,6 +60,7 @@ export function DrumMachine() {
 
   return (
     <div className={styles.studio}>
+      <div className={styles.main}>
       <section aria-labelledby={headingId} className={styles.machine}>
         <h2 id={headingId}>Pads</h2>
         {error !== null && <p role="alert">{error}</p>}
@@ -75,8 +77,19 @@ export function DrumMachine() {
           ))}
         </ul>
       </section>
-      <LevelMeter getLevelDb={getLevelDb} />
-      <HitLog hits={hits} />
+      </div>
+      <div className={styles.side}>
+        <Controls
+          kit={kit}
+          onKitChange={setKit}
+          volume={volume}
+          onVolumeChange={setVolume}
+          muted={muted}
+          onMutedChange={setMuted}
+        />
+        <LevelMeter getLevelDb={getLevelDb} />
+        <HitLog hits={hits} />
+      </div>
     </div>
   );
 }

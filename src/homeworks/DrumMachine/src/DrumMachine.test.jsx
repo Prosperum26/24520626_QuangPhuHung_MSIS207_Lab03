@@ -3,7 +3,17 @@ import { StrictMode } from 'react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { ACTIVE_MS, LOG_MAX, PADS } from './drumPads.js';
 
-const audio = vi.hoisted(() => ({ trigger: vi.fn(), getLevelDb: () => -60, error: null }));
+const audio = vi.hoisted(() => ({
+  trigger: vi.fn(),
+  getLevelDb: () => -60,
+  error: null,
+  kit: 'acoustic',
+  setKit: vi.fn(),
+  volume: 0.8,
+  setVolume: vi.fn(),
+  muted: false,
+  setMuted: vi.fn(),
+}));
 vi.mock('./useDrumAudio.js', () => ({ useDrumAudio: () => audio }));
 
 const { DrumMachine } = await import('./DrumMachine.jsx');
@@ -123,6 +133,14 @@ describe('DrumMachine', () => {
     fireEvent.keyDown(window, { code: 'KeyA' });
     expect(shapeOf(/Kick/)).not.toBe(kickFirst);
     expect(shapeOf(/Snare/)).toBe(snareBefore);
+  });
+
+  it('đổi bộ trống và tắt tiếng trong Controls gọi setKit và setMuted của hook', () => {
+    render(<DrumMachine />);
+    fireEvent.change(screen.getByRole('combobox', { name: 'Bộ trống' }), { target: { value: 'electronic' } });
+    expect(audio.setKit).toHaveBeenCalledWith('electronic');
+    fireEvent.click(screen.getByRole('checkbox', { name: 'Tắt tiếng' }));
+    expect(audio.setMuted).toHaveBeenCalledWith(true);
   });
 
   it('có lỗi âm thanh thì hiện role="alert"', () => {
