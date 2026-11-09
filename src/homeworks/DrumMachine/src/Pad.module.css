@@ -1,22 +1,254 @@
-/* Khung tối thiểu cho H1-04; tương phản, focus, 375px và reduced-motion hoàn thiện ở H1-08. */
+/*
+ * Nút là một ô vuông trong suốt (vùng bấm và viền focus luôn đầy đủ);
+ * hình nhạc cụ là .shape nằm phía sau chữ. Mỗi âm chỉnh hình qua các biến:
+ *   --inset  khoảng lùi của hình so với ô (hình nhỏ/dẹt)
+ *   --radius bo góc (50% = tròn, hoặc elip nếu ô bị lùi lệch)
+ *   --tilt   góc nghiêng cố định
+ *   --rim    viền trong (mặt trống snare)
+ * Animation dùng `transform`; nghiêng dùng `rotate`, lún dùng `translate`:
+ * ba thuộc tính này cộng dồn nên không đè nhau.
+ */
 .pad {
+  --inset: 8%;
+  --radius: 50%;
+  --tilt: 0deg;
+  --rim: 0 0 0 0 transparent;
+  --drop: var(--lift);
+
+  position: relative;
+  isolation: isolate;
   display: grid;
-  place-items: center;
-  gap: 0.25rem;
+  place-content: center;
+  justify-items: center;
+  gap: 0.3rem;
   width: 100%;
-  min-height: 6rem;
+  aspect-ratio: 1;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
   font: inherit;
   cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.pad[aria-pressed='true'] {
-  outline: 3px solid currentColor;
+.shape {
+  position: absolute;
+  inset: var(--inset);
+  z-index: -1;
+  border: 3px solid var(--ink);
+  border-radius: var(--radius);
+  background: var(--pad-color);
+  box-shadow: var(--rim), 0 var(--drop) 0 var(--ink);
+  rotate: var(--tilt);
+  transition:
+    translate 70ms ease-out,
+    box-shadow 70ms ease-out;
 }
 
 .label {
-  font-weight: 600;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.1;
 }
 
 .key {
-  font-family: monospace;
+  font-size: 0.8rem;
+}
+
+.pad:hover .shape {
+  translate: 0 -2px;
+  box-shadow: var(--rim), 0 calc(var(--drop) + 2px) 0 var(--ink);
+}
+
+/* Lúc bấm: hình lún xuống, bóng biến mất; vẫn thấy được khi tắt animation. */
+.pad[aria-pressed='true'] {
+  --drop: 0px;
+}
+
+.pad[aria-pressed='true'] .shape {
+  translate: 0 var(--lift);
+}
+
+/* ---------- Hình theo nhạc cụ ---------- */
+
+.pad[data-sound='kick'] {
+  --inset: 2%;
+}
+
+/* Mặt trống kick: vòng tròn trong mờ */
+.pad[data-sound='kick'] .shape::before {
+  content: '';
+  position: absolute;
+  inset: 18%;
+  border: 3px solid var(--ink);
+  border-radius: 50%;
+  opacity: 0.22;
+}
+
+.pad[data-sound='snare'] {
+  --inset: 12%;
+  --rim: inset 0 0 0 0.5rem rgb(255 255 255 / 0.55);
+}
+
+.pad[data-sound='tom'] {
+  --inset: 10% 15%;
+  --radius: 44% 44% 38% 38% / 24% 24% 24% 24%;
+}
+
+.pad[data-sound='clap'] {
+  --inset: 18%;
+  --radius: 26%;
+  --tilt: 45deg;
+}
+
+/* Cymbal nhìn nghiêng: elip dẹt có núm chuông ở giữa */
+.pad[data-sound='hihat'] {
+  --inset: 31% 5%;
+}
+
+.pad[data-sound='openhat'] {
+  --inset: 27% 4%;
+  --tilt: -9deg;
+}
+
+.pad[data-sound='crash'] {
+  --inset: 22% 0%;
+  --tilt: 10deg;
+}
+
+.pad[data-sound='hihat'] .shape::before,
+.pad[data-sound='openhat'] .shape::before,
+.pad[data-sound='crash'] .shape::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0.9rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: var(--ink);
+  translate: -50% -50%;
+}
+
+/* ---------- Animation riêng cho từng âm (chạy khi có .hit) ---------- */
+
+/* Vòng sóng lan ra (kick, clap, crash) */
+.hit::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border: 3px solid var(--ink);
+  border-radius: inherit;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Kick: nảy mạnh như mặt trống bị đạp, kèm sóng tròn */
+.pad[data-sound='kick'] .hit {
+  animation: thump 300ms cubic-bezier(0.2, 0.9, 0.3, 1.3);
+}
+
+.pad[data-sound='kick'] .hit::after {
+  animation: ring 450ms ease-out;
+}
+
+/* Snare: rung ngang nhanh như dây lò xo */
+.pad[data-sound='snare'] .hit {
+  animation: rattle 200ms linear;
+}
+
+/* Hi-hat đóng: co dẹt rất ngắn */
+.pad[data-sound='hihat'] .hit {
+  animation: squeeze 120ms ease-out;
+}
+
+/* Open hat: lắc lư, tắt dần */
+.pad[data-sound='openhat'] .hit {
+  animation: swing 600ms ease-out;
+}
+
+/* Tom: nhún xuống rồi bật lên */
+.pad[data-sound='tom'] .hit {
+  animation: bounce 280ms ease-out;
+}
+
+/* Clap: bung ra, sóng nét đứt */
+.pad[data-sound='clap'] .hit {
+  animation: pop 220ms ease-out;
+}
+
+.pad[data-sound='clap'] .hit::after {
+  border-style: dashed;
+  animation: ring 320ms ease-out;
+}
+
+/* Crash: lắc dài, sóng rộng */
+.pad[data-sound='crash'] .hit {
+  animation: wobble 900ms ease-out;
+}
+
+.pad[data-sound='crash'] .hit::after {
+  animation: ring-wide 750ms ease-out;
+}
+
+@keyframes thump {
+  0% { transform: scale(1); }
+  30% { transform: scale(1.12); }
+  60% { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+
+@keyframes ring {
+  0% { opacity: 0.85; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.45); }
+}
+
+@keyframes ring-wide {
+  0% { opacity: 0.7; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.7, 2.4); }
+}
+
+@keyframes rattle {
+  0%, 100% { transform: translateX(0); }
+  17% { transform: translateX(-5px); }
+  33% { transform: translateX(5px); }
+  50% { transform: translateX(-4px); }
+  67% { transform: translateX(3px); }
+  83% { transform: translateX(-2px); }
+}
+
+@keyframes squeeze {
+  0%, 100% { transform: scaleY(1); }
+  40% { transform: scaleY(0.6) scaleX(1.04); }
+}
+
+@keyframes swing {
+  0%, 100% { transform: rotate(0deg); }
+  15% { transform: rotate(10deg); }
+  35% { transform: rotate(-7deg); }
+  55% { transform: rotate(4deg); }
+  75% { transform: rotate(-2deg); }
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0) scale(1); }
+  35% { transform: translateY(6px) scale(1.04, 0.92); }
+  70% { transform: translateY(-4px) scale(0.98, 1.04); }
+}
+
+@keyframes pop {
+  0%, 100% { transform: scale(1); }
+  40% { transform: scale(1.22); }
+  70% { transform: scale(0.94); }
+}
+
+@keyframes wobble {
+  0%, 100% { transform: rotate(0deg); }
+  12% { transform: rotate(-14deg); }
+  30% { transform: rotate(10deg); }
+  48% { transform: rotate(-7deg); }
+  66% { transform: rotate(4deg); }
+  84% { transform: rotate(-2deg); }
 }

@@ -1,26 +1,57 @@
-/* Khung tối thiểu cho H1-07; hoàn thiện ở H1-D. */
 .meter {
   display: grid;
-  gap: 0.5rem;
+  gap: 0.75rem;
+  padding: 1.25rem;
+  border: 2px solid var(--ink);
+  border-radius: var(--radius-panel);
+  background: var(--surface);
 }
 
 .readout {
   display: flex;
-  gap: 0.5rem;
-  margin: 0;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.75rem;
+  min-height: 2.5rem;
 }
 
+.value {
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+.level {
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+
+/* Vạch: tắt là khung rỗng, bật là khối đặc có màu. Phân biệt bằng hình chứ không chỉ màu. */
 .bar {
   display: grid;
-  grid-template-columns: repeat(12, 1fr);
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  align-items: end;
   gap: 0.25rem;
+  height: 2.5rem;
 }
 
 .segment {
-  height: 1.5rem;
-  border: 2px solid currentColor;
+  height: 100%;
+  border: 2px solid var(--ink-soft);
+  border-radius: 0.3rem;
 }
 
 .segment[data-lit='true'] {
-  background: currentColor;
+  border-color: var(--ink);
+  background: var(--hihat);
+}
+
+.segment:nth-child(n + 8)[data-lit='true'] {
+  background: var(--snare);
+}
+
+.segment:nth-child(n + 11)[data-lit='true'] {
+  background: var(--kick);
 }

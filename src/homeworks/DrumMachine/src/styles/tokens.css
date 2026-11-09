@@ -1,0 +1,75 @@
+/* Mọi màu và font nằm ở đây; CSS Module chỉ dùng var(--token). */
+:root {
+  color-scheme: light;
+
+  --paper: #eef3ff; /* nền trang: trắng xanh lạnh */
+  --surface: #ffffff;
+  --ink: #1d1a4e; /* chữ, viền, bóng đổ */
+  --ink-soft: #4b4785; /* chữ phụ */
+
+  /* Mỗi âm một màu, dùng chung cho pad, chip nhật ký. Chữ trên các màu này luôn là --ink. */
+  --kick: #ff7a59;
+  --snare: #ffd23f;
+  --hihat: #3ee6c1;
+  --openhat: #7cc6fe;
+  --tom: #c9a7ff;
+  --clap: #ff9ec7;
+  --crash: #b8f35a;
+
+  --font: 'Bricolage Grotesque', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --radius-panel: 1.25rem;
+  --lift: 6px; /* độ nổi của pad; khi bấm pad lún xuống đúng chừng này */
+}
+
+[data-sound='kick'] { --pad-color: var(--kick); }
+[data-sound='snare'] { --pad-color: var(--snare); }
+[data-sound='hihat'] { --pad-color: var(--hihat); }
+[data-sound='openhat'] { --pad-color: var(--openhat); }
+[data-sound='tom'] { --pad-color: var(--tom); }
+[data-sound='clap'] { --pad-color: var(--clap); }
+[data-sound='crash'] { --pad-color: var(--crash); }
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 1.0625rem;
+  line-height: 1.5;
+}
+
+h1,
+h2,
+p {
+  margin: 0;
+}
+
+h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+/* Phím như một keycap nhỏ: viền dưới dày hơn. */
+kbd {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.7em;
+  padding: 0 0.35em;
+  border: 2px solid var(--ink);
+  border-bottom-width: 4px;
+  border-radius: 0.45em;
+  background: var(--surface);
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 0.85em;
+  font-weight: 700;
+  line-height: 1.5;
+}

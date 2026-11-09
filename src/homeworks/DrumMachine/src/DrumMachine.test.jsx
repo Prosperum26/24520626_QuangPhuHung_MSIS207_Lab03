@@ -114,6 +114,17 @@ describe('DrumMachine', () => {
     expect(items).toHaveLength(LOG_MAX);
   });
 
+  it('gõ lại cùng pad thì hình của pad đó được tạo lại (animation chạy lại), pad khác giữ nguyên', () => {
+    render(<DrumMachine />);
+    const shapeOf = (name) => pad(name).querySelector('[aria-hidden="true"]');
+    fireEvent.keyDown(window, { code: 'KeyA' });
+    const kickFirst = shapeOf(/Kick/);
+    const snareBefore = shapeOf(/Snare/);
+    fireEvent.keyDown(window, { code: 'KeyA' });
+    expect(shapeOf(/Kick/)).not.toBe(kickFirst);
+    expect(shapeOf(/Snare/)).toBe(snareBefore);
+  });
+
   it('có lỗi âm thanh thì hiện role="alert"', () => {
     audio.error = 'Không tải được kick.wav';
     render(<DrumMachine />);

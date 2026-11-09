@@ -64,8 +64,13 @@ export function DrumMachine() {
         {error !== null && <p role="alert">{error}</p>}
         <ul className={styles.grid}>
           {PADS.map((pad) => (
-            <li key={pad.id}>
-              <Pad pad={pad} isActive={activeIds.has(pad.id)} onTrigger={handleTrigger} />
+            <li key={pad.id} data-sound={pad.id}>
+              <Pad
+                pad={pad}
+                isActive={activeIds.has(pad.id)}
+                hitId={hits.find((h) => h.padId === pad.id)?.id}
+                onTrigger={handleTrigger}
+              />
             </li>
           ))}
         </ul>

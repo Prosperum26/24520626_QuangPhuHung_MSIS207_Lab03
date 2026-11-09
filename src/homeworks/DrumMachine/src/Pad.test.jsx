@@ -21,6 +21,32 @@ describe('Pad', () => {
     expect(screen.getByRole('button')).toHaveAttribute('aria-pressed', 'true');
   });
 
+  it('có data-sound để CSS chọn hình và animation riêng', () => {
+    render(<Pad pad={openHat} isActive={false} onTrigger={() => {}} />);
+    expect(screen.getByRole('button')).toHaveAttribute('data-sound', 'openhat');
+  });
+
+  it('mỗi hit mới (hitId đổi) tạo lại phần tử hình để animation chạy lại từ đầu', () => {
+    const { container, rerender } = render(<Pad pad={openHat} isActive={false} onTrigger={() => {}} />);
+    const idle = container.querySelector('[aria-hidden="true"]');
+    expect(idle.className).not.toMatch(/hit/);
+
+    rerender(<Pad pad={openHat} isActive hitId={1} onTrigger={() => {}} />);
+    const first = container.querySelector('[aria-hidden="true"]');
+    expect(first).not.toBe(idle);
+    expect(first.className).toMatch(/hit/);
+
+    rerender(<Pad pad={openHat} isActive hitId={2} onTrigger={() => {}} />);
+    expect(container.querySelector('[aria-hidden="true"]')).not.toBe(first);
+  });
+
+  it('cùng hitId thì giữ nguyên phần tử (re-render khác không làm animation chạy lại)', () => {
+    const { container, rerender } = render(<Pad pad={openHat} isActive hitId={5} onTrigger={() => {}} />);
+    const shape = container.querySelector('[aria-hidden="true"]');
+    rerender(<Pad pad={openHat} isActive={false} hitId={5} onTrigger={() => {}} />);
+    expect(container.querySelector('[aria-hidden="true"]')).toBe(shape);
+  });
+
   it('click gọi onTrigger với id của pad', () => {
     const onTrigger = vi.fn();
     render(<Pad pad={openHat} isActive={false} onTrigger={onTrigger} />);

@@ -54,6 +54,7 @@ Máy trạng thái looper: `empty -> recording -> playing <-> overdubbing`, `pla
 | H1-05 | `<DrumMachine>` ghép pad, keyboard, audio; trạng thái active có thời hạn (timer có cleanup) | `src/DrumMachine.jsx` | Test: phím W làm pad W `aria-pressed=true` rồi về false | [x] |
 | H1-06 | Hit log `<output aria-live="polite">` (giới hạn độ dài, không spam đọc) | `src/HitLog.jsx` | Screen reader/ảnh a11y tree; test nội dung log | [x] |
 | H1-07 | Decibel meter trực quan (không chỉ màu; có text/aria) | `src/LevelMeter.jsx` | Có nhãn chữ; tương phản >= 3:1 | [x] |
+| H1-D | (design) Bảng màu sáng, mỗi pad một hình dạng theo nhạc cụ (trống tròn, cymbal elip, clap hình thoi...) xếp theo vị trí phím QWERTY, animation riêng cho từng âm khi gõ (kick nảy + sóng, snare rung, hi-hat co, open hat lắc, tom nhún, clap bung, crash lắc dài). Animation chạy lại mỗi hit bằng `key` theo id hit | `src/styles/tokens.css`, `src/*.module.css`, `src/Pad.jsx`, `index.html` | Test: mỗi hit tạo lại phần tử hình; ảnh chụp 375px và desktop | [ ] |
 | H1-08 | CSS Modules: focus-visible, tương phản 4.5:1, vùng bấm, 375px, reduced-motion | `src/**/*.module.css` | Tab hết trang; 0 cuộn ngang ở 375px | [ ] |
 | H1-09 | Kiểm tự động + tay: Lighthouse a11y 100, tab bàn phím, UniKey | `evidence/` | JSON Lighthouse, ảnh a11y tree, ghi chú thử UniKey | [ ] |
 | H1-10 | (mở rộng) Script Node sinh kit 808 + copy kit Acoustic + `kits.js` (padId -> url theo kit) | `scripts/synth-kits.mjs`, `public/kits/{acoustic,electronic}/*.wav`, `src/kits.js` | Chạy script ra đủ 7 `.wav`; test: mỗi kit đủ 7 padId | [x] |
@@ -63,7 +64,7 @@ Máy trạng thái looper: `empty -> recording -> playing <-> overdubbing`, `pla
 | H1-14 | (mở rộng) `useLooper`: máy trạng thái, tick `setInterval` có cleanup, Loop/Once, tốc độ đổi lúc chạy, Clear | `src/useLooper.js` | Test từng chuyển trạng thái; Once dừng cuối vòng; Loop lặp; unmount hủy interval; StrictMode không nhân đôi | [ ] |
 | H1-15 | (mở rộng) `LooperPanel` (Record `aria-pressed`, Overdub, Play/Stop, Clear, radio Loop/Once, range tốc độ, `<progress>` có nhãn, `role="status"` cố định) ghép vào `DrumMachine` | `src/LooperPanel.jsx`, `src/DrumMachine.jsx` | a11y tree; status đổi theo trạng thái; 375px không cuộn ngang | [ ] |
 
-**Thứ tự thực hiện (mỗi lượt đúng một task):** H1-00, 01, 02, 10, 11 (đánh dấu cả H1-03), 04, 05, 06, 07, 12, 13, 14, 15, 08, 09. H1-08 và H1-09 làm sau cùng để CSS và Lighthouse phủ cả phần mở rộng.
+**Thứ tự thực hiện (mỗi lượt đúng một task):** H1-00, 01, 02, 10, 11 (đánh dấu cả H1-03), 04, 05, 06, 07, D, 08, 09, rồi 12, 13, 14, 15. H1-08 và H1-09 làm trước phần mở rộng để phần lõi đạt chuẩn trước; sau H1-15 phải **chạy lại** kiểm 375px và Lighthouse (H1-09) cho phần Controls và Looper.
 
 ## 4. Commit gợi ý
 
