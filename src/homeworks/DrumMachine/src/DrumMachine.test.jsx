@@ -3,8 +3,10 @@ import { StrictMode } from 'react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { ACTIVE_MS, LOG_MAX, PADS } from './drumPads.js';
 
+const clock = vi.hoisted(() => ({ t: 0 }));
 const audio = vi.hoisted(() => ({
   trigger: vi.fn(),
+  now: () => clock.t,
   getLevelDb: () => -60,
   error: null,
   kit: 'acoustic',
@@ -21,6 +23,7 @@ const { DrumMachine } = await import('./DrumMachine.jsx');
 const pad = (name) => screen.getByRole('button', { name });
 
 beforeEach(() => {
+  clock.t = 0;
   vi.useFakeTimers();
   audio.trigger.mockClear();
   audio.error = null;
@@ -33,7 +36,7 @@ afterEach(() => {
 describe('DrumMachine', () => {
   it('render 7 pad, mặc định chưa pad nào pressed', () => {
     render(<DrumMachine />);
-    const buttons = screen.getAllByRole('button');
+    const buttons = within(screen.getByRole('region', { name: 'Pads' })).getAllByRole('button');
     expect(buttons).toHaveLength(PADS.length);
     buttons.forEach((b) => expect(b).toHaveAttribute('aria-pressed', 'false'));
   });
@@ -141,6 +144,26 @@ describe('DrumMachine', () => {
     expect(audio.setKit).toHaveBeenCalledWith('electronic');
     fireEvent.click(screen.getByRole('checkbox', { name: 'Tắt tiếng' }));
     expect(audio.setMuted).toHaveBeenCalledWith(true);
+  });
+
+  it('looper: ghi hit của người chơi rồi tự phát lại qua audio.trigger với when theo giờ audio', () => {
+    render(<DrumMachine />);
+    fireEvent.click(screen.getByRole('button', { name: 'Ghi' }));
+    fireEvent.keyDown(window, { code: 'KeyA' });
+    clock.t = 1;
+    fireEvent.click(screen.getByRole('button', { name: 'Ghi' }));
+    expect(within(screen.getByRole('region', { name: 'Looper' })).getByRole('status')).toHaveTextContent('Đang lặp');
+    audio.trigger.mockClear();
+
+    for (let i = 0; i < 4; i++) {
+      clock.t += 0.025;
+      act(() => vi.advanceTimersByTime(25));
+    }
+    // hit ghi lúc 0 giây của vòng, phát lại với when = mốc bắt đầu phát (giờ 1)
+    expect(audio.trigger).toHaveBeenCalledWith('kick', { when: expect.closeTo(1, 3) });
+    // phát lại không đi qua nhật ký: danh sách vẫn chỉ có 1 hit (lúc ghi)
+    const items = within(screen.getByRole('list', { name: /Lịch sử gõ/ })).getAllByRole('listitem');
+    expect(items).toHaveLength(1);
   });
 
   it('có lỗi âm thanh thì hiện role="alert"', () => {

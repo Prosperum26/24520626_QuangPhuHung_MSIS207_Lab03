@@ -46,9 +46,8 @@ export function Controls({ kit, onKitChange, volume, onVolumeChange, muted, onMu
               if (!Number.isNaN(next)) onVolumeChange(next);
             }}
           />
-          <output htmlFor={volumeId} className={styles.value}>
-            {Math.round(volume * 100)}%
-          </output>
+          {/* span, không phải <output>: <output> là vùng live ngầm, kéo thanh trượt sẽ bị đọc liên tục. */}
+          <span className={styles.value}>{Math.round(volume * 100)}%</span>
         </span>
       </div>
 

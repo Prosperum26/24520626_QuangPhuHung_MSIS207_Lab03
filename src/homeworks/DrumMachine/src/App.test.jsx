@@ -4,6 +4,7 @@ import { it, expect, vi } from 'vitest';
 vi.mock('./useDrumAudio.js', () => {
   const audio = {
     trigger: () => {},
+    now: () => 0,
     getLevelDb: () => -60,
     error: null,
     kit: 'acoustic',
@@ -25,4 +26,5 @@ it('render landmark main có tiêu đề h1 và vùng Pads', () => {
   expect(screen.getByRole('region', { name: 'Mức âm' })).toBeInTheDocument();
   expect(screen.getByRole('region', { name: 'Nhật ký gõ' })).toBeInTheDocument();
   expect(screen.getByRole('region', { name: 'Âm thanh' })).toBeInTheDocument();
+  expect(screen.getByRole('region', { name: 'Looper' })).toBeInTheDocument();
 });
