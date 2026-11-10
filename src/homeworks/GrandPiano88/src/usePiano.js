@@ -11,12 +11,19 @@ const EMPTY = new Set();
  *   StrictMode (cleanup rồi mount lại) tự tạo synth mới nếu cái cũ đã dispose.
  * - State duy nhất là `pressed`: Set các midi đang nhấn, luôn tạo Set mới (bất biến).
  * - `press`/`release` có tham chiếu ổn định (không phụ thuộc state) để PianoKey bọc memo không render lại.
- * @param {{ maxVoices?: number, createContext?: () => AudioContext | null }} [options] chỉ đọc lúc tạo synth
+ * @param {{ maxVoices?: number, createContext?: () => AudioContext | null, onSteal?: (midi: number) => void }} [options]
+ *   maxVoices, createContext: chỉ đọc lúc tạo synth. onSteal: callback của cha, luôn đọc bản mới nhất
+ *   (bộ ghi dùng nó để đóng nốt bị cướp).
  */
 export function usePiano(options = {}) {
   const [pressed, setPressed] = useState(EMPTY);
   const synthRef = useRef(null);
   const optionsRef = useRef(options);
+
+  // Giữ options mới nhất mà không buộc các hàm bên dưới đổi tham chiếu (memo cần chúng ổn định).
+  useEffect(() => {
+    optionsRef.current = options;
+  });
 
   const removePressed = useCallback((midi) => {
     // Trả lại đúng Set cũ nếu không đổi gì: React bỏ qua render.
@@ -32,7 +39,11 @@ export function usePiano(options = {}) {
     if (!synthRef.current) {
       const { maxVoices = MAX_VOICES, createContext } = optionsRef.current;
       // Voice bị cướp lúc phím còn đang giữ thì phím đó phải hết sáng.
-      synthRef.current = new PolyphonicSynth(maxVoices, { createContext, onSteal: removePressed });
+      const onSteal = (midi) => {
+        removePressed(midi);
+        optionsRef.current.onSteal?.(midi);
+      };
+      synthRef.current = new PolyphonicSynth(maxVoices, { createContext, onSteal });
     }
     return synthRef.current;
   }, [removePressed]);

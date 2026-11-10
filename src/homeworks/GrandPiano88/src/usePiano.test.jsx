@@ -1,5 +1,5 @@
 import { StrictMode } from 'react';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { act, renderHook } from '@testing-library/react';
 import { usePiano } from './usePiano.js';
 import { createFakeAudio } from './audio/fakeAudio.js';
@@ -11,6 +11,14 @@ function setup(options = {}, wrapper) {
 }
 
 describe('usePiano', () => {
+  it('onSteal của cha được gọi với đúng midi bị cướp', () => {
+    const onSteal = vi.fn();
+    const { result } = setup({ onSteal });
+    for (let midi = 60; midi < 69; midi += 1) act(() => result.current.press(midi));
+    expect(onSteal).toHaveBeenCalledTimes(1);
+    expect(onSteal).toHaveBeenCalledWith(60);
+  });
+
   it('press: phát đúng tần số và thêm vào pressed', () => {
     const { result, audio } = setup();
     act(() => result.current.press(69));
