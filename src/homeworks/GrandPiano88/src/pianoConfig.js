@@ -19,3 +19,6 @@ export const ATTACK_S = 0.01;
 export const RELEASE_S = 0.04;
 /** Đích của exponentialRamp: không được bằng 0 (ramp mũ không tới được 0). */
 export const RELEASE_FLOOR = 0.0001;
+
+/** Phím có tabindex=0 lúc đầu (roving tabindex): C4, "middle C". */
+export const DEFAULT_FOCUS_MIDI = 60;
