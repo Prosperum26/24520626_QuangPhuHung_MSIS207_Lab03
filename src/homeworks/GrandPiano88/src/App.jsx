@@ -1,4 +1,4 @@
-import { GrandPiano } from './components/GrandPiano.jsx';
+import { PianoStudio } from './components/PianoStudio.jsx';
 import styles from './App.module.css';
 
 export function App() {
@@ -10,7 +10,7 @@ export function App() {
           <p className={styles.lede}>Piano 88 phím, chơi tối đa 8 nốt cùng lúc.</p>
         </hgroup>
       </header>
-      <GrandPiano />
+      <PianoStudio />
     </main>
   );
 }

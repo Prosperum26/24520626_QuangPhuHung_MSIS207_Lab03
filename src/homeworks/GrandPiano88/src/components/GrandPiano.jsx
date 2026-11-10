@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { buildKeys, groupByOctave, octaveLayout } from '../music/notes.js';
 import { DEFAULT_FOCUS_MIDI, MIDI_MAX, MIDI_MIN } from '../pianoConfig.js';
-import { usePiano } from '../usePiano.js';
 import { PianoKey } from './PianoKey.jsx';
 import styles from './GrandPiano.module.css';
 
@@ -18,14 +17,14 @@ function moveTarget(midi, code) {
 }
 
 /**
- * Đàn 88 phím. State của cả đàn là một Set các phím đang nhấn (trong usePiano); mỗi phím nhận
- * boolean `pressed.has(midi)` riêng. Nhấn một phím: GrandPiano render lại một lần, nhưng 87 PianoKey
+ * Đàn 88 phím, thuần hiển thị: `pressed` (Set các phím đang nhấn) và hai hàm nhấn/nhả do cha truyền vào
+ * (cha nối chúng với synth và bộ ghi, xem PianoStudio). Mỗi phím nhận boolean `pressed.has(midi)` riêng. Nhấn một phím: GrandPiano render lại một lần, nhưng 87 PianoKey
  * còn lại bị `memo` bỏ qua vì mọi prop của chúng không đổi.
  * Roving tabindex: chỉ một phím (`focusMidi`) nằm trong thứ tự Tab; mũi tên di chuyển giữa các phím.
+ * @param {{ pressed: Set<number>, onNoteOn: (midi: number) => void, onNoteOff: (midi: number) => void }} props
  */
-export function GrandPiano() {
+export function GrandPiano({ pressed, onNoteOn, onNoteOff }) {
   const headingId = useId();
-  const { pressed, press, release } = usePiano();
   const [focusMidi, setFocusMidi] = useState(DEFAULT_FOCUS_MIDI);
   const scrollerRef = useRef(null);
 
@@ -68,8 +67,8 @@ export function GrandPiano() {
                 pitchClass={key.pitchClass}
                 isPressed={pressed.has(key.midi)}
                 tabbable={key.midi === focusMidi}
-                onNoteOn={press}
-                onNoteOff={release}
+                onNoteOn={onNoteOn}
+                onNoteOff={onNoteOff}
                 onMoveFocus={moveFocus}
               />
             ))}

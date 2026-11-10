@@ -1,0 +1,102 @@
+.sequencer {
+  display: grid;
+  gap: 1rem;
+  min-width: 0;
+  padding: 1.25rem;
+  border: 3px solid var(--ink);
+  border-radius: var(--radius-panel);
+  background: var(--surface);
+  box-shadow: 0 var(--lift) 0 var(--ink);
+}
+
+.status {
+  min-height: 3em; /* chứa đủ câu dài nhất để panel không giật khi đổi trạng thái */
+  color: var(--ink-soft);
+}
+
+.buttons {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(6.5rem, 1fr));
+  gap: 0.75rem;
+}
+
+/* Nút nổi như phím: viền mực, bóng cứng; bấm thì lún xuống. */
+.button {
+  min-height: 2.75rem;
+  padding: 0 1rem;
+  border: 2px solid var(--ink);
+  border-radius: 0.9rem;
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: 0 4px 0 var(--ink);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition:
+    translate 70ms ease-out,
+    box-shadow 70ms ease-out;
+}
+
+/* Đang ghi: nút Ghi sáng màu và lún xuống (không chỉ dựa vào màu). */
+.button[aria-pressed='true'] {
+  background: var(--press-white);
+}
+
+.button:active:not(:disabled),
+.button[aria-pressed='true'] {
+  translate: 0 4px;
+  box-shadow: 0 0 0 var(--ink);
+}
+
+/* Bị vô hiệu: viền nét đứt và chữ nhạt, không chỉ mờ màu (vẫn đọc được, tương phản chữ >= 4.5:1 với nền). */
+.button:disabled {
+  border-style: dashed;
+  box-shadow: none;
+  color: var(--ink-soft);
+  cursor: not-allowed;
+}
+
+.speeds {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.speeds legend {
+  margin-bottom: 0.35rem;
+  padding: 0;
+  font-weight: 600;
+}
+
+.radio {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.radio input {
+  width: 1.4rem;
+  height: 1.4rem;
+  accent-color: var(--ink);
+}
+
+.speeds:disabled {
+  color: var(--ink-soft);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .button {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .button[aria-pressed='true'] {
+    border-width: 4px;
+    border-color: Highlight;
+  }
+}
