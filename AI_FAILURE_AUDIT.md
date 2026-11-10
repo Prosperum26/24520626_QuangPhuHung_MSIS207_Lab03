@@ -1,7 +1,7 @@
 # AI Failure Mode Audit — Lab 03
 
 > Deliverable bắt buộc (15% điểm, cùng nhóm với Atomic Git): ít nhất **3 lỗi AI thật** kèm bằng chứng và bản sửa.
-> Bốn mục dưới đây là lỗi thật xảy ra trong session làm Exercise 1. Bằng chứng mục 1-3 là output terminal và ảnh checklist; mục 4 là log Console đo trên Edge (gần với DevTools nhất). Khi gặp lỗi có Profiler, Network hoặc Accessibility tree ở Ex2, Ex3 và homework, thay hoặc bổ sung vào đây để đủ yêu cầu "DevTools proof".
+> Bốn mục đầu là lỗi thật xảy ra trong session làm Exercise 1 (bằng chứng mục 1-3 là output terminal và ảnh checklist; mục 4 là log Console đo trên Edge). Mục 5 xảy ra ở Homework 1, bằng chứng là ảnh Lighthouse chụp từ DevTools. Khi gặp lỗi có Profiler, Network hoặc Accessibility tree ở Ex2, Ex3 và homework, thay hoặc bổ sung vào đây để đủ yêu cầu "DevTools proof".
 > Chỉ ghi điều đã xảy ra. Không bịa prompt, code, ảnh hay commit hash. Các ô `(điền)` do bạn bổ sung.
 
 - **Sinh viên:** Quang Phú Hùng — 24520626
@@ -17,6 +17,7 @@
 | 2 | Khởi tạo (X0-09) | Cài ESLint bản mới nhất mà không kiểm peer dependency, `npm install` thất bại | Output `npm` (ERESOLVE) | Đã sửa, chờ hash commit |
 | 3 | Exercise 1 (E1-03) | 34 test pass nhưng gate `grep '<div'` vẫn ra 1 dòng do chính comment của AI; thêm cảnh báo giả của ESLint | Output `grep`, `eslint` | Đã sửa, chờ hash commit |
 | 4 | Exercise 1 (E1-07) | Demo "ảnh lỗi" và favicon mặc định bắn lỗi đỏ vào Console, trái gate "Console sạch" | Log Console đo trên Edge | Đã sửa, chờ hash commit |
+| 5 | Homework 1 (H1-D) | AI thêm font Google Fonts (stylesheet bên thứ ba chặn render) và tải trước 7 file WAV lúc mount mà không đo Performance; Lighthouse Performance 69 | Ảnh Lighthouse (DevTools) | Đã sửa code, chờ đo lại và hash commit |
 
 ## Lỗi 1 — Đọc sai cấu trúc folder của checklist và ghi nhầm là "bắt buộc"
 
@@ -167,3 +168,49 @@ Lỗi 404 còn lại nhiều khả năng là `/favicon.ico` (suy luận: biến 
 ### Bài học
 
 Dữ liệu demo cho ca lỗi cũng phải qua gate "Console sạch". Luôn đo bằng trình duyệt thật (Console, Network) trước khi báo xong, không chỉ dựa vào test đơn vị.
+
+## Lỗi 5 — Thêm tài nguyên bên thứ ba chặn render mà không đo Performance
+
+### Bối cảnh
+
+- **Task:** H1-D (làm đẹp giao diện, xem [WBS HW1](src/homeworks/DrumMachine/TASK_DECOMPOSITION.md)), sau đó H1-09 (Lighthouse).
+- **Prompt gốc của bạn:** "Ok ổn nhưng giao diện xấu quá, update giao diện lên đi, bảng màu sáng 1 tí, phá cách cho các nút luôn, ngoài ra thêm tí animation khi bấm tùy thuộc vào từng loại âm thanh."
+- **Điều AI tuyên bố:** báo `npm run build` thành công và các grep sạch; không đo Performance trước khi giao. Sau khi bạn gửi điểm Lighthouse, AI ghi vào `evidence/README.md` rằng điểm Performance 69 "chưa phản ánh bản nộp" vì chạy trên dev server. Đây là giả thuyết chưa được đo.
+
+### Lỗi
+
+Để dùng font Bricolage Grotesque, AI thêm vào `index.html` hai thẻ `preconnect` và một stylesheet từ `fonts.googleapis.com`. Request này nằm trên đường chặn render và kéo theo chuỗi HTML, CSS của Google, rồi file font. Cùng lúc, hook `useDrumAudio` tải trước cả 7 file WAV (khoảng 281 KB, cộng từ kích thước file trong `public/kits/acoustic/`) ngay lúc mount.
+
+Lighthouse chạy trên dev server (`localhost:5173`) cho thấy ba nhóm cần tách:
+
+- **Do lựa chọn của AI (có trong insight):** Render-blocking requests, Network dependency tree, 3rd parties.
+- **Đặc trưng của dev server, không quy cho AI:** Minify JavaScript (2,959 KiB), Reduce unused JavaScript (1,366 KiB), User Timing marks (3 user timings). Tổng 4,186 KiB gồm cả bundle dev nên không tách riêng được phần WAV.
+- **Chưa xác định nguyên nhân:** Forced reflow. Chưa có trace để biết là code dự án hay công cụ dev.
+
+Việc tải trước WAV làm nặng LCP là **suy luận** (Lighthouse mô phỏng mạng chậm), chưa đo riêng.
+
+Dòng AI sinh ra:
+
+```html
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&display=swap" />
+```
+
+### Bằng chứng
+
+Ảnh Lighthouse trong DevTools, dev server `localhost:5173`, lúc 08:25:29:
+
+- [lighthouse-devtools.png](src/homeworks/DrumMachine/evidence/lighthouse-devtools.png): Performance 69, Accessibility 100, Best Practices 100, SEO 91.
+- [lighthouse-metrics-devtools.png](src/homeworks/DrumMachine/evidence/lighthouse-metrics-devtools.png): First Contentful Paint 2.1 s, Largest Contentful Paint 3.6 s, Total Blocking Time 0 ms, Cumulative Layout Shift 0, Speed Index 2.1 s.
+- [lighthouse-insights-devtools.png](src/homeworks/DrumMachine/evidence/lighthouse-insights-devtools.png): Render-blocking requests (ước tính tiết kiệm 160 ms), Forced reflow, Network dependency tree, 3rd parties, Minify JavaScript (2,959 KiB), Reduce unused JavaScript (1,366 KiB), Avoid enormous network payloads (4,186 KiB).
+
+### Bản sửa thủ công
+
+- **Commit:** (điền hash từ `git log`)
+- **Thay đổi:** tự phục vụ font từ `public/fonts/` (hai tập con `latin` 41 KB và `vietnamese` 8,6 KB, có `unicode-range` và `font-display: swap`) kèm `<link rel="preload">`; xoá ba thẻ Google; dời tải trước WAV sang `whenIdle` (sau khi trang tải xong và trình duyệt rảnh). Kiểm tra trên bản build: `grep googleapis|gstatic` trong `dist/` ra 0; JS 235 KB (gzip 74 KB), CSS 11,7 KB (gzip 3,25 KB).
+- **Đo lại:** (điền: Lighthouse chạy trên `npm run preview` cổng 4173; ghi điểm Performance, FCP, LCP và lưu ảnh hoặc JSON vào `evidence/`).
+
+### Bài học
+
+Mọi tài nguyên bên thứ ba (font, script) là một request chặn render cần đo, không chỉ là lựa chọn thẩm mỹ. Đo Performance trên bản build chứ không phải dev server, và tách phần do mình gây ra khỏi phần do công cụ dev. Giả thuyết "do dev server" phải được kiểm lại bằng bản build trước khi viết thành kết luận.
