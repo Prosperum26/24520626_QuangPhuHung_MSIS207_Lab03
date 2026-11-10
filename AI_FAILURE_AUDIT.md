@@ -17,7 +17,7 @@
 | 2 | Khởi tạo (X0-09) | Cài ESLint bản mới nhất mà không kiểm peer dependency, `npm install` thất bại | Output `npm` (ERESOLVE) | Đã sửa, chờ hash commit |
 | 3 | Exercise 1 (E1-03) | 34 test pass nhưng gate `grep '<div'` vẫn ra 1 dòng do chính comment của AI; thêm cảnh báo giả của ESLint | Output `grep`, `eslint` | Đã sửa, chờ hash commit |
 | 4 | Exercise 1 (E1-07) | Demo "ảnh lỗi" và favicon mặc định bắn lỗi đỏ vào Console, trái gate "Console sạch" | Log Console đo trên Edge | Đã sửa, chờ hash commit |
-| 5 | Homework 1 (H1-D) | AI thêm font Google Fonts (stylesheet bên thứ ba chặn render) và tải trước 7 file WAV lúc mount mà không đo Performance; Lighthouse Performance 69 | Ảnh Lighthouse (DevTools) | Đã sửa code, chờ đo lại và hash commit |
+| 5 | Homework 1 (H1-D) | AI thêm font Google Fonts (stylesheet bên thứ ba chặn render) và tải trước 7 file WAV lúc mount mà không đo Performance; Lighthouse Performance 69 | Ảnh Lighthouse (DevTools) | Đã sửa và đo lại (Performance 69 lên 100) |
 
 ## Lỗi 1 — Đọc sai cấu trúc folder của checklist và ghi nhầm là "bắt buộc"
 
@@ -207,9 +207,9 @@ Dòng AI sinh ra:
 
 ### Bản sửa thủ công
 
-- **Commit:** (điền hash từ `git log`)
+- **Commit:** `401843f`
 - **Thay đổi:** tự phục vụ font từ `public/fonts/` (hai tập con `latin` 41 KB và `vietnamese` 8,6 KB, có `unicode-range` và `font-display: swap`) kèm `<link rel="preload">`; xoá ba thẻ Google; dời tải trước WAV sang `whenIdle` (sau khi trang tải xong và trình duyệt rảnh). Kiểm tra trên bản build: `grep googleapis|gstatic` trong `dist/` ra 0; JS 235 KB (gzip 74 KB), CSS 11,7 KB (gzip 3,25 KB).
-- **Đo lại:** (điền: Lighthouse chạy trên `npm run preview` cổng 4173; ghi điểm Performance, FCP, LCP và lưu ảnh hoặc JSON vào `evidence/`).
+- **Đo lại:** Lighthouse trong DevTools lúc 08:46:08 trên `localhost:4174` (cổng preview): Performance 69 lên **100**, Accessibility 100, Best Practices 100, SEO 91. Ảnh: [lighthouse-build-after.png](src/homeworks/DrumMachine/evidence/lighthouse-build-after.png). Ảnh chỉ cho thấy các điểm tổng; chưa lưu FCP, LCP sau khi sửa.
 
 ### Bài học
 
