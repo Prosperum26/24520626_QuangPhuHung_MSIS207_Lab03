@@ -14,10 +14,12 @@ Tệp này ghi lại cái gì đã kiểm, kiểm bằng cách nào, và cái g�
 | Lighthouse: chỉ số Performance (dev server) | First Contentful Paint 2.1 s, Largest Contentful Paint 3.6 s, Total Blocking Time 0 ms, Cumulative Layout Shift 0, Speed Index 2.1 s | [lighthouse-metrics-devtools.png](lighthouse-metrics-devtools.png) |
 | Lighthouse: insight và diagnostics (dev server) | Render-blocking requests (ước tính tiết kiệm 160 ms), Forced reflow, Network dependency tree, 3rd parties; Minify JavaScript 2,959 KiB, Reduce unused JavaScript 1,366 KiB, payload 4,186 KiB | [lighthouse-insights-devtools.png](lighthouse-insights-devtools.png) |
 
+| Lighthouse sau khi sửa Performance | Panel Lighthouse chạy lúc 08:46:08 trên `http://localhost:4174/` (cổng preview): Performance **100**, Accessibility **100**, Best Practices 100, SEO 91 | [lighthouse-build-after.png](lighthouse-build-after.png) |
+
 Ghi chú về các bằng chứng trên:
 
 - Lighthouse chạy trên **dev server** (cổng 5173), không phải bản build (`npm run preview`, cổng 4173). Các mục Minify JavaScript, Reduce unused JavaScript và User Timing là đặc trưng của bản dev. Các mục Render-blocking requests, Network dependency tree và 3rd parties đến từ stylesheet Google Fonts mà AI đã thêm; ghi ở Lỗi 5 của [AI_FAILURE_AUDIT.md](../../../../AI_FAILURE_AUDIT.md).
-- Đã sửa trong code (chưa đo lại bằng Lighthouse): font tự phục vụ + preload, bỏ ba thẻ Google, dời tải trước WAV sang lúc rảnh. Điểm sau sửa phải đo trên bản build và ghi vào bảng; điểm 69 ở trên là **trước** khi sửa.
+- Đã sửa trong code: font tự phục vụ + preload, bỏ ba thẻ Google, dời tải trước WAV sang lúc rảnh. Điểm 69 ở trên là **trước** khi sửa; điểm **sau** khi sửa ở dòng kế tiếp.
 - Forced reflow chưa rõ nguyên nhân. Nếu vẫn còn sau khi đo trên bản build, mở insight đó trong Lighthouse để xem dòng mã gây ra.
 - Mới có ảnh chụp, **chưa có file JSON** của Lighthouse (gate H1-09 yêu cầu JSON). Trong panel Lighthouse: nút ⋮ > Save as JSON, lưu thành `evidence/lighthouse-a11y.report.json`.
 - Ảnh a11y tree là vùng Looper, chưa phải pad. Gate H1-04 (pad có tên và `aria-pressed`) cần thêm một ảnh chọn nút "Kick A" trong cây.
@@ -64,7 +66,7 @@ Kết quả: `evidence/lighthouse-a11y.report.json` và `.report.html`. Ghi đi�
 | Console | Mở Console, gõ mỗi pad một lần: không có lỗi hay cảnh báo | | `console.png` |
 | Âm thanh | Nghe đủ 7 pad; giữ phím không bắn lặp; hi-hat (D) cắt tiếng open hat (W) | | ghi chú |
 
-Lighthouse Accessibility: **100** (DevTools, dev server 5173, theo ảnh [lighthouse-devtools.png](lighthouse-devtools.png)). Còn phải chạy lại trên bản build và lưu JSON.
+Lighthouse Accessibility: **100** ở cả hai lần đo: dev server 5173 trước khi sửa Performance ([lighthouse-devtools.png](lighthouse-devtools.png)) và cổng preview 4174 sau khi sửa ([lighthouse-build-after.png](lighthouse-build-after.png)). Performance: 69 trước, **100** sau. Còn thiếu file JSON của Lighthouse.
 
 ## Phải kiểm lại
 
