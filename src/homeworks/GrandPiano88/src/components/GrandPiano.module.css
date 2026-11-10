@@ -1,0 +1,58 @@
+/*
+ * Cuộn ngang là có chủ đích: 52 phím trắng không thể vừa 375px mà vẫn chạm được (WCAG 1.4.10 miễn
+ * trừ nội dung cần bố cục hai chiều như bàn phím nhạc). Chỉ .scroller cuộn, phần còn lại của trang thì không.
+ * Mỗi quãng tám là lưới 7 cột trắng; phím đen đặt ở mép phải cột của phím trắng bên trái nó (theo data-pc
+ * ở PianoKey.module.css). Quãng đầu và cuối thiếu phím nên co khung bằng data-lead / data-trail.
+ */
+.piano {
+  --white-w: 2.75rem;
+  --key-h: 11rem;
+
+  display: grid;
+  gap: 0.75rem;
+  min-width: 0;
+  padding: 1.25rem 0 0.5rem;
+  border: 3px solid var(--ink);
+  border-radius: var(--radius-panel);
+  background: var(--surface);
+  box-shadow: 0 var(--lift) 0 var(--ink);
+}
+
+.piano > h2,
+.hint {
+  padding-inline: 1.25rem;
+}
+
+.hint {
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+}
+
+.scroller {
+  position: relative;
+  display: flex;
+  overflow-x: auto;
+  padding: 0.25rem 1.25rem calc(var(--lift) + 1rem);
+  scrollbar-color: var(--ink) var(--paper);
+}
+
+.octave {
+  display: grid;
+  flex: none;
+  grid-template-columns: repeat(7, var(--white-w));
+  grid-template-rows: var(--key-h);
+}
+
+/* Quãng thiếu cột trắng: kéo khung lại bằng margin âm đúng số cột thiếu. */
+.octave[data-lead='1'] { margin-inline-start: calc(-1 * var(--white-w)); }
+.octave[data-lead='2'] { margin-inline-start: calc(-2 * var(--white-w)); }
+.octave[data-lead='3'] { margin-inline-start: calc(-3 * var(--white-w)); }
+.octave[data-lead='4'] { margin-inline-start: calc(-4 * var(--white-w)); }
+.octave[data-lead='5'] { margin-inline-start: calc(-5 * var(--white-w)); }
+.octave[data-lead='6'] { margin-inline-start: calc(-6 * var(--white-w)); }
+.octave[data-trail='1'] { margin-inline-end: calc(-1 * var(--white-w)); }
+.octave[data-trail='2'] { margin-inline-end: calc(-2 * var(--white-w)); }
+.octave[data-trail='3'] { margin-inline-end: calc(-3 * var(--white-w)); }
+.octave[data-trail='4'] { margin-inline-end: calc(-4 * var(--white-w)); }
+.octave[data-trail='5'] { margin-inline-end: calc(-5 * var(--white-w)); }
+.octave[data-trail='6'] { margin-inline-end: calc(-6 * var(--white-w)); }

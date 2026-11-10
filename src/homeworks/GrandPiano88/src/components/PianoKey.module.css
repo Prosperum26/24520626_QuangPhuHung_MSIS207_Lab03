@@ -1,0 +1,124 @@
+/*
+ * Vị trí theo pitch class (data-pc, 0 = C): phím trắng ở cột của nó (C D E F G A B = 1..7);
+ * phím đen nằm ở mép phải cột của phím trắng bên trái nó, lệch nửa bề rộng sang phải.
+ * Bảng cột này trùng WHITE_COLUMN trong src/music/notes.js.
+ * Nhấn: phím lún xuống đúng độ nổi (--lift) và đổi màu, nên vẫn thấy được khi tắt animation.
+ */
+.key {
+  --drop: var(--lift);
+
+  grid-row: 1;
+  padding: 0;
+  border: 0;
+  color: var(--ink);
+  font: inherit;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    translate 70ms ease-out,
+    box-shadow 70ms ease-out;
+}
+
+.white {
+  display: grid;
+  align-items: end;
+  justify-items: center;
+  padding-bottom: 0.6rem;
+  border-radius: 0 0 0.6rem 0.6rem;
+  background: var(--key-white);
+  box-shadow:
+    inset 0 0 0 1.5px var(--ink),
+    0 var(--drop) 0 var(--ink);
+}
+
+.black {
+  z-index: 1;
+  align-self: start;
+  justify-self: end;
+  width: calc(var(--white-w) * 0.62);
+  height: 62%;
+  translate: 50% 0;
+  border-radius: 0 0 0.45rem 0.45rem;
+  background: var(--key-black);
+  box-shadow:
+    inset 0 0 0 2px var(--ink),
+    0 var(--drop) 0 var(--ink);
+}
+
+.name {
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.white[data-pc='0'] { grid-column: 1; }
+.white[data-pc='2'] { grid-column: 2; }
+.white[data-pc='4'] { grid-column: 3; }
+.white[data-pc='5'] { grid-column: 4; }
+.white[data-pc='7'] { grid-column: 5; }
+.white[data-pc='9'] { grid-column: 6; }
+.white[data-pc='11'] { grid-column: 7; }
+.black[data-pc='1'] { grid-column: 1; }
+.black[data-pc='3'] { grid-column: 2; }
+.black[data-pc='6'] { grid-column: 4; }
+.black[data-pc='8'] { grid-column: 5; }
+.black[data-pc='10'] { grid-column: 6; }
+
+/* Chỉ thiết bị có chuột: trên màn cảm ứng :hover bị "dính" sau khi chạm. */
+@media (hover: hover) {
+  .white:hover {
+    background: var(--paper);
+  }
+}
+
+.key[aria-pressed='true'] {
+  --drop: 0px;
+
+  translate: 0 var(--lift);
+}
+
+.black[aria-pressed='true'] {
+  translate: 50% var(--lift);
+  background: var(--press-black);
+}
+
+.white[aria-pressed='true'] {
+  background: var(--press-white);
+}
+
+/* Focus bàn phím: phím trắng vẽ khung bên trong (không bị phím đen che), phím đen vẽ bên ngoài. */
+.key:focus-visible {
+  outline: 3px solid var(--ink);
+}
+
+.white:focus-visible {
+  outline-offset: -8px;
+}
+
+.black:focus-visible {
+  z-index: 2;
+  outline-offset: 2px;
+  outline-color: var(--ink);
+  box-shadow:
+    inset 0 0 0 2px var(--ink),
+    0 var(--drop) 0 var(--ink),
+    0 0 0 5px var(--surface);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .key {
+    transition: none;
+  }
+}
+
+/* Chế độ tương phản cao: màu hệ thống; trạng thái nhấn không chỉ dựa vào màu. */
+@media (forced-colors: active) {
+  .key {
+    border: 1px solid ButtonText;
+  }
+
+  .key[aria-pressed='true'] {
+    background: Highlight;
+    color: HighlightText;
+  }
+}
