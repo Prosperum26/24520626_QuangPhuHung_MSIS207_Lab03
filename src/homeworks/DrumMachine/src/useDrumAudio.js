@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { createAudioEngine, DEFAULT_VOLUME } from './audioEngine.js';
 import { DEFAULT_KIT_ID } from './kits.js';
+import { whenIdle } from './whenIdle.js';
 
 /**
  * Hook bọc audioEngine. Engine nằm trong ref (không phải state) vì không có gì để render lại.
@@ -29,11 +30,17 @@ export function useDrumAudio() {
   }, []);
 
   // Tải sẵn byte của kit (chưa cần AudioContext) để hit đầu tiên chỉ còn việc giải mã.
-  useEffect(() => {
-    getEngine()
-      .prefetch(kit)
-      .catch((err) => setError(err.message));
-  }, [getEngine, kit]);
+  // Đợi trang tải xong và trình duyệt rảnh: ~280 KB WAV không được tranh băng thông với phần hiển thị.
+  // Nếu người dùng gõ trước đó thì engine tự tải kit khi cần (loadKit), nên không mất tiếng.
+  useEffect(
+    () =>
+      whenIdle(() => {
+        getEngine()
+          .prefetch(kit)
+          .catch((err) => setError(err.message));
+      }),
+    [getEngine, kit],
+  );
 
   // Chỉ cleanup khi unmount: dọn AudioContext.
   useEffect(

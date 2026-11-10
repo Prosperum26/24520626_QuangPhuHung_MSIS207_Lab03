@@ -43,17 +43,18 @@ describe('useDrumAudio', () => {
     expect(result.current.trigger).toBe(first);
   });
 
-  it('prefetch kit mặc định khi mount', () => {
+  it('prefetch kit mặc định khi trình duyệt rảnh, không đồng bộ lúc mount', async () => {
     renderHook(() => useDrumAudio());
-    expect(last().prefetch).toHaveBeenCalledWith('acoustic');
+    expect(engines).toHaveLength(0); // engine chưa được tạo
+    await waitFor(() => expect(last().prefetch).toHaveBeenCalledWith('acoustic'));
   });
 
-  it('setKit đổi state, báo engine và prefetch kit mới', () => {
+  it('setKit đổi state, báo engine và prefetch kit mới', async () => {
     const { result } = renderHook(() => useDrumAudio());
     act(() => result.current.setKit('electronic'));
     expect(result.current.kit).toBe('electronic');
     expect(last().setKit).toHaveBeenCalledWith('electronic');
-    expect(last().prefetch).toHaveBeenCalledWith('electronic');
+    await waitFor(() => expect(last().prefetch).toHaveBeenCalledWith('electronic'));
   });
 
   it('setVolume và setMuted đổi state và báo engine', () => {
@@ -72,8 +73,15 @@ describe('useDrumAudio', () => {
     expect(result.current.now()).toBe(2);
   });
 
-  it('unmount dispose engine', () => {
+  it('unmount trước khi rảnh thì huỷ prefetch, không tạo engine', () => {
     const { unmount } = renderHook(() => useDrumAudio());
+    unmount();
+    expect(engines).toHaveLength(0);
+  });
+
+  it('unmount dispose engine', () => {
+    const { result, unmount } = renderHook(() => useDrumAudio());
+    act(() => result.current.trigger('kick')); // tạo engine
     const engine = last();
     unmount();
     expect(engine.dispose).toHaveBeenCalled();
@@ -92,14 +100,16 @@ describe('useDrumAudio', () => {
   it('lỗi từ engine hiện ra ở error', async () => {
     const { result } = renderHook(() => useDrumAudio());
     expect(result.current.error).toBeNull();
+    act(() => result.current.trigger('kick')); // tạo engine
     act(() => engineOptions.onError(new Error('Không tải được kick.wav')));
     await waitFor(() => expect(result.current.error).toBe('Không tải được kick.wav'));
   });
 
   it('prefetch bị từ chối thì error được đặt, không ném lỗi chưa xử lý', async () => {
     const { result } = renderHook(() => useDrumAudio());
+    act(() => result.current.trigger('kick')); // tạo engine
     const failing = last();
-    failing.prefetch.mockReturnValueOnce(Promise.reject(new Error('mất mạng')));
+    failing.prefetch.mockImplementationOnce(() => Promise.reject(new Error('mất mạng')));
     act(() => result.current.setKit('electronic'));
     await waitFor(() => expect(result.current.error).toBe('mất mạng'));
   });
