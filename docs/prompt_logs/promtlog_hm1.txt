@@ -1,0 +1,3527 @@
+  ⎿  SessionStart:startup hook error
+  ⎿  [bash C:\Users\Phu Hung\.claude\plugins\cache\anthropic-plugin-directory\cl
+     aude-memory\1.0.0-0afb7b2da7cc/hooks/scripts/memory-context.sh]:
+     C:/Users/Phu: line 1: syntax error near unexpected token `('
+
+[Image #1]
+
+> ok giờ tới lab03 homework 1 do có sử dụng code cũ của lab 2 nên bạn có thể
+  tham khảo ở đây C:\Dev\Project\24520626_QuangPhuHung_MSIS207_Lab02,
+  brainstorm mình đi
+
+● Skill(superpowers:brainstorming)
+  ⎿  Successfully loaded skill
+
+● Mình xếp bài này vào nhóm "bounded-to-architectural" vì HW1 có code Lab 2 để
+  tham khảo nhưng folder Lab 3 chưa có flow nào, nên sẽ nặng hơn. Mình sẽ đọc
+  ngữ cảnh trước, chưa sửa gì. · summary
+
+  Searched for 4 patterns, read 2 files, ran 3 shell commands (ctrl+o to expand)
+
+● Mình đã đọc xong ngữ cảnh. Mình xếp HW1 vào nhóm architectural: Lab 3 chưa có
+  project Vite nào cho bài này, nên chưa có flow sẵn để sửa. Vì vậy sẽ có
+  brainstorm, spec, rồi plan, và chưa viết code.
+
+  Điều mình tìm thấy
+
+  - Lab 2 HW1 không phải drum kit. Nó là data grid vanilla JS, nên không có code
+    drum để chép. Thứ dùng lại được là ý tưởng: announce.js (C:\Dev\Project\245
+    20626_QuangPhuHung_MSIS207_Lab02\Homework1_Lab02\src\grid\announce.js) giữ
+    vùng live role="status" cố định ngoài cây render, vì vùng live bị tạo lại
+    mỗi render thường không được đọc ra. Hit log của mình cần đúng nguyên tắc
+    này.
+  - Drum kit thật nằm ở Lab 1 (C:\Dev\Project\MSIS207_Lab1\Homework_2). WBS của
+    bạn cũng chỉ đến đó. Ở đó có 9 file .wav tự tổng hợp (không dính license), 3
+    module nhỏ và tokens.css đã có sẵn tương phản và dark mode. Nó dùng key chứ
+    không phải e.code, và dùng cloneNode cho mỗi lần phát.
+  - Slide ghi 7 phím (W/A/S/D/J/K/L), còn Lab 1 có 9 pad. Mình đề xuất theo
+    slide và WBS: 7 pad, chọn 7 trong 9 sample.
+  - Slide có chỗ nên sửa. Contract dùng
+    ['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName). Cách này bỏ sót
+    contenteditable. Mình sẽ dùng closest('input, textarea, select,
+    [contenteditable]') như Lab 1. Slide cũng nhắc keyup nhưng contract chỉ có
+    keydown.
+
+  Mình hiểu bài như sau
+
+  Mục tiêu là app React 19 + Vite cho 7 pad. Pad là <button aria-pressed>, hit
+  log là <output aria-live="polite">, có thanh decibel trực quan. Phải đạt
+  Lighthouse a11y 100 và WCAG 2.2 AA, không cuộn ngang ở 375px, và bạn giải
+  thích được code khi bị sửa trực tiếp. Phần bạn đã nói rõ: e.code, e.repeat, bỏ
+  qua input, cleanup. Phần mình đang giả định: ghi/phát lại nằm ngoài scope
+  (WBS đã loại), và 7 pad thay vì 9.
+
+  Câu hỏi quan trọng nhất
+
+  Âm thanh dùng cách nào?
+
+  1. Dùng lại .wav của Lab 1 qua Web Audio (khuyên dùng). Nạp file một lần bằng
+     decodeAudioData, mỗi lần nhấn tạo một AudioBufferSourceNode mới nên phát
+     chồng được và không rò. Nguồn thật nên có tiếng drum thật. Mình đo mức
+     "decibel" bằng AnalyserNode RMS, nên thanh meter đo đúng âm thanh đang
+     phát.
+  2. Tổng hợp bằng oscillator, không cần file. Code nhỏ nhưng nghe không giống
+     drum, và meter chỉ là con số giả.
+  3. Giữ new Audio()/cloneNode như Lab 1. Đơn giản nhất, nhưng không đo được mức
+     âm thật, nên meter sẽ phải mô phỏng.
+
+  Bạn chọn cách nào, hay có hướng khác? Sau khi bạn trả lời, mình sẽ đề xuất 2-3
+  kiến trúc, trình bày thiết kế theo từng phần, rồi mới viết spec.
+
+> à drum kit bên đây có vẻ thầy nhầm thật
+  C:\Dev\Project\MSIS207_Lab1\Homework_2.  về âm thanh thì yeah dùng lại .wav
+  của lab 1 cũng được nhưng mình muốn phong phú hơn tí, bạn có đề xuất gì không
+
+● Có, và mình sẽ giữ mọi thứ đủ nhỏ để bạn giải thích được trong 180 giây. Dưới
+  đây là các ý, xếp theo chi phí thấp đến cao. Cả bốn ý đầu đều chạy trên cùng
+  engine Web Audio, chỉ thêm vài dòng.
+
+  #: 1
+  Ý tưởng: Humanize: mỗi lần nhấn lệch playbackRate ±3% và gain ±10% ngẫu nhiên
+  Hiệu quả: Hết kiểu "máy bắn", nghe tự nhiên
+  Code thêm: Khoảng 3 dòng
+  Liên quan a11y/yêu cầu: Không
+  ────────────────────────────────────────
+  #: 2
+  Ý tưởng: Hi-hat choke: nhấn closed hat thì ngắt open hat đang kêu
+  Hiệu quả: Đúng hành vi trống thật
+  Code thêm: Khoảng 6 dòng (giữ node đang chạy theo chokeGroup)
+  Liên quan a11y/yêu cầu: Không
+  ────────────────────────────────────────
+  #: 3
+  Ý tưởng: Master volume + mute bằng <input type="range"> có <label htmlFor>
+  Hiệu quả: Điều khiển âm lượng, nối thẳng vào GainNode master
+  Code thêm: Khoảng 15 dòng
+  Liên quan a11y/yêu cầu: Dùng valueAsNumber. Còn xử lý được ca "đang focus
+    slider thì phím có kích hoạt pad không"
+  ────────────────────────────────────────
+  #: 4
+  Ý tưởng: Meter thật: AnalyserNode ở cuối chuỗi, đọc RMS bằng
+    requestAnimationFrame có cleanup
+  Hiệu quả: Thanh decibel phản ánh âm thanh thật
+  Code thêm: Đã nằm trong plan cơ bản
+  Liên quan a11y/yêu cầu: Có nhãn chữ "−18 dB", không chỉ màu
+  ────────────────────────────────────────
+  #: 5
+  Ý tưởng: Chọn kit (Acoustic .wav / Lo-fi / Electronic): drumPads.js map padId
+    sang buffer của kit đang chọn
+  Hiệu quả: Phong phú nhất, phím không đổi
+  Code thêm: Trung bình: cần thêm 1-2 bộ sample
+  Liên quan a11y/yêu cầu: Có <select> với label
+  ────────────────────────────────────────
+  #: 6
+  Ý tưởng: Reverb "Room": ConvolverNode với impulse tự sinh bằng noise có decay
+  Hiệu quả: Có không gian, nghe "studio"
+  Code thêm: Khoảng 20 dòng
+  Liên quan a11y/yêu cầu: Công tắc bật/tắt
+
+  Đề xuất của mình: bắt buộc làm 1, 2, 3, 4. Chúng rẻ, nghe khác rõ, và đều có
+  test được: choke kiểm bằng spy trên stop(), volume kiểm bằng valueAsNumber. Ý
+  5 chỉ nên làm nếu bạn kiếm được bộ sample thứ hai không dính license, hoặc
+  mình tổng hợp lại bằng script như Lab 1. Ý 6 bỏ qua để tránh over-engineering.
+
+  Lưu ý về kit: nếu làm ý 5, padMap vẫn giữ một nguồn duy nhất. Đổi kit chỉ đổi
+  bảng padId sang file âm, nên không động vào hook bàn phím.
+
+  Câu hỏi để chốt: bạn muốn làm 1-4, làm 1-5, hay thêm/bớt ý nào? Nếu làm kit,
+  bạn muốn thêm bộ sample nào (mình có thể tổng hợp bằng script giống Lab 1)?
+
+> làm luôn cái số 5 đi nhưng làm tổng hợp lại bằng script như lab 1 xem, thay
+  vì ý 6 bạn làm 1 cái looper được không, mình thấy khi các nhạc sĩ soạn nhạc
+  đa số có 1 cái looper.
+
+● Làm được. Có một điểm cần báo trước: WBS HW1 ghi "ghi/phát lại: ngoài phạm vi
+  (đã có ở Lab 1)". Looper là bản mở rộng, nên mình sẽ ghi vào spec như mục
+  thêm, tách khỏi 9 task H1-00 đến H1-09. Nếu thiếu thời gian thì cắt looper mà
+  không ảnh hưởng phần chấm điểm.
+
+  Đã chốt
+
+  - Kit: 2 kit tổng hợp bằng script. Kit "Acoustic" dùng lại cách Lab 1 làm. Kit
+    "Electronic 808" làm mới, cùng 7 pad W A S D J K L. Đổi kit chỉ đổi bảng
+    padId sang file âm, hook bàn phím không đổi.
+  - Audio: Web Audio, nạp buffer một lần, mỗi lần nhấn tạo một
+    AudioBufferSourceNode. Kèm humanize, hi-hat choke, master volume, và meter
+    thật bằng AnalyserNode.
+  - Looper: thay cho reverb.
+
+  Looper: 3 cách làm
+
+  A. setTimeout phát lại danh sách sự kiện. Dễ viết nhất nhưng sai. Timer bị
+  trôi, tab nền còn bị giới hạn tốc độ, nên loop lệch nhịp sau vài vòng. Đây
+  đúng là lỗi "đồng hồ trôi" của HW3, nên mình loại.
+
+  B. Loop-pedal (khuyên dùng). Bấm Record, chơi, bấm lại thì độ dài vòng bằng
+  thời gian đã ghi, rồi tự lặp. Có Overdub để chồng thêm lớp, có Clear. Phát lại
+  dùng bộ lập lịch look-ahead trên AudioContext.currentTime. Cứ 25ms một
+  setInterval (có cleanup) nhìn trước 100ms và đặt lịch source.start(when). Nhịp
+  chính xác theo đồng hồ âm thanh, không trôi.
+
+  C. Lưới cố định theo BPM. Có metronome, 1 ô vuông 16 bước, mỗi hit được
+  quantize. Giống drum machine hơn là looper. Nặng hơn (UI lưới 7×16, metronome,
+  BPM) và khác điều bạn mô tả về nhạc sĩ.
+
+  Mình chọn B. Phần logic "sự kiện nào rơi vào cửa sổ thời gian nào" là hàm
+  thuần, test được với đồng hồ giả mà không cần âm thanh thật. Nhược điểm là hit
+  không được quantize. Nếu cần thì thêm sau, nhưng mình bỏ qua cho đỡ phức tạp.
+
+  Trợ năng của looper:
+  - Nút Record dùng aria-pressed.
+  - Trạng thái (idle / recording / playing / overdubbing) báo qua một vùng
+    role="status".
+  - Có một thanh tiến trình cho vòng lặp, kèm chữ.
+  - Phím tắt looper không dùng chữ cái, tránh va với pad. Mình định dùng Space
+    cho Record/Stop, nhưng Space cũng kích hoạt <button> đang focus. Mình sẽ xử
+    lý bằng cách ghi nhận khi focus không ở nút nào, hoặc chỉ dùng nút bấm. Bạn
+    muốn phím tắt không?
+
+  Một câu hỏi để chốt: bạn đồng ý cách B (loop-pedal, không quantize)? Và có
+  phím tắt cho looper, hay chỉ dùng nút bấm cho gọn và đỡ rủi ro va phím? Mình
+  nghiêng về chỉ nút bấm. Bạn đồng ý thì mình trình bày thiết kế theo từng phần
+  để bạn duyệt.
+
+> ý B cũng ok nhưng cho phép tùy chỉnh các thông số nhe, ví dụ lặp liên tục hay
+  chờ, tốc độ lặp, tùy chỉnh nhẹ 1 tí về tốc độ bla bla. OK viết plan chi tiết
+  đi
+
+● Mình sẽ viết spec trước, vì quy trình brainstorming yêu cầu bạn duyệt spec rồi
+  mới viết plan thực thi. Spec này đã gồm thiết kế, task chia nhỏ và test.
+
+● Write(c:\Dev\Project\24520626_QuangPhuHung_MSIS207_Lab03\docs\superpowers\spec
+       s\2026-11-09-hw1-drum-kit-design.md)
+  ⎿  Wrote 164 lines to c:\Dev\Project\24520626_QuangPhuHung_MSIS207_Lab03\
+     docs\superpowers\specs\2026-11-09-hw1-drum-kit-design.md
+      1 # HW1 Drum Kit: thiết kế
+      2
+      3 Bài: `src/homeworks/DrumMachine/` (project Vite riêng). WBS gốc:
+        [TASK_DECOMPOSITION.md](../../../src/homeworks/DrumMachine/TASK_D
+        ECOMPOSITION.md) (H1-00 đến H1-09). Tài liệu này mở rộng WBS bằng
+         kit tổng hợp, humanize, choke, volume, meter thật và looper (H1-
+        10 đến H1-15). Phần mở rộng nằm ngoài scope đề; cắt được mà không
+         ảnh hưởng điểm.
+      4
+      5 ## 1. Mục tiêu và tiêu chí thành công
+     … +159 lines (ctrl+o to expand)
+
+● Spec đã viết xong, nhưng mình chưa commit (theo luật của bạn là AI không tự
+  commit): 2026-11-09-hw1-drum-kit-design.md
+  (docs/superpowers/specs/2026-11-09-hw1-drum-kit-design.md). Mình chưa chạy gì
+  và chưa viết code nào, nên chưa có gì được verify.
+
+  Bạn nên đọc kỹ ba chỗ trước khi duyệt:
+  - §2, sáu giả định. Quan trọng nhất là "chờ" hiểu thành chế độ Once, tốc độ là
+    0.5x đến 2x không đổi cao độ, và looper chỉ có nút bấm.
+  - §6, máy trạng thái looper. Năm trạng thái (empty, recording, playing,
+    overdubbing, ready) và bảng chuyển. Đây là phần dễ bị giảng viên đột biến
+    nhất.
+  - §10, thứ tự task. 16 task, mỗi lượt đúng một task theo luật atomic của bạn.
+
+  Một chỗ mình lệch khỏi slide: bỏ kiểm tagName và dùng closest('input,
+  textarea, select, [contenteditable]'), vì kiểm tagName bỏ sót contenteditable.
+  Đây là điểm đáng ghi vào AI_FAILURE_AUDIT.md. Nhưng mục đó phải do bạn viết
+  từ lỗi thật bạn gặp, mình không bịa.
+
+  Bạn đọc spec và cho mình biết cần sửa gì. Nếu ổn, mình chuyển sang viết plan
+  thực thi chi tiết. Plan đó sẽ cụ thể từng bước (test viết trước, lệnh chạy,
+  kết quả mong đợi) cho từng task.
+
+> viết vào task_decompiosition ấy
+
+● Update(TASK_DECOMPOSITION.md)
+  ⎿  Added 5 lines, removed 1 line
+      12  - `if (e.repeat) return;`; bỏ qua khi `target` là `INPUT/TEXTAR
+          EA/SELECT`.
+      13  - Pad là `<button aria-pressed={isActive}>`; hit log `<output a
+          ria-live="polite">`; thanh decibel trực quan cho người khiếm th
+          ính.
+      14  - Cleanup listener và âm thanh khi unmount.
+      15 -**Ngoài phạm vi:** ghi/phát lại (đã có ở Lab 1), lưu trữ, nhạc 
+         -cụ khác.                                                       
+      15 +**Ngoài phạm vi đề:** lưu trữ, nhạc cụ khác, quantize/metronome
+         +, reverb, phím tắt cho looper.                                 
+      16  
+      17 +**Mở rộng tự chọn (H1-10 đến H1-15, cắt được mà không ảnh hưởng
+         + điểm):** 2 kit tổng hợp (Acoustic, Electronic 808), humanize, 
+         +hi-hat choke, master volume/mute, meter đo âm thật, và looper (
+         +record, overdub, chế độ Loop/Once, tốc độ 0.5x-2x). Thiết kế đầ
+         +y đủ: [spec](../../../docs/superpowers/specs/2026-11-09-hw1-dru
+         +m-kit-design.md).                                              
+      18 +                                                               
+      19 +**Giả định đã chốt:** 7 pad (không phải 9 như Lab 1); "chờ" = c
+         +hế độ Once; tốc độ chỉ co giãn nhịp, không đổi cao độ; looper c
+         +hỉ điều khiển bằng nút; kit Acoustic copy 7 sample từ Lab 1, ki
+         +t 808 sinh bằng script Node.                                   
+      20 +                                                               
+      21  ## 2. Contract
+      22  
+      23  ```js
+
+● Update(TASK_DECOMPOSITION.md)
+  ⎿  Added 9 lines, removed 1 line
+      26  /**
+      27   * useDrumKeyboard(padMap, onTriggerPad, isEnabled = true) -> v
+          oid
+      28   *   - đăng ký keydown, cleanup removeEventListener
+      29 - * useDrumAudio() -> { trigger(padId): void, level: number }   
+      29 + * useDrumAudio() -> { trigger(padId, { when? }): void, now(): 
+         +number, volume, setVolume, muted, setMuted,                    
+      30 + *                      kit, setKit, getLevelDb(): number }    
+      31 + * (mở rộng H1-11; bản tối thiểu của WBS gốc chỉ cần trigger)  
+      32   */
+      33 +/** @typedef {{ t: number, padId: string }} LoopEvent */   // t
+         +: giây trong vòng, 0 <= t < loopLen                            
+      34 +// loopScheduler thuần: positionAt(anchor, nowAudio, speed, loo
+         +pLen), eventsInWindow(events, loopLen, from, to), toAudioTime(a
+         +nchor, loopT, speed)                                           
+      35  ```
+      36  
+      37 +Invariant looper: `anchor = { audioTime, loopT }`, đổi tốc độ t
+         +hì đặt lại anchor (không nhảy vị trí); cửa sổ lập lịch liên tục
+         + `[lastTo, now + lookahead)` nên hit overdub không phát đúp; ev
+         +ents bất biến (`[...prev, e]`).                                
+      38 +                                                               
+      39 +Máy trạng thái looper: `empty -> recording -> playing <-> overd
+         +ubbing`, `playing -> ready` (Stop hoặc hết vòng ở chế độ Once),
+         + `ready -> playing` (Play), Clear về `empty`. Hit không có hoặc
+         + `loopLen < MIN_LOOP_MS` thì Stop-recording về `empty`.        
+      40 +                                                               
+      41  - Bảng phím, tên âm, ngưỡng đặt ở **một module** (`drumPads.js`
+          ) để sửa phím chỉ một dòng khi bị đột biến.
+      42  - Âm thanh: dùng file `.wav` hoặc tổng hợp bằng Web Audio; phát
+           chồng được (polyphonic); `play().catch(...)` hoặc xử lý `Audio
+          Context.resume()` sau thao tác người dùng.
+      43  - Pad kích hoạt bằng cả chuột/chạm và bàn phím; vùng bấm >= 24×
+          24 CSS px (WCAG 2.5.8).
+
+● Update(TASK_DECOMPOSITION.md)
+  ⎿  Added 8 lines
+      56  | H1-07 | Decibel meter trực quan (không chỉ màu; có text/aria)
+           | `src/LevelMeter.jsx` | Có nhãn chữ; tương phản >= 3:1 | [ ] 
+          |
+      57  | H1-08 | CSS Modules: focus-visible, tương phản 4.5:1, vùng bấ
+          m, 375px, reduced-motion | `src/**/*.module.css` | Tab hết tran
+          g; 0 cuộn ngang ở 375px | [ ] |
+      58  | H1-09 | Kiểm tự động + tay: Lighthouse a11y 100, tab bàn phím
+          , UniKey | `evidence/` | JSON Lighthouse, ảnh a11y tree, ghi ch
+          ú thử UniKey | [ ] |
+      59 +| H1-10 | (mở rộng) Script Node sinh kit 808 + copy kit Acousti
+         +c + `kits.js` (padId -> url theo kit) | `scripts/synth-kits.mjs
+         +`, `public/kits/{acoustic,electronic}/*.wav`, `src/kits.js` | C
+         +hạy script ra đủ 7 `.wav`; test: mỗi kit đủ 7 padId | [ ] |    
+      60 +| H1-11 | (mở rộng, gộp luôn H1-03) `audioEngine` + `useDrumAud
+         +io`: graph source -> gain -> master -> analyser, `AudioContext`
+         + tạo lười + `resume()`, choke open hat bởi closed hat, humanize
+         + (rate ±3%, gain ±10%), volume/mute, `getLevelDb` | `src/audioE
+         +ngine.js`, `src/useDrumAudio.js` | Test với `AudioContext` giả:
+         + N lần nhấn = N source, `onended` thì `disconnect`, choke dừng 
+         +đúng node, mute đặt gain 0, dB có sàn -60 | [ ] |              
+      61 +| H1-12 | (mở rộng) `Controls`: kit `<select>`, volume `<input 
+         +type="range">` (`valueAsNumber` + `Number.isNaN`), mute; mọi ô 
+         +có `<label htmlFor>` (`useId`) | `src/Controls.jsx` | Test: đổi
+         + kit gọi `setKit`; volume giữ kiểu số; a11y tree có tên | [ ] |
+      62 +| H1-13 | (mở rộng) `loopScheduler.js` + `looperConfig.js` (`TI
+         +CK_MS=25`, `LOOKAHEAD_MS=100`, `MIN_LOOP_MS`, `SPEEDS`) | `src/
+         +loopScheduler.js`, `src/looperConfig.js` | Test thuần: speed 0.
+         +5/1/2; cửa sổ vòng quanh; đổi speed giữ liên tục; overdub không
+         + phát đúp | [ ] |                                              
+      63 +| H1-14 | (mở rộng) `useLooper`: máy trạng thái, tick `setInter
+         +val` có cleanup, Loop/Once, tốc độ đổi lúc chạy, Clear | `src/u
+         +seLooper.js` | Test từng chuyển trạng thái; Once dừng cuối vòng
+         +; Loop lặp; unmount hủy interval; StrictMode không nhân đôi | [
+         + ] |                                                           
+      64 +| H1-15 | (mở rộng) `LooperPanel` (Record `aria-pressed`, Overd
+         +ub, Play/Stop, Clear, radio Loop/Once, range tốc độ, `<progress
+         +>` có nhãn, `role="status"` cố định) ghép vào `DrumMachine` | `
+         +src/LooperPanel.jsx`, `src/DrumMachine.jsx` | a11y tree; status
+         + đổi theo trạng thái; 375px không cuộn ngang | [ ] |           
+      65  
+      66 +**Thứ tự thực hiện (mỗi lượt đúng một task):** H1-00, 01, 02, 1
+         +0, 11 (đánh dấu cả H1-03), 04, 05, 06, 07, 12, 13, 14, 15, 08, 
+         +09. H1-08 và H1-09 làm sau cùng để CSS và Lighthouse phủ cả phầ
+         +n mở rộng.                                                     
+      67 +                                                               
+      68  ## 4. Commit gợi ý
+      69  
+      70  `docs(hw1): add drum kit spec` · `feat(hw1): pad map and drum k
+          eyboard hook` · `feat(hw1): audio trigger with aria-pressed pad
+          s` · `feat(hw1): hit log and decibel meter` · `style(hw1): wcag
+           2.2 aa focus, contrast and 375px` · `test(hw1): lighthouse and
+           keyboard evidence`
+
+● Update(TASK_DECOMPOSITION.md)
+  ⎿  Added 3 lines, removed 1 line
+      67  
+      68  ## 4. Commit gợi ý
+      69  
+      70 -`docs(hw1): add drum kit spec` · `feat(hw1): pad map and drum k
+         -eyboard hook` · `feat(hw1): audio trigger with aria-pressed pad
+         -s` · `feat(hw1): hit log and decibel meter` · `style(hw1): wcag
+         - 2.2 aa focus, contrast and 375px` · `test(hw1): lighthouse and
+         - keyboard evidence`                                            
+      70 +`docs(hw1): add drum kit spec` · `feat(hw1): pad map and drum k
+         +eyboard hook` · `feat(hw1): audio trigger with aria-pressed pad
+         +s` · `feat(hw1): hit log and decibel meter` · `feat(hw1): synth
+         +esized kits and kit select` · `feat(hw1): looper with overdub, 
+         +speed and loop mode` · `style(hw1): wcag 2.2 aa focus, contrast
+         + and 375px` · `test(hw1): lighthouse and keyboard evidence`    
+      71  
+      72 +AI không tự commit; bạn xem `git diff` rồi tự chạy `git commit`
+         +.                                                              
+      73 +                                                               
+      74  ## 5. Cổng kiểm tra
+      75  
+      76  ```bash
+
+● Update(TASK_DECOMPOSITION.md)
+  ⎿  Added 4 lines
+      84  
+      85  - Dùng `e.key` thay `e.code`; quên `e.repeat`; `window.addEvent
+          Listener` thiếu cleanup (nhân đôi listener dưới StrictMode).
+      86  - Tạo `Audio` mới mỗi lần nhấn gây rò; `aria-pressed` không đồn
+          g bộ; hit log đọc từng phím gây ồn.
+      87 +- Looper dùng `setTimeout` để phát lại thì trôi nhịp; phải lập 
+         +lịch theo `AudioContext.currentTime`.                          
+      88 +- Hit overdub bị phát đúp vì lọt vào cửa sổ lập lịch; đổi tốc đ
+         +ộ không đặt lại anchor làm vị trí nhảy.                        
+      89 +- `AudioContext` bị suspended nếu chưa `resume()` sau thao tác 
+         +người dùng; `rAF` của meter không cleanup.                     
+      90 +- Kiểm `target.tagName` bỏ sót `contenteditable` (slide); dùng 
+         +`closest(...)`.                                                
+
+● Mình đã cập nhật TASK_DECOMPOSITION.md
+  (src/homeworks/DrumMachine/TASK_DECOMPOSITION.md) của HW1. Cả năm lần sửa đều
+  áp dụng thành công. Mình chưa chạy lệnh nào, nên chưa verify gì ngoài việc
+  file đã ghi được.
+
+  Đã thêm vào file:
+  - §1: tách "ngoài phạm vi đề" khỏi "mở rộng tự chọn", kèm các giả định đã
+    chốt. Link sang spec để xem thiết kế đầy đủ.
+  - §2 (Contract): useDrumAudio mở rộng, kiểu LoopEvent, các hàm của
+    loopScheduler, invariant của looper và máy trạng thái.
+  - §3: sáu task mới H1-10 đến H1-15, mỗi task có file và gate, cộng thứ tự thực
+    hiện từng lượt một.
+  - §4: thêm hai message commit cho kit và looper, kèm nhắc AI không tự commit.
+  - §6 (Dễ sai): thêm các lỗi như setTimeout trôi nhịp, overdub phát đúp,
+    AudioContext bị suspended, rAF không cleanup, và tagName bỏ sót
+    contenteditable.
+
+  Hai điểm cần bạn để ý:
+  - H1-03 (audio hook) được gộp vào H1-11. Mình đặt thứ tự là H1-10 → H1-11 rồi
+    mới tới H1-04, vì Pad và DrumMachine cần engine thật. Khi làm xong H1-11 thì
+    bạn tick cả hai dòng.
+  - Spec ở docs/superpowers/specs/ vẫn còn đó. File này ghi tóm tắt và dẫn link
+    tới spec, nên hai nơi có thể lệch nhau nếu bạn sửa một bên.
+
+  Theo luật bạn đặt, mình chưa commit. Gợi ý commit đầu tiên là docs(hw1): add
+  drum kit spec, gồm file WBS này và file spec.
+
+  Bạn muốn bắt đầu với H1-00 (khởi tạo project Vite bằng cách copy từ Ex1) chứ?
+
+> ok thực hiện tới H1-05 luôn đi vì cả 5 đều là task nền tảng, chia nhỏ commit
+  ra nhe và commit nhưng để mình tự thêm cop author sau không được tự thêm cop
+  author
+
+  Ran 3 shell commands (ctrl+o to expand)
+
+● Cả spec và WBS đã nằm trong commit fb072e3, nên cây làm việc sạch. Mình bắt
+  đầu từ H1-00.
+
+  Ran 2 shell commands (ctrl+o to expand)
+
+● Test và lint đều xanh. Commit H1-00, không thêm co-author theo yêu cầu của
+  bạn.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Bây giờ là H1-01 và H1-02. Mình viết test trước.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Hai file test đang fail đúng kỳ vọng vì chưa có module. Bây giờ mình viết phần
+  cài đặt.
+  Ran 1 shell command (ctrl+o to expand)
+
+● 18/18 test pass, lint sạch, grep cấm ra 0 dòng. Mình tick H1-01/02 trong WBS
+  rồi commit.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● H1-10: mình viết script sinh kit 808, copy kit Acoustic từ Lab 1, rồi viết
+  kits.js.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Mình kiểm tra nhanh các file sinh ra có phải im lặng hay méo tiếng không, rồi
+  viết kits.js kèm test.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● File không im lặng, không clip, và script cho kết quả giống nhau mỗi lần chạy
+  (cùng MD5). Giờ là kits.js và test.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Lint không áp globals Node cho file .mjs, và grep "http://" src còn bắt trúng
+  chính tên test của mình, trong khi cổng kiểm yêu cầu 0 dòng; mình sửa cả hai.
+  · summary
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Test 24/24, lint sạch, cả hai grep ra 0 dòng (rc=1 nghĩa là không có kết quả).
+  Commit H1-10.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● H1-11 (gộp H1-03): audioEngine là factory nhận AudioContext và fetch từ ngoài,
+  để test được bằng đối tượng giả. Mình viết test trước.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Heredoc bị lỗi shell, nên mình ghi file bằng công cụ Write.
+
+● Write(src\audioEngine.test.js)
+  ⎿  Wrote 243 lines to src\audioEngine.test.js
+       1 import { describe, it, expect, vi } from 'vitest';
+       2 import { createAudioEngine, RATE_JITTER, GAIN_JITTER, SILENCE_DB
+          } from './audioEngine.js';
+       3
+       4 function makeNode(extra = {}) {
+       5   return { connect: vi.fn(), disconnect: vi.fn(), ...extra };
+       6 }
+       7
+       8 function createFakeContext() {
+       9   const ctx = {
+     … +234 lines (ctrl+o to expand)
+
+● Write(src\audioEngine.js)
+  ⎿  Wrote 203 lines to src\audioEngine.js
+       1 import { PADS } from './drumPads.js';
+       2 import { DEFAULT_KIT_ID, KITS, kitUrl } from './kits.js';
+       3
+       4 /** Lệch tốc độ phát mỗi hit (±3%): hết cảm giác "máy bắn" mà kh
+         ông đổi nốt rõ rệt. */
+       5 export const RATE_JITTER = 0.03;
+       6 /** Lệch âm lượng mỗi hit (±10%). */
+       7 export const GAIN_JITTER = 0.1;
+       8 /** Mức dB thấp nhất báo ra; im lặng và tiếng quá nhỏ đều về đây
+         . */
+     … +195 lines (ctrl+o to expand)
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Test chạy xanh ngay lần đầu, nên mình kiểm tra xem test choke có thật sự bắt
+  được lỗi không: tạm tắt logic choke rồi chạy lại.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Đã khôi phục file, 40/40 xanh. Giờ là hook useDrumAudio, mình viết test trước.
+
+  Ran 2 shell commands (ctrl+o to expand)
+
+● 49/49 test, lint sạch. Commit H1-11 (đồng thời tick H1-03).
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● H1-04 và H1-05. Mình viết test trước cho Pad và DrumMachine.
+
+● Write(src\Pad.test.jsx)
+  ⎿  Wrote 39 lines to src\Pad.test.jsx
+       1 import { render, screen } from '@testing-library/react';
+       2 import userEvent from '@testing-library/user-event';
+       3 import { describe, it, expect, vi } from 'vitest';
+       4 import { Pad } from './Pad.jsx';
+       5 import { padMap } from './drumPads.js';
+       6
+       7 const openHat = padMap.get('KeyW');
+       8
+       9 describe('Pad', () => {
+      10   it('là button type="button" có tên gồm nhãn và phím', () => {
+     … +29 lines (ctrl+o to expand)
+
+  Listed 1 directory (ctrl+o to expand)
+
+● Dự án không có user-event và luật yêu cầu hỏi trước khi cài thêm, nên mình
+  chuyển sang fireEvent. Test Enter bị bỏ vì jsdom không mô phỏng Enter thành
+  click; mình sẽ kiểm tra phần này bằng tay ở H1-09. · summary
+
+● Write(src\Pad.test.jsx)
+  ⎿  Added 3 lines, removed 12 lines
+      1 -import { render, screen } from '@testing-library/react';        
+      2 -import userEvent from '@testing-library/user-event';            
+      1 +import { render, screen, fireEvent } from '@testing-library/reac
+        +t';                                                             
+      2  import { describe, it, expect, vi } from 'vitest';
+      3  import { Pad } from './Pad.jsx';
+      4  import { padMap } from './drumPads.js';
+     ...
+      21      expect(screen.getByRole('button')).toHaveAttribute('aria-pr
+          essed', 'true');
+      22    });
+      23  
+      25 -  it('click gọi onTrigger với id của pad', async () => {       
+      24 +  it('click gọi onTrigger với id của pad', () => {             
+      25      const onTrigger = vi.fn();
+      26      render(<Pad pad={openHat} isActive={false} onTrigger={onTri
+          gger} />);
+      28 -    await userEvent.click(screen.getByRole('button'));         
+      27 +    fireEvent.click(screen.getByRole('button'));               
+      28      expect(onTrigger).toHaveBeenCalledExactlyOnceWith('openhat'
+          );
+      29    });
+      31 -                                                               
+      32 -  it('Enter trên nút đang focus cũng kích hoạt (bàn phím không 
+         -cần phím tắt)', async () => {                                  
+      33 -    const onTrigger = vi.fn();                                 
+      34 -    render(<Pad pad={openHat} isActive={false} onTrigger={onTri
+         -gger} />);                                                     
+      35 -    screen.getByRole('button').focus();                        
+      36 -    await userEvent.keyboard('{Enter}');                       
+      37 -    expect(onTrigger).toHaveBeenCalledWith('openhat');         
+      38 -  });                                                          
+      30  });
+
+● Write(src\DrumMachine.test.jsx)
+  ⎿  Wrote 114 lines to src\DrumMachine.test.jsx
+      1 import { render, screen, fireEvent, act } from '@testing-library/
+        react';
+      2 import { StrictMode } from 'react';
+      3 import { describe, it, expect, vi, beforeEach, afterEach } from '
+        vitest';
+      4 import { ACTIVE_MS, PADS } from './drumPads.js';
+      5
+      6 const audio = vi.hoisted(() => ({ trigger: vi.fn(), error: null }
+        ));
+      7 vi.mock('./useDrumAudio.js', () => ({ useDrumAudio: () => audio }
+     … +108 lines (~4 KB) (ctrl+o to expand)
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● 63/63 test, lint sạch. Mình chạy thêm build thật và các cổng grep của WBS.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Build thành công, các grep cấm đều ra 0 dòng (rc=1). Mình chia hai commit cho
+  H1-04 và H1-05.
+  Ran 1 shell command (ctrl+o to expand)
+
+● Mình đã làm xong H1-00 đến H1-05 (H1-03 gộp vào H1-11), kèm H1-10 làm tiền đề
+  cho engine. Tất cả đã commit thành 6 commit mới, không có dòng Co-Authored-By
+  nào (đã kiểm: 0 dòng). Cây làm việc sạch.
+
+  Commit
+
+  ┌──────────────────────────────────────────────────────┬──────────────────┐
+  │                        Commit                        │       Task       │
+  ├──────────────────────────────────────────────────────┼──────────────────┤
+  │ 66c1df9 chore(hw1): init vite project for drum kit   │ H1-00            │
+  ├──────────────────────────────────────────────────────┼──────────────────┤
+  │ 3f5eed1 feat(hw1): pad map and drum keyboard hook    │ H1-01, H1-02     │
+  ├──────────────────────────────────────────────────────┼──────────────────┤
+  │ 1cd9dbd feat(hw1): synthesized drum kits             │ H1-10            │
+  ├──────────────────────────────────────────────────────┼──────────────────┤
+  │ b27c1db feat(hw1): web audio engine with choke and   │ H1-11 (gồm       │
+  │ volume                                               │ H1-03)           │
+  ├──────────────────────────────────────────────────────┼──────────────────┤
+  │ e7b53b7 feat(hw1): pad button with aria-pressed      │ H1-04            │
+  ├──────────────────────────────────────────────────────┼──────────────────┤
+  │ 3efd4c1 feat(hw1): audio trigger with aria-pressed   │ H1-05            │
+  │ pads                                                 │                  │
+  └──────────────────────────────────────────────────────┴──────────────────┘
+
+  Kết quả đã chạy thật
+
+  - npm test: 8 file, 63/63 pass.
+  - npm run lint: sạch.
+  - npm run build: thành công.
+  - Ba lệnh grep cấm ra 0 dòng: keyCode|keypress|alert(|innerHTML, http:// và
+    style={{.
+  - Script sinh kit 808 cho kết quả giống nhau mỗi lần chạy (cùng MD5), 7 file
+    không im lặng và không clip.
+  - Mình tắt thử logic choke để xem test có bắt được lỗi không: test fail đúng,
+    rồi mình khôi phục file.
+
+  Chưa verify
+
+  - Chưa nghe âm thanh trong trình duyệt thật. Test dùng AudioContext giả, nên
+    chưa biết tiếng có đúng, có pop hay có lỗi Console không. Gate H1-03 "không
+    lỗi Console" cần kiểm tay bằng npm run dev.
+  - H1-04 mình đã tick, nhưng gate gốc là Accessibility tree trong DevTools.
+    Mình mới kiểm tên và aria-pressed bằng Testing Library. Nếu bạn muốn chặt
+    chẽ thì bỏ tick đến khi xem a11y tree.
+  - Enter trên nút đang focus có kích hoạt pad hay không: jsdom không mô phỏng,
+    cần thử tay ở H1-09.
+  - Mình chỉ làm CSS tối thiểu. Tương phản, focus, 375px và reduced-motion nằm ở
+    H1-08.
+
+  Điểm lệch so với kế hoạch
+
+  - Không có @testing-library/user-event trong stack, nên mình dùng fireEvent
+    như các bài trước và không cài thêm.
+  - Mình thêm .mjs vào files của eslint.config.js để lint áp globals Node cho
+    script.
+  - Sample Acoustic từ Lab 1 kết thúc ở biên độ khác 0 (tom ≈ 2%), có thể gây
+    pop rất nhẹ. Mình chưa thêm fade cuối, sẽ nghe thử rồi quyết định.
+
+  Bước tiếp theo theo WBS là H1-06 (hit log) và H1-07 (decibel meter). Bạn có
+  muốn chạy npm run dev nghe thử trước không?
+
+> /model opus
+  ⎿  Set model to claude-opus-5-5
+
+> Ok ổn nhưng giao diện xấu quá, update giao diện lên đi, bảng màu sáng 1 tí,
+  phá cách cho các nút luôn, ngoài ra thêm tí animation khi bấm tùy thuộc vào
+  từng loại âm thanh. (Base theo plan nếu chưa nên làm bây giờ thì note vào vị
+  trí task phù hợp để là H1 - Design) sau đó hoàn thiện tới H1 - 10 và tương tự
+  chia nhỏ commit nhưng để mình tự update cop author
+
+  Read 1 file, recalled 1 memory (ctrl+o to expand)
+
+● Bạn đã nói rõ hướng: màu sáng, nút phá cách, animation riêng cho từng âm. Mình
+  nạp skill thiết kế để làm phần giao diện.
+
+● Skill(frontend-design:frontend-design)
+  ⎿  Successfully loaded skill
+
+● Trước khi viết, mình kiểm tra máy có Chrome không (để chụp màn hình tự soi
+  giao diện và chạy Lighthouse cho H1-09), và có mạng để tải Lighthouse không.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Edge và npm sẵn sàng, nên mình chụp màn hình tự kiểm tra giao diện và chạy
+  Lighthouse được. Tiếp theo mình làm H1-06 (viết test trước, thêm padById,
+  keyLabel, ANNOUNCE_MS vào drumPads.js), rồi H1-07, H1-D, H1-08, H1-09.
+
+  Read 1 file (ctrl+o to expand)
+
+● Update(src\drumPads.js)
+  ⎿  Added 3 lines
+      11  /** Số hit tối đa giữ trong lịch sử hit log. */
+      12  export const LOG_MAX = 8;
+      13  
+      14 +/** Gộp các hit trong khoảng này thành một câu đọc, để trình đọ
+         +c màn hình không đọc từng phím. */                             
+      15 +export const ANNOUNCE_MS = 500;                                
+      16 +                                                               
+      17  /** @type {readonly Pad[]} */
+      18  export const PADS = Object.freeze([
+      19    { id: 'openhat', code: 'KeyW', label: 'Open Hat', chokeGroup:
+           'hat' },
+
+● Update(src\drumPads.js)
+  ⎿  Added 6 lines
+      27  
+      28  /** @type {ReadonlyMap<string, Pad>} khoá là e.code, ví dụ 'Key
+          W'. */
+      29  export const padMap = new Map(PADS.map((pad) => [pad.code, pad]
+          ));
+      30 +                                                               
+      31 +/** @type {ReadonlyMap<string, Pad>} khoá là pad.id, ví dụ 'kic
+         +k'. */                                                         
+      32 +export const padById = new Map(PADS.map((pad) => [pad.id, pad])
+         +);                                                             
+      33 +                                                               
+      34 +/** Chữ in trên phím: 'KeyW' -> 'W'. */                        
+      35 +export const keyLabel = (pad) => pad.code.replace(/^Key/, ''); 
+
+● Write(src\HitLog.test.jsx)
+  ⎿  Wrote 69 lines to src\HitLog.test.jsx
+      1 import { render, screen, act, within } from '@testing-library/rea
+        ct';
+      2 import { describe, it, expect, vi, beforeEach, afterEach } from '
+        vitest';
+      3 import { HitLog } from './HitLog.jsx';
+      4 import { ANNOUNCE_MS } from './drumPads.js';
+      5
+      6 const hit = (id, padId) => ({ id, padId });
+      7
+      8 beforeEach(() => vi.useFakeTimers());
+     … +61 lines (ctrl+o to expand)
+
+● Write(src\HitLog.jsx)
+  ⎿  Wrote 59 lines to src\HitLog.jsx
+       1 import { useEffect, useId, useRef, useState } from 'react';
+       2 import { ANNOUNCE_MS, keyLabel, padById } from './drumPads.js';
+       3 import styles from './HitLog.module.css';
+       4
+       5 /** @typedef {{ id: number, padId: string }} Hit  id tăng dần, d
+         uy nhất trong phiên. */
+       6
+       7 function describe(latest, count) {
+       8   const pad = padById.get(latest.padId);
+       9   return count === 1 ? `${pad.label}, phím ${keyLabel(pad)}` : `
+     … +51 lines (~2 KB) (ctrl+o to expand)
+
+● Write(src\HitLog.module.css)
+  ⎿  Wrote 35 lines to src\HitLog.module.css
+      1 /* Khung tối thiểu cho H1-06; hoàn thiện ở H1-D. */
+      2 .log {
+      3   display: grid;
+      4   gap: 0.5rem;
+      5 }
+      6
+      7 .announcement {
+      8   min-height: 1.5em;
+      9 }
+     … +26 lines (ctrl+o to expand)
+
+  Read 1 file, ran 1 shell command (ctrl+o to expand)
+
+● Lệnh đó lỗi cú pháp, nên mình ghi lại cả file DrumMachine.jsx bằng Write cho
+  chắc.
+
+● Write(src\DrumMachine.jsx)
+  ⎿  Error writing file
+
+  Read 2 files (ctrl+o to expand)
+
+● The script thật ra đã chạy, chỉ lệch thụt lề. Mình ghi lại bản sạch.
+
+● Write(src\DrumMachine.jsx)
+  ⎿  Added 14 lines, removed 14 lines
+       7  import styles from './DrumMachine.module.css';
+       8  
+       9  /**
+      10 - * Ghép bàn phím, âm thanh và các pad. Mọi nguồn kích hoạt (phí
+         -m, chuột, chạm) đi qua một                                     
+      11 - * handleTrigger duy nhất, nên âm thanh và trạng thái sáng luôn
+         - khớp nhau.                                                    
+      10 + * Ghép bàn phím, âm thanh, pad và nhật ký. Mọi nguồn kích hoạt
+         + (phím, chuột, chạm) đi qua một                                
+      11 + * handleTrigger duy nhất, nên âm thanh, trạng thái sáng và nhậ
+         +t ký luôn khớp nhau.                                           
+      12   */
+      13  export function DrumMachine() {
+      14    const { trigger, error } = useDrumAudio();
+     ...
+      58  
+      59    return (
+      60      <div className={styles.studio}>
+      61 -    <section aria-labelledby={headingId} className={styles.mach
+         -ine}>                                                          
+      62 -      <h2 id={headingId}>Pads</h2>                             
+      63 -      {error !== null && <p role="alert">{error}</p>}          
+      64 -      <ul className={styles.grid}>                             
+      65 -        {PADS.map((pad) => (                                   
+      66 -          <li key={pad.id}>                                    
+      67 -            <Pad pad={pad} isActive={activeIds.has(pad.id)} onT
+         -rigger={handleTrigger} />                                      
+      68 -          </li>                                                
+      69 -        ))}                                                    
+      70 -      </ul>                                                    
+      71 -    </section>                                                 
+      72 -    <HitLog hits={hits} />                                     
+      61 +      <section aria-labelledby={headingId} className={styles.ma
+         +chine}>                                                        
+      62 +        <h2 id={headingId}>Pads</h2>                           
+      63 +        {error !== null && <p role="alert">{error}</p>}        
+      64 +        <ul className={styles.grid}>                           
+      65 +          {PADS.map((pad) => (                                 
+      66 +            <li key={pad.id}>                                  
+      67 +              <Pad pad={pad} isActive={activeIds.has(pad.id)} o
+         +nTrigger={handleTrigger} />                                    
+      68 +            </li>                                              
+      69 +          ))}                                                  
+      70 +        </ul>                                                  
+      71 +      </section>                                               
+      72 +      <HitLog hits={hits} />                                   
+      73      </div>
+      74    );
+      75  }
+
+● Update(src\DrumMachine.test.jsx)
+  ⎿  Added 12 lines
+      101      expect(audio.trigger).toHaveBeenCalledTimes(1);
+      102    });
+      103  
+      104 +  it('mỗi hit vào nhật ký, mới nhất trước, tối đa LOG_MAX', ()
+          + => {                                                         
+      105 +    render(<DrumMachine />);                                  
+      106 +    fireEvent.keyDown(window, { code: 'KeyA' });              
+      107 +    fireEvent.click(pad(/Snare/));                            
+      108 +    let items = within(screen.getByRole('list', { name: /Lịch 
+          +sử gõ/ })).getAllByRole('listitem');                          
+      109 +    expect(items.map((li) => li.textContent)).toEqual(['Snare 
+          +S', 'Kick A']);                                               
+      110 +                                                              
+      111 +    for (let n = 0; n < LOG_MAX + 3; n++) fireEvent.keyDown(wi
+          +ndow, { code: 'KeyL' });                                      
+      112 +    items = within(screen.getByRole('list', { name: /Lịch sử g
+          +õ/ })).getAllByRole('listitem');                              
+      113 +    expect(items).toHaveLength(LOG_MAX);                      
+      114 +  });                                                         
+      115 +                                                              
+      116    it('có lỗi âm thanh thì hiện role="alert"', () => {
+      117      audio.error = 'Không tải được kick.wav';
+      118      render(<DrumMachine />);
+
+  Read 1 file (ctrl+o to expand)
+
+● Update(src\DrumMachine.test.jsx)
+  ⎿  Added 2 lines, removed 2 lines
+      1 -import { render, screen, fireEvent, act } from '@testing-library
+        -/react';                                                        
+      1 +import { render, screen, fireEvent, act, within } from '@testing
+        +-library/react';                                                
+      2  import { StrictMode } from 'react';
+      3  import { describe, it, expect, vi, beforeEach, afterEach } from 
+         'vitest';
+      4 -import { ACTIVE_MS, PADS } from './drumPads.js';                
+      4 +import { ACTIVE_MS, LOG_MAX, PADS } from './drumPads.js';       
+      5  
+      6  const audio = vi.hoisted(() => ({ trigger: vi.fn(), error: null 
+         }));
+      7  vi.mock('./useDrumAudio.js', () => ({ useDrumAudio: () => audio 
+         }));
+
+● Update(src\DrumMachine.test.jsx)
+  ⎿  Added 2 lines, removed 1 line
+      86      const { unmount } = render(<DrumMachine />);
+      87      fireEvent.keyDown(window, { code: 'KeyA' });
+      88      fireEvent.keyDown(window, { code: 'KeyS' });
+      89 -    expect(vi.getTimerCount()).toBe(2);                        
+      89 +    // 2 timer tắt sáng của pad + 1 timer đọc của nhật ký      
+      90 +    expect(vi.getTimerCount()).toBe(3);                        
+      91      unmount();
+      92      expect(vi.getTimerCount()).toBe(0);
+      93    });
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● 71/71 test, lint sạch. Commit H1-06.
+  Ran 1 shell command (ctrl+o to expand)
+
+● H1-07 (meter). Mình thêm hằng số vào drumPads.js rồi viết test trước.
+
+● Update(src\drumPads.js)
+  ⎿  Added 12 lines
+      14  /** Gộp các hit trong khoảng này thành một câu đọc, để trình đọ
+          c màn hình không đọc từng phím. */
+      15  export const ANNOUNCE_MS = 500;
+      16  
+      17 +/** Meter: cập nhật số tối đa ~12 lần/giây (đủ mượt, không rend
+         +er mỗi frame). */                                              
+      18 +export const METER_INTERVAL_MS = 80;                           
+      19 +/** Số vạch của thanh meter. */                                
+      20 +export const METER_SEGMENTS = 12;                              
+      21 +/** Ngưỡng chữ của meter (dB, từ cao xuống thấp). Dưới ngưỡng c
+         +uối là "Im lặng". */                                           
+      22 +export const METER_LEVELS = Object.freeze([                    
+      23 +  { minDb: -12, label: 'Rất lớn' },                            
+      24 +  { minDb: -24, label: 'Lớn' },                                
+      25 +  { minDb: -40, label: 'Vừa' },                                
+      26 +  { minDb: -59, label: 'Nhỏ' },                                
+      27 +]);                                                            
+      28 +                                                               
+      29  /** @type {readonly Pad[]} */
+      30  export const PADS = Object.freeze([
+      31    { id: 'openhat', code: 'KeyW', label: 'Open Hat', chokeGroup:
+           'hat' },
+
+● Write(src\LevelMeter.test.jsx)
+  ⎿  Wrote 96 lines to src\LevelMeter.test.jsx
+      1 import { render, screen, act } from '@testing-library/react';
+      2 import { describe, it, expect, vi, beforeEach, afterEach } from '
+        vitest';
+      3 import { LevelMeter, levelLabel } from './LevelMeter.jsx';
+      4 import { METER_INTERVAL_MS, METER_SEGMENTS } from './drumPads.js'
+        ;
+      5 import { SILENCE_DB } from './audioEngine.js';
+      6
+      7 let frames;
+      8 let nextId;
+     … +88 lines (ctrl+o to expand)
+
+● Write(src\LevelMeter.jsx)
+  ⎿  Wrote 58 lines to src\LevelMeter.jsx
+       1 import { useEffect, useId, useState } from 'react';
+       2 import { SILENCE_DB } from './audioEngine.js';
+       3 import { METER_INTERVAL_MS, METER_LEVELS, METER_SEGMENTS } from
+         './drumPads.js';
+       4 import styles from './LevelMeter.module.css';
+       5
+       6 const SEGMENT_IDS = Array.from({ length: METER_SEGMENTS }, (_, n
+         ) => `seg-${n}`);
+       7
+       8 /** Chữ mô tả mức âm, để meter không chỉ dựa vào màu. */
+     … +50 lines (ctrl+o to expand)
+
+● Write(src\LevelMeter.module.css)
+  ⎿  Wrote 26 lines to src\LevelMeter.module.css
+       1 /* Khung tối thiểu cho H1-07; hoàn thiện ở H1-D. */
+       2 .meter {
+       3   display: grid;
+       4   gap: 0.5rem;
+       5 }
+       6
+       7 .readout {
+       8   display: flex;
+       9   gap: 0.5rem;
+      10   margin: 0;
+     … +16 lines (ctrl+o to expand)
+
+● Giờ nối meter vào DrumMachine và cập nhật mock trong test.
+
+● Update(src\DrumMachine.jsx)
+  ⎿  Added 1 line, removed 1 line
+      11   * handleTrigger duy nhất, nên âm thanh, trạng thái sáng và nhậ
+          t ký luôn khớp nhau.
+      12   */
+      13  export function DrumMachine() {
+      14 -  const { trigger, error } = useDrumAudio();                   
+      14 +  const { trigger, getLevelDb, error } = useDrumAudio();       
+      15    const [activeIds, setActiveIds] = useState(() => new Set());
+      16    const timersRef = useRef(new Map()); // padId -> id của timer
+           tắt sáng
+      17    const [hits, setHits] = useState([]); // mới nhất trước, tối 
+          đa LOG_MAX
+
+● Update(src\DrumMachine.jsx)
+  ⎿  Added 1 line
+      69            ))}
+      70          </ul>
+      71        </section>
+      72 +      <LevelMeter getLevelDb={getLevelDb} />                   
+      73        <HitLog hits={hits} />
+      74      </div>
+      75    );
+
+● Update(src\DrumMachine.jsx)
+  ⎿  Added 1 line
+      1  import { useCallback, useEffect, useId, useRef, useState } from 
+         'react';
+      2  import { ACTIVE_MS, LOG_MAX, PADS, padMap } from './drumPads.js'
+         ;
+      3  import { HitLog } from './HitLog.jsx';
+      4 +import { LevelMeter } from './LevelMeter.jsx';                  
+      5  import { Pad } from './Pad.jsx';
+      6  import { useDrumAudio } from './useDrumAudio.js';
+      7  import { useDrumKeyboard } from './useDrumKeyboard.js';
+
+● Update(src\DrumMachine.test.jsx)
+  ⎿  Added 1 line, removed 1 line
+      3  import { describe, it, expect, vi, beforeEach, afterEach } from 
+         'vitest';
+      4  import { ACTIVE_MS, LOG_MAX, PADS } from './drumPads.js';
+      5  
+      6 -const audio = vi.hoisted(() => ({ trigger: vi.fn(), error: null 
+        -}));                                                            
+      6 +const audio = vi.hoisted(() => ({ trigger: vi.fn(), getLevelDb: 
+        +() => -60, error: null }));                                     
+      7  vi.mock('./useDrumAudio.js', () => ({ useDrumAudio: () => audio 
+         }));
+      8  
+      9  const { DrumMachine } = await import('./DrumMachine.jsx');
+
+  Read 1 file (ctrl+o to expand)
+
+● Update(src\App.test.jsx)
+  ⎿  Added 4 lines, removed 1 line
+       1  import { render, screen } from '@testing-library/react';
+       2  import { it, expect, vi } from 'vitest';
+       3  
+       4 -vi.mock('./useDrumAudio.js', () => ({ useDrumAudio: () => ({ tr
+         -igger: vi.fn(), error: null }) }));                            
+       4 +vi.mock('./useDrumAudio.js', () => {                           
+       5 +  const audio = { trigger: () => {}, getLevelDb: () => -60, err
+         +or: null };                                                    
+       6 +  return { useDrumAudio: () => audio };                        
+       7 +});                                                            
+       8  const { App } = await import('./App.jsx');
+       9  
+      10  it('render landmark main có tiêu đề h1 và vùng Pads', () => {
+
+● Update(src\App.test.jsx)
+  ⎿  Added 2 lines
+      12    expect(screen.getByRole('main')).toBeInTheDocument();
+      13    expect(screen.getByRole('heading', { level: 1, name: 'Drum Ki
+          t' })).toBeInTheDocument();
+      14    expect(screen.getByRole('region', { name: 'Pads' })).toBeInTh
+          eDocument();
+      15 +  expect(screen.getByRole('region', { name: 'Mức âm' })).toBeIn
+         +TheDocument();                                                 
+      16 +  expect(screen.getByRole('region', { name: 'Nhật ký gõ' })).to
+         +BeInTheDocument();                                             
+      17  });
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Fake timer của Vitest đếm cả rAF của meter nên ra 4 timer; test cũng xác nhận
+  rAF được huỷ khi unmount, nên mình sẽ sửa số kỳ vọng.
+
+● Update(src\DrumMachine.test.jsx)
+  ⎿  Added 2 lines, removed 2 lines
+      86      const { unmount } = render(<DrumMachine />);
+      87      fireEvent.keyDown(window, { code: 'KeyA' });
+      88      fireEvent.keyDown(window, { code: 'KeyS' });
+      89 -    // 2 timer tắt sáng của pad + 1 timer đọc của nhật ký      
+      90 -    expect(vi.getTimerCount()).toBe(3);                        
+      89 +    // 2 timer tắt sáng của pad + 1 timer đọc của nhật ký + 1 r
+         +equestAnimationFrame của meter                                 
+      90 +    expect(vi.getTimerCount()).toBe(4);                        
+      91      unmount();
+      92      expect(vi.getTimerCount()).toBe(0);
+      93    });
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● H1-07 đã commit với 78/78 test pass. Tiếp theo mình chèn dòng H1-D vào WBS
+  giữa H1-07 và H1-08, vì phần design cần có trước để H1-08 có giao diện thật mà
+  kiểm.
+
+  Read 1 file (ctrl+o to expand)
+
+● Update(TASK_DECOMPOSITION.md)
+  ⎿  Added 1 line
+      54  | H1-05 | `<DrumMachine>` ghép pad, keyboard, audio; trạng thái
+           active có thời hạn (timer có cleanup) | `src/DrumMachine.jsx` 
+          | Test: phím W làm pad W `aria-pressed=true` rồi về false | [x]
+           |
+      55  | H1-06 | Hit log `<output aria-live="polite">` (giới hạn độ dà
+          i, không spam đọc) | `src/HitLog.jsx` | Screen reader/ảnh a11y 
+          tree; test nội dung log | [x] |
+      56  | H1-07 | Decibel meter trực quan (không chỉ màu; có text/aria)
+           | `src/LevelMeter.jsx` | Có nhãn chữ; tương phản >= 3:1 | [x] 
+          |
+      57 +| H1-D | (design) Bảng màu sáng, mỗi pad một hình dạng theo nhạ
+         +c cụ (trống tròn, cymbal elip, clap hình thoi...) xếp theo vị t
+         +rí phím QWERTY, animation riêng cho từng âm khi gõ (kick nảy + 
+         +sóng, snare rung, hi-hat co, open hat lắc, tom nhún, clap bung,
+         + crash lắc dài). Animation chạy lại mỗi hit bằng `key` theo id 
+         +hit | `src/styles/tokens.css`, `src/*.module.css`, `src/Pad.jsx
+         +`, `index.html` | Test: mỗi hit tạo lại phần tử hình; ảnh chụp 
+         +375px và desktop | [ ] |                                       
+      58  | H1-08 | CSS Modules: focus-visible, tương phản 4.5:1, vùng bấ
+          m, 375px, reduced-motion | `src/**/*.module.css` | Tab hết tran
+          g; 0 cuộn ngang ở 375px | [ ] |
+      59  | H1-09 | Kiểm tự động + tay: Lighthouse a11y 100, tab bàn phím
+          , UniKey | `evidence/` | JSON Lighthouse, ảnh a11y tree, ghi ch
+          ú thử UniKey | [ ] |
+      60  | H1-10 | (mở rộng) Script Node sinh kit 808 + copy kit Acousti
+          c + `kits.js` (padId -> url theo kit) | `scripts/synth-kits.mjs
+          `, `public/kits/{acoustic,electronic}/*.wav`, `src/kits.js` | C
+          hạy script ra đủ 7 `.wav`; test: mỗi kit đủ 7 padId | [x] |
+
+● Update(TASK_DECOMPOSITION.md)
+  ⎿  Added 1 line, removed 1 line
+      64  | H1-14 | (mở rộng) `useLooper`: máy trạng thái, tick `setInter
+          val` có cleanup, Loop/Once, tốc độ đổi lúc chạy, Clear | `src/u
+          seLooper.js` | Test từng chuyển trạng thái; Once dừng cuối vòng
+          ; Loop lặp; unmount hủy interval; StrictMode không nhân đôi | [
+           ] |
+      65  | H1-15 | (mở rộng) `LooperPanel` (Record `aria-pressed`, Overd
+          ub, Play/Stop, Clear, radio Loop/Once, range tốc độ, `<progress
+          >` có nhãn, `role="status"` cố định) ghép vào `DrumMachine` | `
+          src/LooperPanel.jsx`, `src/DrumMachine.jsx` | a11y tree; status
+           đổi theo trạng thái; 375px không cuộn ngang | [ ] |
+      66  
+      67 -**Thứ tự thực hiện (mỗi lượt đúng một task):** H1-00, 01, 02, 1
+         -0, 11 (đánh dấu cả H1-03), 04, 05, 06, 07, 12, 13, 14, 15, 08, 
+         -09. H1-08 và H1-09 làm sau cùng để CSS và Lighthouse phủ cả phầ
+         -n mở rộng.                                                     
+      67 +**Thứ tự thực hiện (mỗi lượt đúng một task):** H1-00, 01, 02, 1
+         +0, 11 (đánh dấu cả H1-03), 04, 05, 06, 07, D, 08, 09, rồi 12, 1
+         +3, 14, 15. H1-08 và H1-09 làm trước phần mở rộng để phần lõi đạ
+         +t chuẩn trước; sau H1-15 phải **chạy lại** kiểm 375px và Lighth
+         +ouse (H1-09) cho phần Controls và Looper.                      
+      68  
+      69  ## 4. Commit gợi ý
+      70  
+
+● Mình đã chốt bảng màu và chữ theo hướng tránh các mặc định thông dụng, bố cục
+  pad bám đúng vị trí phím, và pad có hình dạng nhạc cụ như điểm nhấn duy nhất;
+  tiếp theo mình viết test cho phần animation được tạo lại mỗi lần hit.
+
+● Update(src\Pad.test.jsx)
+  ⎿  Added 26 lines
+      21      expect(screen.getByRole('button')).toHaveAttribute('aria-pr
+          essed', 'true');
+      22    });
+      23  
+      24 +  it('có data-sound để CSS chọn hình và animation riêng', () =>
+         + {                                                             
+      25 +    render(<Pad pad={openHat} isActive={false} onTrigger={() =>
+         + {}} />);                                                      
+      26 +    expect(screen.getByRole('button')).toHaveAttribute('data-so
+         +und', 'openhat');                                              
+      27 +  });                                                          
+      28 +                                                               
+      29 +  it('mỗi hit mới (hitId đổi) tạo lại phần tử hình để animation
+         + chạy lại từ đầu', () => {                                     
+      30 +    const { container, rerender } = render(<Pad pad={openHat} i
+         +sActive={false} onTrigger={() => {}} />);                      
+      31 +    const idle = container.querySelector('[aria-hidden="true"]'
+         +);                                                             
+      32 +    expect(idle.className).not.toMatch(/hit/);                 
+      33 +                                                               
+      34 +    rerender(<Pad pad={openHat} isActive hitId={1} onTrigger={(
+         +) => {}} />);                                                  
+      35 +    const first = container.querySelector('[aria-hidden="true"]
+         +');                                                            
+      36 +    expect(first).not.toBe(idle);                              
+      37 +    expect(first.className).toMatch(/hit/);                    
+      38 +                                                               
+      39 +    rerender(<Pad pad={openHat} isActive hitId={2} onTrigger={(
+         +) => {}} />);                                                  
+      40 +    expect(container.querySelector('[aria-hidden="true"]')).not
+         +.toBe(first);                                                  
+      41 +  });                                                          
+      42 +                                                               
+      43 +  it('cùng hitId thì giữ nguyên phần tử (re-render khác không l
+         +àm animation chạy lại)', () => {                               
+      44 +    const { container, rerender } = render(<Pad pad={openHat} i
+         +sActive hitId={5} onTrigger={() => {}} />);                    
+      45 +    const shape = container.querySelector('[aria-hidden="true"]
+         +');                                                            
+      46 +    rerender(<Pad pad={openHat} isActive={false} hitId={5} onTr
+         +igger={() => {}} />);                                          
+      47 +    expect(container.querySelector('[aria-hidden="true"]')).toB
+         +e(shape);                                                      
+      48 +  });                                                          
+      49 +                                                               
+      50    it('click gọi onTrigger với id của pad', () => {
+      51      const onTrigger = vi.fn();
+      52      render(<Pad pad={openHat} isActive={false} onTrigger={onTri
+          gger} />);
+
+● Update(src\DrumMachine.test.jsx)
+  ⎿  Added 11 lines
+      114      expect(items).toHaveLength(LOG_MAX);
+      115    });
+      116  
+      117 +  it('gõ lại cùng pad thì hình của pad đó được tạo lại (animat
+          +ion chạy lại), pad khác giữ nguyên', () => {                  
+      118 +    render(<DrumMachine />);                                  
+      119 +    const shapeOf = (name) => pad(name).querySelector('[aria-h
+          +idden="true"]');                                              
+      120 +    fireEvent.keyDown(window, { code: 'KeyA' });              
+      121 +    const kickFirst = shapeOf(/Kick/);                        
+      122 +    const snareBefore = shapeOf(/Snare/);                     
+      123 +    fireEvent.keyDown(window, { code: 'KeyA' });              
+      124 +    expect(shapeOf(/Kick/)).not.toBe(kickFirst);              
+      125 +    expect(shapeOf(/Snare/)).toBe(snareBefore);               
+      126 +  });                                                         
+      127 +                                                              
+      128    it('có lỗi âm thanh thì hiện role="alert"', () => {
+      129      audio.error = 'Không tải được kick.wav';
+      130      render(<DrumMachine />);
+  Ran 1 shell command (ctrl+o to expand)
+
+● Ba test fail đúng như mong đợi. Giờ là phần cài đặt: Pad, DrumMachine, token
+  CSS, font và bố cục.
+
+● Write(src\Pad.jsx)
+  ⎿  Added 10 lines, removed 2 lines
+       1 +import { keyLabel } from './drumPads.js';                      
+       2  import styles from './Pad.module.css';
+       3  
+       4  /**
+       5   * Một pad trống. aria-pressed theo isActive (sáng ngắn sau mỗi
+           hit); không giữ state riêng.
+       6 + * Hình dạng và animation chọn bằng CSS qua data-sound.        
+       7 + * Phần tử hình có key = hitId: mỗi hit mới React tạo phần tử m
+         +ới, nên CSS animation chạy lại                                 
+       8 + * từ đầu kể cả khi gõ liên tục (đổi class thôi thì animation đ
+         +ang chạy không khởi động lại).                                 
+       9   * @param {{
+      10   *   pad: import('./drumPads.js').Pad,
+      11   *   isActive: boolean,
+      12 + *   hitId?: number,                                           
+      13   *   onTrigger: (padId: string) => void,
+      14   * }} props
+      15   */
+      11 -export function Pad({ pad, isActive, onTrigger }) {            
+      12 -  const key = pad.code.replace(/^Key/, '');                    
+      16 +export function Pad({ pad, isActive, hitId, onTrigger }) {     
+      17 +  const key = keyLabel(pad);                                   
+      18 +  const shapeClass = hitId === undefined ? styles.shape : `${st
+         +yles.shape} ${styles.hit}`;                                    
+      19    return (
+      20      <button
+      21        type="button"
+      22        className={styles.pad}
+      23 +      data-sound={pad.id}                                      
+      24        aria-pressed={isActive}
+      25        aria-keyshortcuts={key}
+      26        onClick={() => onTrigger(pad.id)}
+      27      >
+      28 +      <span key={hitId ?? 'idle'} className={shapeClass} aria-h
+         +idden="true" />                                                
+      29        <span className={styles.label}>{pad.label}</span>{' '}
+      30        <kbd className={styles.key}>{key}</kbd>
+      31      </button>
+
+● Update(src\DrumMachine.jsx)
+  ⎿  Added 7 lines, removed 2 lines
+      64          {error !== null && <p role="alert">{error}</p>}
+      65          <ul className={styles.grid}>
+      66            {PADS.map((pad) => (
+      67 -            <li key={pad.id}>                                  
+      68 -              <Pad pad={pad} isActive={activeIds.has(pad.id)} o
+         -nTrigger={handleTrigger} />                                    
+      67 +            <li key={pad.id} data-sound={pad.id}>              
+      68 +              <Pad                                             
+      69 +                pad={pad}                                      
+      70 +                isActive={activeIds.has(pad.id)}               
+      71 +                hitId={hits.find((h) => h.padId === pad.id)?.id
+         +}                                                              
+      72 +                onTrigger={handleTrigger}                      
+      73 +              />                                               
+      74              </li>
+      75            ))}
+      76          </ul>
+
+● Write(src\styles\tokens.css)
+  ⎿  Wrote 75 lines to src\styles\tokens.css
+       1 /* Mọi màu và font nằm ở đây; CSS Module chỉ dùng var(--token).
+         */
+       2 :root {
+       3   color-scheme: light;
+       4
+       5   --paper: #eef3ff; /* nền trang: trắng xanh lạnh */
+       6   --surface: #ffffff;
+       7   --ink: #1d1a4e; /* chữ, viền, bóng đổ */
+       8   --ink-soft: #4b4785; /* chữ phụ */
+       9
+     … +66 lines (ctrl+o to expand)
+
+● Write(src\Pad.module.css)
+  ⎿  Added 240 lines, removed 8 lines
+        1 -/* Khung tối thiểu cho H1-04; tương phản, focus, 375px và redu
+          -ced-motion hoàn thiện ở H1-08. */                             
+        1 +/*                                                            
+        2 + * Nút là một ô vuông trong suốt (vùng bấm và viền focus luôn 
+          +đầy đủ);                                                      
+        3 + * hình nhạc cụ là .shape nằm phía sau chữ. Mỗi âm chỉnh hình 
+          +qua các biến:                                                 
+        4 + *   --inset  khoảng lùi của hình so với ô (hình nhỏ/dẹt)     
+        5 + *   --radius bo góc (50% = tròn, hoặc elip nếu ô bị lùi lệch)
+        6 + *   --tilt   góc nghiêng cố định                             
+        7 + *   --rim    viền trong (mặt trống snare)                    
+        8 + * Animation dùng `transform`; nghiêng dùng `rotate`, lún dùng
+          + `translate`:                                                 
+        9 + * ba thuộc tính này cộng dồn nên không đè nhau.              
+       10 + */                                                           
+       11  .pad {
+       12 +  --inset: 8%;                                                
+       13 +  --radius: 50%;                                              
+       14 +  --tilt: 0deg;                                               
+       15 +  --rim: 0 0 0 0 transparent;                                 
+       16 +  --drop: var(--lift);                                        
+       17 +                                                              
+       18 +  position: relative;                                         
+       19 +  isolation: isolate;                                         
+       20    display: grid;
+        4 -  place-items: center;                                        
+        5 -  gap: 0.25rem;                                               
+       21 +  place-content: center;                                      
+       22 +  justify-items: center;                                      
+       23 +  gap: 0.3rem;                                                
+       24    width: 100%;
+        7 -  min-height: 6rem;                                           
+       25 +  aspect-ratio: 1;                                            
+       26 +  padding: 0;                                                 
+       27 +  border: 0;                                                  
+       28 +  background: transparent;                                    
+       29 +  color: var(--ink);                                          
+       30    font: inherit;
+       31    cursor: pointer;
+       32 +  touch-action: manipulation;                                 
+       33 +  -webkit-tap-highlight-color: transparent;                   
+       34  }
+       35  
+       12 -.pad[aria-pressed='true'] {                                   
+       13 -  outline: 3px solid currentColor;                            
+       36 +.shape {                                                      
+       37 +  position: absolute;                                         
+       38 +  inset: var(--inset);                                        
+       39 +  z-index: -1;                                                
+       40 +  border: 3px solid var(--ink);                               
+       41 +  border-radius: var(--radius);                               
+       42 +  background: var(--pad-color);                               
+       43 +  box-shadow: var(--rim), 0 var(--drop) 0 var(--ink);         
+       44 +  rotate: var(--tilt);                                        
+       45 +  transition:                                                 
+       46 +    translate 70ms ease-out,                                  
+       47 +    box-shadow 70ms ease-out;                                 
+       48  }
+       49  
+       50  .label {
+       17 -  font-weight: 600;                                           
+       51 +  font-size: 1rem;                                            
+       52 +  font-weight: 700;                                           
+       53 +  line-height: 1.1;                                           
+       54  }
+       55  
+       56  .key {
+       21 -  font-family: monospace;                                     
+       57 +  font-size: 0.8rem;                                          
+       58  }
+       59 +                                                              
+       60 +.pad:hover .shape {                                           
+       61 +  translate: 0 -2px;                                          
+       62 +  box-shadow: var(--rim), 0 calc(var(--drop) + 2px) 0 var(--in
+          +k);                                                           
+       63 +}                                                             
+       64 +                                                              
+       65 +/* Lúc bấm: hình lún xuống, bóng biến mất; vẫn thấy được khi t
+          +ắt animation. */                                              
+       66 +.pad[aria-pressed='true'] {                                   
+       67 +  --drop: 0px;                                                
+       68 +}                                                             
+       69 +                                                              
+       70 +.pad[aria-pressed='true'] .shape {                            
+       71 +  translate: 0 var(--lift);                                   
+       72 +}                                                             
+       73 +                                                              
+       74 +/* ---------- Hình theo nhạc cụ ---------- */                 
+       75 +                                                              
+       76 +.pad[data-sound='kick'] {                                     
+       77 +  --inset: 2%;                                                
+       78 +}                                                             
+       79 +                                                              
+       80 +/* Mặt trống kick: vòng tròn trong mờ */                      
+       81 +.pad[data-sound='kick'] .shape::before {                      
+       82 +  content: '';                                                
+       83 +  position: absolute;                                         
+       84 +  inset: 18%;                                                 
+       85 +  border: 3px solid var(--ink);                               
+       86 +  border-radius: 50%;                                         
+       87 +  opacity: 0.22;                                              
+       88 +}                                                             
+       89 +                                                              
+       90 +.pad[data-sound='snare'] {                                    
+       91 +  --inset: 12%;                                               
+       92 +  --rim: inset 0 0 0 0.5rem rgb(255 255 255 / 0.55);          
+       93 +}                                                             
+       94 +                                                              
+       95 +.pad[data-sound='tom'] {                                      
+       96 +  --inset: 10% 15%;                                           
+       97 +  --radius: 44% 44% 38% 38% / 24% 24% 24% 24%;                
+       98 +}                                                             
+       99 +                                                              
+      100 +.pad[data-sound='clap'] {                                     
+      101 +  --inset: 18%;                                               
+      102 +  --radius: 26%;                                              
+      103 +  --tilt: 45deg;                                              
+      104 +}                                                             
+      105 +                                                              
+      106 +/* Cymbal nhìn nghiêng: elip dẹt có núm chuông ở giữa */      
+      107 +.pad[data-sound='hihat'] {                                    
+      108 +  --inset: 31% 5%;                                            
+      109 +}                                                             
+      110 +                                                              
+      111 +.pad[data-sound='openhat'] {                                  
+      112 +  --inset: 27% 4%;                                            
+      113 +  --tilt: -9deg;                                              
+      114 +}                                                             
+      115 +                                                              
+      116 +.pad[data-sound='crash'] {                                    
+      117 +  --inset: 22% 0%;                                            
+      118 +  --tilt: 10deg;                                              
+      119 +}                                                             
+      120 +                                                              
+      121 +.pad[data-sound='hihat'] .shape::before,                      
+      122 +.pad[data-sound='openhat'] .shape::before,                    
+      123 +.pad[data-sound='crash'] .shape::before {                     
+      124 +  content: '';                                                
+      125 +  position: absolute;                                         
+      126 +  top: 50%;                                                   
+      127 +  left: 50%;                                                  
+      128 +  width: 0.9rem;                                              
+      129 +  height: 0.45rem;                                            
+      130 +  border-radius: 50%;                                         
+      131 +  background: var(--ink);                                     
+      132 +  translate: -50% -50%;                                       
+      133 +}                                                             
+      134 +                                                              
+      135 +/* ---------- Animation riêng cho từng âm (chạy khi có .hit) -
+          +--------- */                                                  
+      136 +                                                              
+      137 +/* Vòng sóng lan ra (kick, clap, crash) */                    
+      138 +.hit::after {                                                 
+      139 +  content: '';                                                
+      140 +  position: absolute;                                         
+      141 +  inset: -3px;                                                
+      142 +  border: 3px solid var(--ink);                               
+      143 +  border-radius: inherit;                                     
+      144 +  opacity: 0;                                                 
+      145 +  pointer-events: none;                                       
+      146 +}                                                             
+      147 +                                                              
+      148 +/* Kick: nảy mạnh như mặt trống bị đạp, kèm sóng tròn */      
+      149 +.pad[data-sound='kick'] .hit {                                
+      150 +  animation: thump 300ms cubic-bezier(0.2, 0.9, 0.3, 1.3);    
+      151 +}                                                             
+      152 +                                                              
+      153 +.pad[data-sound='kick'] .hit::after {                         
+      154 +  animation: ring 450ms ease-out;                             
+      155 +}                                                             
+      156 +                                                              
+      157 +/* Snare: rung ngang nhanh như dây lò xo */                   
+      158 +.pad[data-sound='snare'] .hit {                               
+      159 +  animation: rattle 200ms linear;                             
+      160 +}                                                             
+      161 +                                                              
+      162 +/* Hi-hat đóng: co dẹt rất ngắn */                            
+      163 +.pad[data-sound='hihat'] .hit {                               
+      164 +  animation: squeeze 120ms ease-out;                          
+      165 +}                                                             
+      166 +                                                              
+      167 +/* Open hat: lắc lư, tắt dần */                               
+      168 +.pad[data-sound='openhat'] .hit {                             
+      169 +  animation: swing 600ms ease-out;                            
+      170 +}                                                             
+      171 +                                                              
+      172 +/* Tom: nhún xuống rồi bật lên */                             
+      173 +.pad[data-sound='tom'] .hit {                                 
+      174 +  animation: bounce 280ms ease-out;                           
+      175 +}                                                             
+      176 +                                                              
+      177 +/* Clap: bung ra, sóng nét đứt */                             
+      178 +.pad[data-sound='clap'] .hit {                                
+      179 +  animation: pop 220ms ease-out;                              
+      180 +}                                                             
+      181 +                                                              
+      182 +.pad[data-sound='clap'] .hit::after {                         
+      183 +  border-style: dashed;                                       
+      184 +  animation: ring 320ms ease-out;                             
+      185 +}                                                             
+      186 +                                                              
+      187 +/* Crash: lắc dài, sóng rộng */                               
+      188 +.pad[data-sound='crash'] .hit {                               
+      189 +  animation: wobble 900ms ease-out;                           
+      190 +}                                                             
+      191 +                                                              
+      192 +.pad[data-sound='crash'] .hit::after {                        
+      193 +  animation: ring-wide 750ms ease-out;                        
+      194 +}                                                             
+      195 +                                                              
+      196 +@keyframes thump {                                            
+      197 +  0% { transform: scale(1); }                                 
+      198 +  30% { transform: scale(1.12); }                             
+      199 +  60% { transform: scale(0.95); }                             
+      200 +  100% { transform: scale(1); }                               
+      201 +}                                                             
+      202 +                                                              
+      203 +@keyframes ring {                                             
+      204 +  0% { opacity: 0.85; transform: scale(1); }                  
+      205 +  100% { opacity: 0; transform: scale(1.45); }                
+      206 +}                                                             
+      207 +                                                              
+      208 +@keyframes ring-wide {                                        
+      209 +  0% { opacity: 0.7; transform: scale(1); }                   
+      210 +  100% { opacity: 0; transform: scale(1.7, 2.4); }            
+      211 +}                                                             
+      212 +                                                              
+      213 +@keyframes rattle {                                           
+      214 +  0%, 100% { transform: translateX(0); }                      
+      215 +  17% { transform: translateX(-5px); }                        
+      216 +  33% { transform: translateX(5px); }                         
+      217 +  50% { transform: translateX(-4px); }                        
+      218 +  67% { transform: translateX(3px); }                         
+      219 +  83% { transform: translateX(-2px); }                        
+      220 +}                                                             
+      221 +                                                              
+      222 +@keyframes squeeze {                                          
+      223 +  0%, 100% { transform: scaleY(1); }                          
+      224 +  40% { transform: scaleY(0.6) scaleX(1.04); }                
+      225 +}                                                             
+      226 +                                                              
+      227 +@keyframes swing {                                            
+      228 +  0%, 100% { transform: rotate(0deg); }                       
+      229 +  15% { transform: rotate(10deg); }                           
+      230 +  35% { transform: rotate(-7deg); }                           
+      231 +  55% { transform: rotate(4deg); }                            
+      232 +  75% { transform: rotate(-2deg); }                           
+      233 +}                                                             
+      234 +                                                              
+      235 +@keyframes bounce {                                           
+      236 +  0%, 100% { transform: translateY(0) scale(1); }             
+      237 +  35% { transform: translateY(6px) scale(1.04, 0.92); }       
+      238 +  70% { transform: translateY(-4px) scale(0.98, 1.04); }      
+      239 +}                                                             
+      240 +                                                              
+      241 +@keyframes pop {                                              
+      242 +  0%, 100% { transform: scale(1); }                           
+      243 +  40% { transform: scale(1.22); }                             
+      244 +  70% { transform: scale(0.94); }                             
+      245 +}                                                             
+      246 +                                                              
+      247 +@keyframes wobble {                                           
+      248 +  0%, 100% { transform: rotate(0deg); }                       
+      249 +  12% { transform: rotate(-14deg); }                          
+      250 +  30% { transform: rotate(10deg); }                           
+      251 +  48% { transform: rotate(-7deg); }                           
+      252 +  66% { transform: rotate(4deg); }                            
+      253 +  84% { transform: rotate(-2deg); }                           
+      254 +}                                                             
+
+● Write(src\DrumMachine.module.css)
+  ⎿  Added 48 lines, removed 5 lines
+       1 -/* Khung tối thiểu cho H1-05; hoàn thiện ở H1-08. */           
+       1 +/* Màn rộng: pad bên trái chiếm 2 hàng, meter và nhật ký xếp ở 
+         +cột phải. */                                                   
+       2 +.studio {                                                      
+       3 +  display: grid;                                               
+       4 +  gap: 2rem;                                                   
+       5 +  align-items: start;                                          
+       6 +}                                                              
+       7 +                                                               
+       8 +@media (min-width: 60rem) {                                    
+       9 +  .studio {                                                    
+      10 +    grid-template-columns: minmax(0, 2fr) minmax(16rem, 1fr);  
+      11 +  }                                                            
+      12 +                                                               
+      13 +  .machine {                                                   
+      14 +    grid-row: span 2;                                          
+      15 +  }                                                            
+      16 +}                                                              
+      17 +                                                               
+      18  .machine {
+       3 -  max-width: 40rem;                                            
+       4 -  margin-inline: auto;                                         
+      19 +  display: grid;                                               
+      20 +  gap: 1rem;                                                   
+      21  }
+      22  
+      23 +/*                                                             
+      24 + * Pad xếp đúng vị trí phím trên bàn phím QWERTY: W lệch nửa ph
+         +ím phía trên A/S,                                              
+      25 + * cụm J K L tách bên phải. Mỗi pad chiếm 2 cột nên lệch nửa ph
+         +ím được.                                                       
+      26 + * Màn hẹp: cụm J K L xuống hàng thứ ba.                       
+      27 + */                                                            
+      28  .grid {
+      29    display: grid;
+       9 -  grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));  
+      10 -  gap: 0.75rem;                                                
+      30 +  grid-template-columns: repeat(6, minmax(0, 1fr));            
+      31 +  grid-template-areas:                                         
+      32 +    '. w w . . .'                                              
+      33 +    'a a s s d d'                                              
+      34 +    'j j k k l l';                                             
+      35 +  gap: 0.75rem 0.5rem;                                         
+      36 +  margin: 0;                                                   
+      37    padding: 0;
+      38    list-style: none;
+      39  }
+      40 +                                                               
+      41 +@media (min-width: 40rem) {                                    
+      42 +  .grid {                                                      
+      43 +    grid-template-columns: repeat(13, minmax(0, 1fr));         
+      44 +    grid-template-areas:                                       
+      45 +      '. w w . . . . . . . . . .'                              
+      46 +      'a a s s d d . j j k k l l';                             
+      47 +  }                                                            
+      48 +}                                                              
+      49 +                                                               
+      50 +.grid > [data-sound='openhat'] { grid-area: w; }               
+      51 +.grid > [data-sound='kick'] { grid-area: a; }                  
+      52 +.grid > [data-sound='snare'] { grid-area: s; }                 
+      53 +.grid > [data-sound='hihat'] { grid-area: d; }                 
+      54 +.grid > [data-sound='tom'] { grid-area: j; }                   
+      55 +.grid > [data-sound='clap'] { grid-area: k; }                  
+      56 +.grid > [data-sound='crash'] { grid-area: l; }                 
+
+● Write(src\HitLog.module.css)
+  ⎿  Added 22 lines, removed 7 lines
+       1 -/* Khung tối thiểu cho H1-06; hoàn thiện ở H1-D. */            
+       1  .log {
+       2    display: grid;
+       4 -  gap: 0.5rem;                                                 
+       3 +  gap: 0.75rem;                                                
+       4 +  padding: 1.25rem;                                            
+       5 +  border: 2px solid var(--ink);                                
+       6 +  border-radius: var(--radius-panel);                          
+       7 +  background: var(--surface);                                  
+       8  }
+       9  
+      10  .announcement {
+      11    min-height: 1.5em;
+      12 +  color: var(--ink-soft);                                      
+      13  }
+      14  
+      15  .list {
+     ...
+      21    list-style: none;
+      22  }
+      23  
+      24 +/* Chip: chấm màu của âm + tên + phím; màu không phải nguồn thô
+         +ng tin duy nhất. */                                            
+      25  .item {
+      26    display: inline-flex;
+      27    align-items: center;
+      23 -  gap: 0.35rem;                                                
+      28 +  gap: 0.4rem;                                                 
+      29 +  padding: 0.2rem 0.3rem 0.2rem 0.5rem;                        
+      30 +  border: 2px solid var(--ink);                                
+      31 +  border-radius: 999px;                                        
+      32 +  font-size: 0.9375rem;                                        
+      33 +  font-weight: 600;                                            
+      34  }
+      35  
+      36 +.item:first-child {                                            
+      37 +  background: var(--pad-color);                                
+      38 +}                                                              
+      39 +                                                               
+      40  .dot {
+      27 -  width: 0.75rem;                                              
+      28 -  height: 0.75rem;                                             
+      41 +  width: 0.8rem;                                               
+      42 +  height: 0.8rem;                                              
+      43 +  border: 2px solid var(--ink);                                
+      44    border-radius: 50%;
+      30 -  background: currentColor;                                    
+      45 +  background: var(--pad-color);                                
+      46  }
+      47  
+      48  .empty {
+      34 -  margin: 0;                                                   
+      49 +  color: var(--ink-soft);                                      
+      50  }
+
+● Write(src\LevelMeter.module.css)
+  ⎿  Added 39 lines, removed 8 lines
+       1 -/* Khung tối thiểu cho H1-07; hoàn thiện ở H1-D. */            
+       1  .meter {
+       2    display: grid;
+       4 -  gap: 0.5rem;                                                 
+       3 +  gap: 0.75rem;                                                
+       4 +  padding: 1.25rem;                                            
+       5 +  border: 2px solid var(--ink);                                
+       6 +  border-radius: var(--radius-panel);                          
+       7 +  background: var(--surface);                                  
+       8  }
+       9  
+      10  .readout {
+      11    display: flex;
+       9 -  gap: 0.5rem;                                                 
+      10 -  margin: 0;                                                   
+      12 +  align-items: baseline;                                       
+      13 +  flex-wrap: wrap;                                             
+      14 +  gap: 0.5rem 0.75rem;                                         
+      15 +  min-height: 2.5rem;                                          
+      16  }
+      17  
+      18 +.value {                                                       
+      19 +  font-size: 2rem;                                             
+      20 +  font-weight: 800;                                            
+      21 +  line-height: 1;                                              
+      22 +  font-variant-numeric: tabular-nums;                          
+      23 +  letter-spacing: -0.02em;                                     
+      24 +}                                                              
+      25 +                                                               
+      26 +.level {                                                       
+      27 +  font-weight: 600;                                            
+      28 +  color: var(--ink-soft);                                      
+      29 +}                                                              
+      30 +                                                               
+      31 +/* Vạch: tắt là khung rỗng, bật là khối đặc có màu. Phân biệt b
+         +ằng hình chứ không chỉ màu. */                                 
+      32  .bar {
+      33    display: grid;
+      15 -  grid-template-columns: repeat(12, 1fr);                      
+      34 +  grid-template-columns: repeat(12, minmax(0, 1fr));           
+      35 +  align-items: end;                                            
+      36    gap: 0.25rem;
+      37 +  height: 2.5rem;                                              
+      38  }
+      39  
+      40  .segment {
+      20 -  height: 1.5rem;                                              
+      21 -  border: 2px solid currentColor;                              
+      41 +  height: 100%;                                                
+      42 +  border: 2px solid var(--ink-soft);                           
+      43 +  border-radius: 0.3rem;                                       
+      44  }
+      45  
+      46  .segment[data-lit='true'] {
+      25 -  background: currentColor;                                    
+      47 +  border-color: var(--ink);                                    
+      48 +  background: var(--hihat);                                    
+      49  }
+      50 +                                                               
+      51 +.segment:nth-child(n + 8)[data-lit='true'] {                   
+      52 +  background: var(--snare);                                    
+      53 +}                                                              
+      54 +                                                               
+      55 +.segment:nth-child(n + 11)[data-lit='true'] {                  
+      56 +  background: var(--kick);                                     
+      57 +}                                                              
+
+● Tiếp theo là App (masthead), main.jsx nạp token, và font trong index.html.
+
+● Write(src\App.jsx)
+  ⎿  Added 5 lines, removed 4 lines
+       1  import { DrumMachine } from './DrumMachine.jsx';
+       2 +import styles from './App.module.css';                         
+       3  
+       4  export function App() {
+       5    return (
+       5 -    <main>                                                     
+       6 +    <main className={styles.page}>                             
+       7        <header>
+       7 -        <hgroup>                                               
+       8 -          <h1>Drum Kit</h1>                                    
+       9 -          <p>Nhấn phím W A S D J K L hoặc chạm vào pad để chơi.
+         -</p>                                                           
+       8 +        <hgroup className={styles.masthead}>                   
+       9 +          <h1 className={styles.title}>Drum Kit</h1>           
+      10 +          <p className={styles.lede}>Gõ phím W A S D J K L hoặc
+         + chạm vào từng trống.</p>                                      
+      11          </hgroup>
+      12        </header>
+      13        <DrumMachine />
+
+● Write(src\App.module.css)
+  ⎿  Wrote 25 lines to src\App.module.css
+       1 .page {
+       2   display: grid;
+       3   gap: 2rem;
+       4   max-width: 72rem;
+       5   margin-inline: auto;
+       6   padding: clamp(1.5rem, 5vw, 3.5rem) 1rem 4rem;
+       7 }
+       8
+       9 .masthead {
+      10   display: grid;
+     … +15 lines (ctrl+o to expand)
+
+  Read 2 files (ctrl+o to expand)
+
+● Mình sửa luôn meta description vì câu cũ tự nhận "đạt WCAG 2.2 AA", trong khi
+  luật dự án cấm khẳng định điều chưa kiểm.
+
+● Update(index.html)
+  ⎿  Added 7 lines, removed 1 line
+       3    <head>
+       4      <meta charset="UTF-8" />
+       5      <meta name="viewport" content="width=device-width, initial-
+          scale=1.0" />
+       6 -    <meta name="description" content="Drum Kit chơi bằng bàn ph
+         -ím, đạt WCAG 2.2 AA." />                                       
+       6 +    <meta name="description" content="Drum Kit chơi bằng bàn ph
+         +ím hoặc chạm, có nhật ký gõ và thanh mức âm." />               
+       7      <link rel="icon" href="data:," />
+       8 +    <link rel="preconnect" href="https://fonts.googleapis.com" 
+         +/>                                                             
+       9 +    <link rel="preconnect" href="https://fonts.gstatic.com" cro
+         +ssorigin />                                                    
+      10 +    <link                                                      
+      11 +      rel="stylesheet"                                         
+      12 +      href="https://fonts.googleapis.com/css2?family=Bricolage+
+         +Grotesque:opsz,wght@12..96,400..800&display=swap"              
+      13 +    />                                                         
+      14      <title>Drum Kit</title>
+      15    </head>
+      16    <body>
+
+● Update(src\main.jsx)
+  ⎿  Added 1 line
+      1  import { StrictMode } from 'react';
+      2  import { createRoot } from 'react-dom/client';
+      3 +import './styles/tokens.css';                                   
+      4  import { App } from './App.jsx';
+      5  
+      6  const rootEl = document.getElementById('root');
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● 82/82 test, lint và build đều ổn. Giờ mình dựng công cụ chụp ảnh: cài
+  puppeteer-core và lighthouse vào thư mục scratchpad, ngoài project, rồi điều
+  khiển Edge.
+
+  Made 1 scratchpad edit +58, ran 3 shell commands (ctrl+o to expand)
+
+● Edge thoát ngay với mã 0. Nhiều khả năng Edge đang mở sẵn và tiến trình mới bị
+  chuyển sang phiên đó. Mình thử với một profile riêng.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Background command "npx vite preview --port 4173 --strictPort" failed with
+exit code 1
+
+● Server preview cũng đã thoát. Mình xem log của nó.
+
+  Read 1 file (ctrl+o to expand)
+
+● Lệnh cd không có tác dụng trong tác vụ nền nên npx đang chạy ở gốc repo. Mình
+  sẽ chạy lại preview bằng đường dẫn tuyệt đối và thử Edge headless để tìm lỗi
+  khởi động.
+
+  Ran 2 shell commands (ctrl+o to expand)
+
+● Edge không in ra gì. Có thể sandbox của công cụ đang chặn việc mở trình duyệt.
+  Mình thử lại script chụp ảnh ngoài sandbox; bạn sẽ được hỏi xác nhận.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Lần chạy trước để lại file khoá trong profile. Mình dùng profile mới cho mỗi
+  lần chạy.
+  Ran 1 shell command (ctrl+o to expand)
+  ⎿  Blocked by auto mode
+     │ Auto mode: No reason provided
+
+● Mình không chạy được Edge ngoài sandbox nên chưa chụp ảnh hay chạy Lighthouse
+  được, phần đó bạn cần chạy giúp. Mình đã commit H1-D và sẽ tiếp tục với phần
+  tính toán như tương phản và bề rộng ở 375px.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Mình chưa tick H1-D vì gate của nó cần ảnh chụp, và giờ đang làm H1-08. Mình
+  sẽ viết script kiểm tương phản đọc trực tiếp từ tokens.css để bạn tự chạy lại
+  sau này.
+
+● Write(scripts\check-contrast.mjs)
+  ⎿  Wrote 46 lines to scripts\check-contrast.mjs
+       1 // Kiểm tương phản WCAG 2.2 (1.4.3 chữ >= 4.5:1, 1.4.11 thành ph
+         ần >= 3:1) cho các cặp màu
+       2 // thật sự dùng trong app. Đọc màu thẳng từ src/styles/tokens.cs
+         s nên đổi token là kiểm lại được.
+       3 // Chạy: node scripts/check-contrast.mjs   (thoát mã 1 nếu có cặ
+         p không đạt)
+       4 import { readFileSync } from 'node:fs';
+       5 import { fileURLToPath } from 'node:url';
+       6
+       7 const css = readFileSync(fileURLToPath(new URL('../src/styles/to
+     … +40 lines (~2 KB) (ctrl+o to expand)
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Tất cả 16 cặp màu đều đạt, thấp nhất là chữ trên pad Kick với 6.24:1. Tiếp
+  theo mình thêm phần accessibility cho CSS, gồm focus-visible, reduced-motion,
+  forced-colors, chặn animation tràn ngang ở 375px và chỉ áp hover cho thiết bị
+  có chuột.
+
+● Update(src\Pad.module.css)
+  ⎿  Added 13 lines, removed 3 lines
+      57    font-size: 0.8rem;
+      58  }
+      59  
+      60 -.pad:hover .shape {                                            
+      61 -  translate: 0 -2px;                                           
+      62 -  box-shadow: var(--rim), 0 calc(var(--drop) + 2px) 0 var(--ink
+         -);                                                             
+      60 +/* Chỉ thiết bị có chuột: trên màn cảm ứng :hover bị "dính" sau
+         + khi chạm. */                                                  
+      61 +@media (hover: hover) {                                        
+      62 +  .pad:hover .shape {                                          
+      63 +    translate: 0 -2px;                                         
+      64 +    box-shadow: var(--rim), 0 calc(var(--drop) + 2px) 0 var(--i
+         +nk);                                                           
+      65 +  }                                                            
+      66  }
+      67  
+      68 +/* Focus bàn phím: khung quanh cả ô vuông (vùng bấm), không bị 
+         +hình nghiêng che. */                                           
+      69 +.pad:focus-visible {                                           
+      70 +  outline: 3px solid var(--ink);                               
+      71 +  outline-offset: 2px;                                         
+      72 +  border-radius: 1rem;                                         
+      73 +}                                                              
+      74 +                                                               
+      75  /* Lúc bấm: hình lún xuống, bóng biến mất; vẫn thấy được khi tắ
+          t animation. */
+      76  .pad[aria-pressed='true'] {
+      77    --drop: 0px;
+
+● Update(src\Pad.module.css)
+  ⎿  Added 29 lines
+      203    animation: ring-wide 750ms ease-out;
+      204  }
+      205  
+      206 +/*                                                            
+      207 + * Người dùng chọn giảm chuyển động: tắt toàn bộ animation và 
+          +transition.                                                   
+      208 + * Trạng thái bấm vẫn thấy được nhờ hình lún xuống và mất bóng
+          + (đổi tức thì, không chuyển động).                            
+      209 + */                                                           
+      210 +@media (prefers-reduced-motion: reduce) {                     
+      211 +  .shape,                                                     
+      212 +  .hit,                                                       
+      213 +  .hit::after {                                               
+      214 +    animation: none !important;                               
+      215 +    transition: none;                                         
+      216 +  }                                                           
+      217 +}                                                             
+      218 +                                                              
+      219 +/*                                                            
+      220 + * Chế độ tương phản cao (Windows): màu nền bị thay bằng màu h
+          +ệ thống nên hình nhạc cụ mất màu.                             
+      221 + * Giữ viền theo màu hệ thống và đánh dấu pad đang bấm bằng vi
+          +ền Highlight.                                                 
+      222 + */                                                           
+      223 +@media (forced-colors: active) {                              
+      224 +  .shape {                                                    
+      225 +    border-color: CanvasText;                                 
+      226 +    box-shadow: none;                                         
+      227 +  }                                                           
+      228 +                                                              
+      229 +  .pad[aria-pressed='true'] .shape {                          
+      230 +    border-color: Highlight;                                  
+      231 +    border-width: 6px;                                        
+      232 +  }                                                           
+      233 +}                                                             
+      234 +                                                              
+      235  @keyframes thump {
+      236    0% { transform: scale(1); }
+      237    30% { transform: scale(1.12); }
+
+● Update(src\App.module.css)
+  ⎿  Added 3 lines
+       4    max-width: 72rem;
+       5    margin-inline: auto;
+       6    padding: clamp(1.5rem, 5vw, 3.5rem) 1rem 4rem;
+       7 +  /* Sóng animation của pad sát mép (crash phóng 1.7 lần) không
+         + được tạo thanh cuộn ngang ở 375px.                            
+       8 +     clip không tạo vùng cuộn mới như hidden. */               
+       9 +  overflow-x: clip;                                            
+      10  }
+      11  
+      12  .masthead {
+
+● Update(src\styles\tokens.css)
+  ⎿  Added 6 lines
+      57    letter-spacing: -0.01em;
+      58  }
+      59  
+      60 +/* Focus mặc định cho mọi phần tử tương tác khác (pad có kiểu r
+         +iêng trong Pad.module.css). */                                 
+      61 +:focus-visible {                                               
+      62 +  outline: 3px solid var(--ink);                               
+      63 +  outline-offset: 2px;                                         
+      64 +}                                                              
+      65 +                                                               
+      66  /* Phím như một keycap nhỏ: viền dưới dày hơn. */
+      67  kbd {
+      68    display: inline-grid;
+
+● Update(src\Pad.module.css)
+  ⎿  Added 1 line
+      206  /*
+      207   * Người dùng chọn giảm chuyển động: tắt toàn bộ animation và 
+           transition.
+      208   * Trạng thái bấm vẫn thấy được nhờ hình lún xuống và mất bóng
+            (đổi tức thì, không chuyển động).
+      209 + * !important: các luật animation theo từng âm có độ ưu tiên c
+          +ao hơn (.pad[data-sound] .hit).                               
+      210   */
+      211  @media (prefers-reduced-motion: reduce) {
+      212    .shape,
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● 82/82 kiểm tra đều sạch và đã commit H1-08 đúng message WBS, nhưng chưa tick
+  vì gate Tab 375px cần trình duyệt thật.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Mình không thể chạy H1-09 vì cần trình duyệt, nên đã lưu kết quả kiểm tương
+  phản vào evidence/ và viết checklist có lệnh để bạn chạy Lighthouse cùng các
+  bước kiểm tay. Chưa có kết quả nào được điền thêm khi chưa chạy.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Write(evidence\README.md)
+  ⎿  Wrote 52 lines to evidence\README.md
+       1 # Bằng chứng kiểm chứng HW1 (H1-D, H1-08, H1-09)
+       2
+       3 Tệp này ghi lại cái gì đã kiểm, kiểm bằng cách nào, và cái gì cò
+         n phải kiểm tay. Chỉ đánh dấu một mục khi đã có tệp bằng chứng t
+         hật trong thư mục này.
+       4
+       5 ## Đã có
+       6
+       7 | Mục | Cách kiểm | Tệp |
+       8 |---|---|---|
+     … +44 lines (ctrl+o to expand)
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Stop Task
+  ⎿  Set-Location 'C:\Dev\Project\24520626_QuangPhuHung_MSIS207_Lab03\src\h
+     omeworks\DrumMachine'; npm run preview -- --port 4173 --strictPort ·
+     stopped
+
+● Mình đã làm H1-06, H1-07, dòng mới H1-D (giao diện) và H1-08, mỗi task một
+  commit. H1-09 chưa xong, vì mình không mở được trình duyệt từ đây: công cụ
+  kiểm duyệt tự động đã chặn lệnh mở Edge ngoài sandbox. Vì vậy mình chưa nhìn
+  thấy giao diện mới lần nào và chưa chạy Lighthouse. H1-10 thì đã xong từ lượt
+  trước.
+
+  Commit (không có dòng Co-Authored-By nào)
+
+  ┌─────────────────────────────────────────┬───────────┬───────────────────┐
+  │                 Commit                  │   Task    │  Tick trong WBS   │
+  ├─────────────────────────────────────────┼───────────┼───────────────────┤
+  │ 9333499 feat(hw1): hit log with         │ H1-06     │ [x]               │
+  │ debounced live region                   │           │                   │
+  ├─────────────────────────────────────────┼───────────┼───────────────────┤
+  │ cf5fe20 feat(hw1): decibel level meter  │ H1-07     │ [x]               │
+  ├─────────────────────────────────────────┼───────────┼───────────────────┤
+  │ 57e4f6c style(hw1): bright sticker      │ H1-D      │ [ ] (gate cần ảnh │
+  │ design with per-sound hit animations    │           │  chụp)            │
+  ├─────────────────────────────────────────┼───────────┼───────────────────┤
+  │ dcf5db2 style(hw1): wcag 2.2 aa focus,  │ H1-08     │ [ ] (gate cần Tab │
+  │ contrast and 375px                      │           │  và 375px thật)   │
+  ├─────────────────────────────────────────┼───────────┼───────────────────┤
+  │ 7f9990c docs(hw1): contrast evidence    │ một phần  │ [ ]               │
+  │ and browser check checklist             │ H1-09     │                   │
+  └─────────────────────────────────────────┴───────────┴───────────────────┘
+
+  Giao diện đã làm
+
+  - Màu và chữ: nền trắng xanh #EEF3FF, chữ và viền màu chàm #1D1A4E, font
+    Bricolage Grotesque. Mỗi âm một màu sáng, dùng chung cho pad và chip trong
+    nhật ký.
+  - Nút: mỗi pad có hình theo nhạc cụ, kiểu sticker có bóng đổ cứng, khi bấm thì
+    lún xuống. Kick và snare tròn, tom hình thùng, clap hình thoi, ba loại
+    cymbal là elip dẹt có núm ở giữa. Pad xếp đúng vị trí phím trên bàn phím: W
+    lệch phía trên A/S, cụm J K L tách bên phải.
+  - Animation khi gõ:
+    - Kick nảy kèm sóng tròn.
+    - Snare rung ngang.
+    - Hi-hat co dẹt.
+    - Open hat lắc lư.
+    - Tom nhún xuống.
+    - Clap bung ra kèm sóng nét đứt.
+    - Crash lắc dài.
+
+    Gõ liên tục thì animation chạy lại từ đầu, vì phần tử hình được tạo lại theo
+    id của hit. Có test kiểm điều này.
+  - Hit log: danh sách cập nhật ngay. Vùng <output aria-live> đợi 0,5 giây sau
+    cú gõ cuối mới đọc một câu, ví dụ "3 cú gõ, cuối cùng: Hi-Hat", nên không
+    đọc từng phím.
+  - Meter: đo âm thật từ engine, có số dB, chữ mô tả mức và 12 vạch. Vạch tắt là
+    khung rỗng, vạch bật là khối đặc, nên không chỉ dựa vào màu.
+  - Phần a11y của H1-08:
+    - Khung focus quanh cả ô pad.
+    - Khi bật giảm chuyển động thì tắt hết animation, pad vẫn lún khi bấm.
+    - Hỗ trợ chế độ tương phản cao của Windows.
+    - Sóng animation sát mép không tạo thanh cuộn ngang.
+    - Hiệu ứng hover chỉ áp cho thiết bị có chuột.
+
+  Đã kiểm thật
+
+  - npm test: 82/82 pass; npm run lint sạch; npm run build thành công.
+  - Các grep cấm (keyCode, alert(, innerHTML, style={{, http://) đều ra 0 dòng.
+  - Tương phản: script mới node scripts/check-contrast.mjs đọc màu từ
+    tokens.css, 16/16 cặp đạt, thấp nhất 6.24:1. Kết quả lưu ở
+    evidence/contrast.txt.
+
+  Bạn cần chạy
+
+  Mọi lệnh và bảng kiểm nằm trong evidence/README.md
+  (src/homeworks/DrumMachine/evidence/README.md):
+  - Lighthouse qua Edge.
+  - Tab hết trang, 375px, Accessibility tree.
+  - UniKey, giảm chuyển động, Console.
+  - Nghe đủ 7 pad.
+
+  Vì mình chưa nhìn được giao diện, có thể còn lỗi hiển thị: chữ chồng lên hình
+  elip dẹt của hi-hat, hoặc sóng animation bị cắt ở mép. Bạn chụp lại gửi mình
+  thì mình sửa.
+
+  Lưu ý thêm:
+  - Lệnh npm run preview mình chạy nền đã được tắt.
+  - Nếu thấy một tiến trình msedge headless lạ đang chạy, đó có thể là từ lần
+    thử đầu của mình; tắt đi là được.
+  - Nếu muốn mình tự chụp ảnh và chạy Lighthouse ở lần sau, bạn có thể thêm
+    quyền chạy Edge cho Bash trong settings.
+
+> /model sonnet
+  ⎿  Set model to claude-sonnet-5-5
+
+> /model opus
+  ⎿  Set model to claude-opus-5-5
+  ⎿  [Image #2]
+
+> giao diện nè, hơi lệch nhiều chỗ, fix nhanh giao diện này trước đi rồi báo
+  cáo mình những task còn lại
+
+● Mình thấy bốn lỗi chính trong ảnh:
+
+  1. Ba cymbal (Open Hat, Hi-Hat, Crash) quá dẹt nên chữ tràn ra viền. Núm
+     chuông ở giữa bị keycap che mất, chỉ thêm rối.
+  2. Kích cỡ các hình chênh nhau nhiều: Kick rất to trong khi Hi-Hat như một
+     vạch. Nhìn thành ra lệch.
+  3. Khoảng trống lớn giữa hàng W và hàng A S D, cũng do hình Open Hat quá dẹt.
+  4. Nhật ký gõ có một khoảng trống thừa phía trên dòng "Chưa có cú gõ nào". Đó
+     là vùng <output> rỗng vẫn chiếm chỗ (min-height + gap).
+
+● Update(src\Pad.module.css)
+  ⎿  Added 2 lines, removed 1 line
+      83  
+      84  /* ---------- Hình theo nhạc cụ ---------- */
+      85  
+      86 +/* Kích cỡ hình chênh nhau vừa phải (kick to nhất, clap nhỏ nhấ
+         +t) để hàng pad trông cân. */                                   
+      87  .pad[data-sound='kick'] {
+      87 -  --inset: 2%;                                                 
+      88 +  --inset: 4%;                                                 
+      89  }
+      90  
+      91  /* Mặt trống kick: vòng tròn trong mờ */
+
+● Update(src\Pad.module.css)
+  ⎿  Added 1 line, removed 1 line
+       99  }
+      100  
+      101  .pad[data-sound='snare'] {
+      102 -  --inset: 12%;                                               
+      102 +  --inset: 8%;                                                
+      103    --rim: inset 0 0 0 0.5rem rgb(255 255 255 / 0.55);
+      104  }
+      105  
+● Update(src\Pad.module.css)
+  ⎿  Added 1 line, removed 1 line
+      104  }
+      105  
+      106  .pad[data-sound='tom'] {
+      107 -  --inset: 10% 15%;                                           
+      107 +  --inset: 8% 12%;                                            
+      108    --radius: 44% 44% 38% 38% / 24% 24% 24% 24%;
+      109  }
+      110  
+
+● Update(src\Pad.module.css)
+  ⎿  Added 9 lines, removed 20 lines
+      114    --tilt: 45deg;
+      115  }
+      116  
+      117 -/* Cymbal nhìn nghiêng: elip dẹt có núm chuông ở giữa */      
+      117 +/*                                                            
+      118 + * Cymbal nhìn nghiêng: elip. Chiều cao elip phải đủ chứa tên 
+          ++ keycap (khoảng 60% ô),                                      
+      119 + * nếu dẹt hơn thì chữ tràn ra viền.                          
+      120 + */                                                           
+      121  .pad[data-sound='hihat'] {
+      119 -  --inset: 31% 5%;                                            
+      122 +  --inset: 20% 3%;                                            
+      123  }
+      124  
+      125  .pad[data-sound='openhat'] {
+      123 -  --inset: 27% 4%;                                            
+      124 -  --tilt: -9deg;                                              
+      126 +  --inset: 18% 2%;                                            
+      127 +  --tilt: -7deg;                                              
+      128  }
+      129  
+      130  .pad[data-sound='crash'] {
+      128 -  --inset: 22% 0%;                                            
+      129 -  --tilt: 10deg;                                              
+      131 +  --inset: 16% 0%;                                            
+      132 +  --tilt: 7deg;                                               
+      133  }
+      134  
+      132 -.pad[data-sound='hihat'] .shape::before,                      
+      133 -.pad[data-sound='openhat'] .shape::before,                    
+      134 -.pad[data-sound='crash'] .shape::before {                     
+      135 -  content: '';                                                
+      136 -  position: absolute;                                         
+      137 -  top: 50%;                                                   
+      138 -  left: 50%;                                                  
+      139 -  width: 0.9rem;                                              
+      140 -  height: 0.45rem;                                            
+      141 -  border-radius: 50%;                                         
+      142 -  background: var(--ink);                                     
+      143 -  translate: -50% -50%;                                       
+      144 -}                                                             
+      145 -                                                              
+      135  /* ---------- Animation riêng cho từng âm (chạy khi có .hit) -
+           --------- */
+      136  
+      137  /* Vòng sóng lan ra (kick, clap, crash) */
+
+● Update(src\HitLog.module.css)
+  ⎿  Added 13 lines, removed 3 lines
+       1 +/*                                                             
+       2 + * Khoảng cách bằng margin thay vì grid gap: vùng live <output>
+         + lúc rỗng vẫn phải nằm trong DOM                               
+       3 + * (để trình đọc màn hình bắt được thay đổi), nhưng không được 
+         +chiếm chỗ hay tạo khoảng trống.                                
+       4 + */                                                            
+       5  .log {
+       2 -  display: grid;                                               
+       3 -  gap: 0.75rem;                                                
+       6    padding: 1.25rem;
+       7    border: 2px solid var(--ink);
+       8    border-radius: var(--radius-panel);
+       9    background: var(--surface);
+      10  }
+      11  
+      12 +.log > * + * {                                                 
+      13 +  margin-top: 0.75rem;                                         
+      14 +}                                                              
+      15 +                                                               
+      16  .announcement {
+      11 -  min-height: 1.5em;                                           
+      17 +  display: block;                                              
+      18    color: var(--ink-soft);
+      19  }
+      20  
+      21 +.announcement:empty {                                          
+      22 +  margin-top: 0;                                               
+      23 +}                                                              
+      24 +                                                               
+      25  .list {
+      26    display: flex;
+      27    flex-wrap: wrap;
+
+● Phần meter giữ nguyên. Chỗ trống dưới "Im lặng" là chỗ dành cho số dB, để
+  panel không bị giật kích thước khi có tiếng. Giờ mình chạy kiểm tra rồi
+  commit.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Mình đã sửa giao diện trong commit ece5362, không có dòng Co-Authored-By. Test
+  82/82, lint và build đều sạch. Mình vẫn không chụp được ảnh, nên bạn cần F5
+  lại để xem thật.
+
+  Đã sửa
+
+  - Cymbal: ba elip Open Hat, Hi-Hat và Crash cao gần gấp đôi (khoảng 60–68% ô)
+    nên tên và keycap nằm gọn bên trong. Mình bỏ núm chuông vì nó vốn bị keycap
+    che. Độ nghiêng giảm còn ±7°.
+  - Kích cỡ cân hơn: Kick nhỏ lại một chút; Snare và Tom to lên. Hàng pad giờ
+    chênh nhau vừa phải chứ không còn kiểu một hình to, một hình như vạch.
+  - Khoảng trống giữa W và hàng A S D: hẹp lại nhờ Open Hat dày hơn.
+  - Nhật ký gõ: hết khoảng trống thừa. Vùng <output aria-live> lúc rỗng vẫn nằm
+    trong DOM để trình đọc màn hình bắt được thay đổi, nhưng không còn chiếm
+    chỗ.
+
+  Nếu vẫn còn lệch, bạn gửi ảnh mới (nên có thêm ảnh ở 375px) để mình chỉnh
+  tiếp.
+
+  Các task còn lại
+
+  Còn lại trong phần lõi (bài được chấm):
+
+  Task: H1-D Design
+  Trạng thái: Đã code, chưa tick
+  Cần gì: Bạn duyệt giao diện; ảnh 375px và desktop
+  ────────────────────────────────────────
+  Task: H1-08 WCAG CSS
+  Trạng thái: Đã code, chưa tick
+  Cần gì: Tab hết trang và kiểm 375px trong DevTools
+  ────────────────────────────────────────
+  Task: H1-09 Bằng chứng
+  Trạng thái: Mới có contrast.txt
+  Cần gì: Chạy Lighthouse (lệnh có sẵn trong evidence/README.md
+    (src/homeworks/DrumMachine/evidence/README.md)); ảnh a11y tree; thử UniKey;
+    nghe đủ 7 pad; xem Console
+
+  Phần mở rộng (chưa bắt đầu, theo thứ tự):
+
+  ┌─────────────────┬───────────────────────────────────────────────────────┐
+  │      Task       │                       Nội dung                        │
+  ├─────────────────┼───────────────────────────────────────────────────────┤
+  │ H1-12 Controls  │ Chọn kit (Acoustic/808), thanh âm lượng, nút tắt      │
+  │                 │ tiếng. Engine đã hỗ trợ sẵn, chỉ còn giao diện        │
+  ├─────────────────┼───────────────────────────────────────────────────────┤
+  │ H1-13           │ Hàm thuần lập lịch theo đồng hồ âm thanh, chưa cần UI │
+  │ loopScheduler   │                                                       │
+  ├─────────────────┼───────────────────────────────────────────────────────┤
+  │ H1-14 useLooper │ Máy trạng thái của looper: ghi, phát, chồng lớp, chế  │
+  │                 │ độ Loop/Once, chỉnh tốc độ                            │
+  ├─────────────────┼───────────────────────────────────────────────────────┤
+  │ H1-15           │ Giao diện looper, ghép vào trang                      │
+  │ LooperPanel     │                                                       │
+  ├─────────────────┼───────────────────────────────────────────────────────┤
+  │ Chạy lại H1-09  │ Sau H1-15, chạy lại Lighthouse và kiểm 375px vì có    │
+  │                 │ thêm ô nhập và nút mới                                │
+  └─────────────────┴───────────────────────────────────────────────────────┘
+
+  Mình đề xuất bạn chạy phần kiểm tay của H1-09 trước để chốt phần lõi rồi mới
+  làm mở rộng. Nếu muốn mình tự chạy Lighthouse và chụp ảnh, bạn cần cho phép
+  Bash chạy Edge trong settings.
+
+> /model sonnet
+  ⎿  Set model to claude-sonnet-5-5
+
+> ok hoàn thiện các task còn lại trong phần lõi đi , còn phần mở rộng đừng phức
+  tạp hóa quá, làm đơn giản tí là được.
+
+● Phần lõi còn H1-D, H1-08, H1-09, cả ba đều cần trình duyệt. Mình thử thêm một
+  lần trong sandbox với cờ khác trước khi chuyển sang phần mở rộng.
+
+  Ran 4 shell commands (ctrl+o to expand)
+
+● Edge không chạy được trong sandbox nên ba task H1-D, H1-08 và H1-09 cần bạn
+  kiểm tra tay. Mình dừng server preview và chuyển sang H1-12 (Controls).
+  · summary
+
+● Stop Task
+  ⎿  Set-Location 'C:\Dev\Project\24520626_QuangPhuHung_MSIS207_Lab03\src\h
+     omeworks\DrumMachine'; npm run preview -- --port 4173 --strictPort ·
+     stopped
+
+● Write(src\Controls.test.jsx)
+  ⎿  Wrote 54 lines to src\Controls.test.jsx
+       1 import { render, screen, fireEvent } from '@testing-library/reac
+         t';
+       2 import { describe, it, expect, vi } from 'vitest';
+       3 import { Controls } from './Controls.jsx';
+       4 import { KITS } from './kits.js';
+       5
+       6 function setup(props = {}) {
+       7   const handlers = { onKitChange: vi.fn(), onVolumeChange: vi.fn
+         (), onMutedChange: vi.fn() };
+       8   render(<Controls kit="acoustic" volume={0.8} muted={false} {..
+     … +47 lines (~2 KB) (ctrl+o to expand)
+
+● Write(src\Controls.jsx)
+  ⎿  Wrote 61 lines to src\Controls.jsx
+       1 import { useId } from 'react';
+       2 import { KITS } from './kits.js';
+       3 import styles from './Controls.module.css';
+       4
+       5 /**
+       6  * Chọn bộ trống, âm lượng, tắt tiếng. Component thuần: state nằ
+         m ở useDrumAudio.
+       7  * @param {{
+       8  *   kit: string, onKitChange: (id: string) => void,
+       9  *   volume: number, onVolumeChange: (value: number) => void,
+     … +52 lines (ctrl+o to expand)
+
+● Write(src\Controls.module.css)
+  ⎿  Wrote 64 lines to src\Controls.module.css
+       1 .controls {
+       2   display: grid;
+       3   gap: 1rem;
+       4   padding: 1.25rem;
+       5   border: 2px solid var(--ink);
+       6   border-radius: var(--radius-panel);
+       7   background: var(--surface);
+       8 }
+       9
+      10 .field {
+     … +54 lines (ctrl+o to expand)
+
+  Read 1 file (ctrl+o to expand)
+
+● Mình ghép Controls vào DrumMachine và chia bố cục thành cột chính (pad) và cột
+  phụ (điều khiển, meter, nhật ký).
+
+● Update(src\DrumMachine.jsx)
+  ⎿  Added 1 line, removed 1 line
+      12   * handleTrigger duy nhất, nên âm thanh, trạng thái sáng và nhậ
+          t ký luôn khớp nhau.
+      13   */
+      14  export function DrumMachine() {
+      15 -  const { trigger, getLevelDb, error } = useDrumAudio();       
+      15 +  const { trigger, getLevelDb, error, kit, setKit, volume, setV
+         +olume, muted, setMuted } = useDrumAudio();                     
+      16    const [activeIds, setActiveIds] = useState(() => new Set());
+      17    const timersRef = useRef(new Map()); // padId -> id của timer
+           tắt sáng
+      18    const [hits, setHits] = useState([]); // mới nhất trước, tối 
+          đa LOG_MAX
+
+● Update(src\DrumMachine.jsx)
+  ⎿  Added 1 line
+      1  import { useCallback, useEffect, useId, useRef, useState } from 
+         'react';
+      2  import { ACTIVE_MS, LOG_MAX, PADS, padMap } from './drumPads.js'
+         ;
+      3 +import { Controls } from './Controls.jsx';                      
+      4  import { HitLog } from './HitLog.jsx';
+      5  import { LevelMeter } from './LevelMeter.jsx';
+      6  import { Pad } from './Pad.jsx';
+
+● Update(src\DrumMachine.jsx)
+  ⎿  Added 12 lines, removed 2 lines
+      76            ))}
+      77          </ul>
+      78        </section>
+      79 -      <LevelMeter getLevelDb={getLevelDb} />                   
+      80 -      <HitLog hits={hits} />                                   
+      79 +      <div className={styles.side}>                            
+      80 +        <Controls                                              
+      81 +          kit={kit}                                            
+      82 +          onKitChange={setKit}                                 
+      83 +          volume={volume}                                      
+      84 +          onVolumeChange={setVolume}                           
+      85 +          muted={muted}                                        
+      86 +          onMutedChange={setMuted}                             
+      87 +        />                                                     
+      88 +        <LevelMeter getLevelDb={getLevelDb} />                 
+      89 +        <HitLog hits={hits} />                                 
+      90 +      </div>                                                   
+      91      </div>
+      92    );
+      93  }
+
+  Read 1 file, ran 2 shell commands (ctrl+o to expand)
+
+● 90/90 test, lint sạch. Commit H1-12.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Mình sẽ đơn giản hóa bốn hàm thuần của looper: đưa speed vào anchor và bỏ thời
+  gian vòng quấn, nên mỗi hàm chỉ còn vài dòng. · summary
+
+● Write(src\loopScheduler.test.js)
+  ⎿  Wrote 93 lines to src\loopScheduler.test.js
+       1 import { describe, it, expect } from 'vitest';
+       2 import { positionAt, toAudioTime, reanchor, eventsInWindow } fro
+         m './loopScheduler.js';
+       3
+       4 const anchorAt = (audioTime, loopT, speed) => ({ audioTime, loop
+         T, speed });
+       5
+       6 describe('positionAt / toAudioTime', () => {
+       7   it.each([0.5, 1, 2])('speed %s: vị trí tăng theo speed', (spee
+         d) => {
+     … +86 lines (ctrl+o to expand)
+
+● Write(src\looperConfig.js)
+  ⎿  Wrote 21 lines to src\looperConfig.js
+       1 /** Hằng số looper, một chỗ để sửa nhanh khi bị đột biến. */
+       2
+       3 /** Looper kiểm tra "có hit nào sắp tới không" mỗi TICK_MS... */
+       4 export const TICK_MS = 25;
+       5 /** ...và đặt lịch trước LOOKAHEAD_MS. Phải lớn hơn TICK_MS nhiề
+         u để lỡ nhịp một tick vẫn không trễ tiếng. */
+       6 export const LOOKAHEAD_MS = 100;
+       7 /** Vòng ghi ngắn hơn mức này (hoặc không có hit) bị bỏ. */
+       8 export const MIN_LOOP_MS = 300;
+       9
+     … +12 lines (ctrl+o to expand)
+
+● Write(src\loopScheduler.js)  ⎿  Wrote 48 lines to src\loopScheduler.js
+       1 /**
+       2  * Phần thuần của looper: không biết gì về React hay âm thanh, t
+         est được bằng số.
+       3  *
+       4  * Hai loại thời gian:
+       5  *  - giờ audio: AudioContext.currentTime (giây), đồng hồ chính
+         xác, không trôi như setTimeout;
+       6  *  - thời gian vòng ("loopT"): giây tính trên bản ghi, chạy TĂN
+         G DẦN không quấn
+       7  *    (vòng 2 là 2..4 nếu vòng dài 2 giây). Không quấn nên cửa s
+     … +42 lines (~2 KB) (ctrl+o to expand)
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● 108/108 test, lint sạch. Commit H1-13.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Mình sẽ sửa engine.now() để nó tạo AudioContext khi cần, vì nếu không đồng hồ
+  sẽ nhảy và độ dài vòng ghi bị sai; sau đó mình viết test cho hook. · summary
+
+● Update(src\audioEngine.js)
+  ⎿  Added 3 lines, removed 1 line
+      188      return rms > 0 ? Math.max(SILENCE_DB, 20 * Math.log10(rms)
+           ) : SILENCE_DB;
+      189    }
+      190  
+      191 -  const now = () => (ctx ? ctx.currentTime : 0);              
+      191 +  // Giờ audio. Tạo context nếu cần: nút Record là thao tác ng
+          +ười dùng nên hợp lệ, và đồng hồ                               
+      192 +  // phải có từ lúc bắt đầu ghi (nếu không, giờ nhảy từ 0 khi 
+          +context được tạo ở hit đầu).                                  
+      193 +  const now = () => getContext()?.currentTime ?? 0;           
+      194  
+      195    function dispose() {
+      196      disposed = true;
+
+● Update(src\audioEngine.test.js)
+  ⎿  Added 9 lines
+      189      expect(engine.getLevelDb()).toBe(SILENCE_DB);
+      190    });
+      191  
+      192 +  it('now() tạo context khi cần và trả currentTime; sau dispos
+          +e trả 0', () => {                                             
+      193 +    const { ctx, engine } = setup();                          
+      194 +    ctx.currentTime = 4.2;                                    
+      195 +    expect(engine.now()).toBe(4.2);                           
+      196 +    expect(ctx.resume).toHaveBeenCalled();                    
+      197 +    engine.dispose();                                         
+      198 +    expect(engine.now()).toBe(0);                             
+      199 +  });                                                         
+      200 +                                                              
+      201    it('when được truyền vào start()', async () => {
+      202      const { ctx, engine } = setup();
+      203      await engine.loadKit('acoustic');
+
+● Write(src\useLooper.test.jsx)
+  ⎿  Wrote 216 lines to src\useLooper.test.jsx
+       1 import { renderHook, act } from '@testing-library/react';
+       2 import { StrictMode } from 'react';
+       3 import { describe, it, expect, vi, beforeEach, afterEach } from
+         'vitest';
+       4 import { useLooper } from './useLooper.js';
+       5 import { TICK_MS } from './looperConfig.js';
+       6
+       7 beforeEach(() => vi.useFakeTimers());
+       8 afterEach(() => vi.useRealTimers());
+       9
+     … +207 lines (ctrl+o to expand)
+
+● Write(src\useLooper.js)
+  ⎿  Wrote 154 lines to src\useLooper.js
+       1 import { useCallback, useEffect, useRef, useState } from 'react'
+         ;
+       2 import { eventsInWindow, positionAt, reanchor, toAudioTime } fro
+         m './loopScheduler.js';
+       3 import { DEFAULT_LOOP_MODE, LOOKAHEAD_MS, MIN_LOOP_MS, SPEED_DEF
+         AULT, TICK_MS } from './looperConfig.js';
+       4
+       5 /**
+       6  * Looper kiểu loop pedal: Record -> Stop thì độ dài vòng = thời
+          gian đã ghi, rồi tự phát.
+     … +148 lines (ctrl+o to expand)
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Test xanh ngay lần đầu, nên mình thử phá một chỗ quan trọng (bỏ việc ghi nhớ
+  mốc đã lên lịch) để chắc là test thật sự bắt được lỗi.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Bốn test bắt được lỗi, và file đã khôi phục (125/125). Commit H1-14.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● H1-15: LooperPanel rồi ghép vào DrumMachine. Mình viết test cho panel trước.
+
+● Write(src\LooperPanel.test.jsx)
+  ⎿  Wrote 114 lines to src\LooperPanel.test.jsx
+       1 import { render, screen, fireEvent } from '@testing-library/reac
+         t';
+       2 import { describe, it, expect, vi } from 'vitest';
+       3 import { LooperPanel } from './LooperPanel.jsx';
+       4
+       5 function makeLooper(overrides = {}) {
+       6   return {
+       7     mode: 'empty',
+       8     loopMode: 'loop',
+       9     setLoopMode: vi.fn(),
+     … +105 lines (ctrl+o to expand)
+
+● Write(src\LooperPanel.jsx)
+  ⎿  Wrote 108 lines to src\LooperPanel.jsx
+       1 import { useId } from 'react';
+       2 import { LOOP_MODES, SPEED_MAX, SPEED_MIN, SPEED_STEP } from './
+         looperConfig.js';
+       3 import styles from './LooperPanel.module.css';
+       4
+       5 const STATUS = {
+       6   empty: 'Chưa có bản ghi. Bấm Ghi, gõ trống, rồi bấm Ghi lần nữ
+         a để dừng.',
+       7   recording: 'Đang ghi. Gõ trống, xong thì bấm Ghi lần nữa.',
+       8   playing: 'Đang lặp.',
+     … +100 lines (ctrl+o to expand)
+
+● Giờ là CSS cho panel (nút cùng kiểu "sticker" với pad) và ghép vào
+  DrumMachine.
+
+● Write(src\LooperPanel.module.css)
+  ⎿  Wrote 136 lines to src\LooperPanel.module.css
+       1 .looper {
+       2   display: grid;
+       3   gap: 1rem;
+       4   padding: 1.25rem;
+       5   border: 2px solid var(--ink);
+       6   border-radius: var(--radius-panel);
+       7   background: var(--surface);
+       8 }
+       9
+      10 .status {
+     … +126 lines (ctrl+o to expand)
+
+  Read 1 file (ctrl+o to expand)
+
+● Write(src\DrumMachine.jsx)
+  ⎿  Added 28 lines, removed 20 lines
+       3  import { Controls } from './Controls.jsx';
+       4  import { HitLog } from './HitLog.jsx';
+       5  import { LevelMeter } from './LevelMeter.jsx';
+       6 +import { LooperPanel } from './LooperPanel.jsx';               
+       7  import { Pad } from './Pad.jsx';
+       8  import { useDrumAudio } from './useDrumAudio.js';
+       9  import { useDrumKeyboard } from './useDrumKeyboard.js';
+      10 +import { useLooper } from './useLooper.js';                    
+      11  import styles from './DrumMachine.module.css';
+      12  
+      13  /**
+      12 - * Ghép bàn phím, âm thanh, pad và nhật ký. Mọi nguồn kích hoạt
+         - (phím, chuột, chạm) đi qua một                                
+      13 - * handleTrigger duy nhất, nên âm thanh, trạng thái sáng và nhậ
+         -t ký luôn khớp nhau.                                           
+      14 + * Ghép bàn phím, âm thanh, pad, nhật ký và looper. Mọi hit của
+         + người chơi (phím, chuột, chạm) đi qua                         
+      15 + * một handleTrigger duy nhất, nên âm thanh, trạng thái sáng, n
+         +hật ký và bản ghi looper luôn khớp nhau.                       
+      16 + * Looper phát lại thẳng qua `trigger` của audio (không qua han
+         +dleTrigger) nên không tự ghi lại chính nó.                     
+      17   */
+      18  export function DrumMachine() {
+      16 -  const { trigger, getLevelDb, error, kit, setKit, volume, setV
+         -olume, muted, setMuted } = useDrumAudio();                     
+      19 +  const { trigger, now, getLevelDb, error, kit, setKit, volume,
+         + setVolume, muted, setMuted } = useDrumAudio();                
+      20 +  const looper = useLooper({ trigger, now });                  
+      21 +  const { capture } = looper;                                  
+      22 +                                                               
+      23    const [activeIds, setActiveIds] = useState(() => new Set());
+      24    const timersRef = useRef(new Map()); // padId -> id của timer
+           tắt sáng
+      25    const [hits, setHits] = useState([]); // mới nhất trước, tối 
+          đa LOG_MAX
+     ...
+      28    const handleTrigger = useCallback(
+      29      (padId) => {
+      30        trigger(padId);
+      31 +      capture(padId);                                          
+      32  
+      33        hitSeqRef.current += 1;
+      34        const hit = { id: hitSeqRef.current, padId };
+     ...
+      49          }, ACTIVE_MS),
+      50        );
+      51      },
+      45 -    [trigger],                                                 
+      52 +    [trigger, capture],                                        
+      53    );
+      54  
+      55    useDrumKeyboard(padMap, handleTrigger);
+     ...
+      68    return (
+      69      <div className={styles.studio}>
+      70        <div className={styles.main}>
+      64 -      <section aria-labelledby={headingId} className={styles.ma
+         -chine}>                                                        
+      65 -        <h2 id={headingId}>Pads</h2>                           
+      66 -        {error !== null && <p role="alert">{error}</p>}        
+      67 -        <ul className={styles.grid}>                           
+      68 -          {PADS.map((pad) => (                                 
+      69 -            <li key={pad.id} data-sound={pad.id}>              
+      70 -              <Pad                                             
+      71 -                pad={pad}                                      
+      72 -                isActive={activeIds.has(pad.id)}               
+      73 -                hitId={hits.find((h) => h.padId === pad.id)?.id
+         -}                                                              
+      74 -                onTrigger={handleTrigger}                      
+      75 -              />                                               
+      76 -            </li>                                              
+      77 -          ))}                                                  
+      78 -        </ul>                                                  
+      79 -      </section>                                               
+      71 +        <section aria-labelledby={headingId} className={styles.
+         +machine}>                                                      
+      72 +          <h2 id={headingId}>Pads</h2>                         
+      73 +          {error !== null && <p role="alert">{error}</p>}      
+      74 +          <ul className={styles.grid}>                         
+      75 +            {PADS.map((pad) => (                               
+      76 +              <li key={pad.id} data-sound={pad.id}>            
+      77 +                <Pad                                           
+      78 +                  pad={pad}                                    
+      79 +                  isActive={activeIds.has(pad.id)}             
+      80 +                  hitId={hits.find((h) => h.padId === pad.id)?.
+         +id}                                                            
+      81 +                  onTrigger={handleTrigger}                    
+      82 +                />                                             
+      83 +              </li>                                            
+      84 +            ))}                                                
+      85 +          </ul>                                                
+      86 +        </section>                                             
+      87 +        <LooperPanel looper={looper} />                        
+      88        </div>
+      89        <div className={styles.side}>
+      90          <Controls
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Mình đã tìm ra nguyên nhân: <output> ngầm có role status nên kéo thanh trượt
+  làm đọc liên tục, nên mình đổi sang <span>. Hai test còn lại đang chờ kiểm tra
+  tiếp. · summary
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● 138/138 test, lint sạch. Chạy build và các grep cấm rồi commit H1-15.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Vì closest('input') chặn luôn checkbox, radio và range, nên sau khi bấm "Tắt
+  tiếng" phím A S D không còn điều khiển được; mình sửa để chỉ bỏ qua ô nhập chữ
+  và viết test trước. · summary
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Test đỏ đúng như dự đoán. Mình sửa selector.
+
+● Update(src\useDrumKeyboard.js)
+  ⎿  Added 7 lines, removed 1 line
+       2  
+       3  // Ô đang gõ chữ: không cướp phím. closest() bắt được cả phần t
+          ử con của contenteditable,
+       4  // việc kiểm tagName như slide thì bỏ sót.
+       5 -const TYPING_TARGET = 'input, textarea, select, [contenteditabl
+         -e]';                                                           
+       5 +// <input> chỉ tính khi nhận chữ: checkbox, radio, range, nút k
+         +hông nhận chữ, nếu chặn cả chúng thì                           
+       6 +// bấm "Tắt tiếng" xong (focus còn ở checkbox) phím A S D sẽ th
+         +ôi chơi được. <select> giữ nguyên vì                           
+       7 +// nó dùng phím chữ để nhảy tới mục.                           
+       8 +const NON_TEXT_INPUTS = ['checkbox', 'radio', 'range', 'button'
+         +, 'submit', 'reset', 'image', 'file', 'color']                 
+       9 +  .map((type) => `[type="${type}"]`)                           
+      10 +  .join(', ');                                                 
+      11 +const TYPING_TARGET = `input:not(${NON_TEXT_INPUTS}), textarea,
+         + select, [contenteditable]`;                                   
+      12  
+      13  /**
+      14   * Nghe phím tắt trên window bằng e.code.
+
+  Ran 1 shell command (ctrl+o to expand)
+● Mình cập nhật checklist kiểm tay cho phần Controls và Looper, rồi commit.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Phần mở rộng H1-12 đến H1-15 đã xong và có test. Ba task lõi H1-D, H1-08,
+  H1-09 vẫn chưa xong, vì chúng cần trình duyệt và Edge không khởi chạy được
+  trong sandbox của mình, kể cả khi thử lại với cờ khác. Mình đã dừng server
+  preview chạy nền.
+
+  Kết quả đã chạy thật:
+  - npm test ra 140/140 pass (14 file).
+  - npm run lint sạch.
+  - npm run build thành công.
+  - Các grep cấm ra 0 dòng.
+  - Không có dòng Co-Authored-By trong 12 commit gần nhất.
+
+  Commit mới
+
+  ┌─────────┬───────────────────────────────────────────────────────┐
+  │ Commit  │                       Nội dung                        │
+  ├─────────┼───────────────────────────────────────────────────────┤
+  │ 9eb9ec2 │ H1-12: Controls (bộ trống, âm lượng, tắt tiếng)       │
+  ├─────────┼───────────────────────────────────────────────────────┤
+  │ f3ce27c │ H1-13: hàm thuần của looper                           │
+  ├─────────┼───────────────────────────────────────────────────────┤
+  │ 768a240 │ H1-14: hook useLooper                                 │
+  ├─────────┼───────────────────────────────────────────────────────┤
+  │ e7cf628 │ H1-15: LooperPanel ghép vào trang                     │
+  ├─────────┼───────────────────────────────────────────────────────┤
+  │ 7923ebf │ Sửa lỗi bàn phím (xem bên dưới)                       │
+  ├─────────┼───────────────────────────────────────────────────────┤
+  │ 8711755 │ Thêm mục kiểm tay cho Controls và Looper vào evidence │
+  └─────────┴───────────────────────────────────────────────────────┘
+
+  Phần mở rộng, đã làm gọn
+
+  - Looper hoạt động theo kiểu loop pedal: Ghi, Phát/Dừng, Chồng lớp, Xoá. Có
+    chế độ Lặp liên tục hoặc Một lần, và tốc độ 0.5× đến 2×.
+  - Mình bỏ qua quantize, phím tắt và hiệu ứng sáng pad khi phát lại.
+  - Phát lại lập lịch theo đồng hồ âm thanh nên nhịp không trôi. Mình thử phá
+    một chỗ trong hook thì 4 test fail đúng, nghĩa là test có tác dụng.
+  - Giới hạn đã biết: tab nền bị trình duyệt giãn timer thì một hit chồng lớp gõ
+    lúc đó có thể phát đúp một lần. Điều này đã ghi trong comment của
+    useLooper.js.
+
+  Hai lỗi thật mình tự tìm ra và đã sửa
+
+  1. <output> là vùng live ngầm. Mình dùng nó cho số âm lượng và tốc độ, nên kéo
+     thanh trượt sẽ bị đọc liên tục. Đã đổi sang <span>.
+  2. Bấm "Tắt tiếng" xong thì phím A S D không chơi được nữa. Selector
+     closest('input') chặn cả checkbox, radio và range. Giờ chỉ chặn ô nhập chữ,
+     select, textarea và contenteditable. Đây là lỗi AI có thật, đáng cân nhắc
+     đưa vào AI_FAILURE_AUDIT.md, nhưng bạn tự viết theo bằng chứng của bạn.
+
+  Còn lại, cần bạn
+
+  ┌────────────────┬────────────────────────────────────────────────────────┐
+  │      Task      │                         Cần gì                         │
+  ├────────────────┼────────────────────────────────────────────────────────┤
+  │ H1-D (giao     │ Bạn xem lại sau lần sửa ece5362 và duyệt, hoặc gửi ảnh │
+  │ diện)          │  mới để mình chỉnh                                     │
+  ├────────────────┼────────────────────────────────────────────────────────┤
+  │ H1-08 (WCAG    │ Tab hết trang, kiểm 375px (tất cả nút và slider mới    │
+  │ CSS)           │ cũng cần kiểm)                                         │
+  ├────────────────┼────────────────────────────────────────────────────────┤
+  │ H1-09 (bằng    │ Chạy Lighthouse, chụp a11y tree, thử UniKey, xem       │
+  │ chứng)         │ Console                                                │
+  └────────────────┴────────────────────────────────────────────────────────┘
+
+  Lệnh Lighthouse và bảng kiểm tay đầy đủ nằm trong evidence/README.md
+  (src/homeworks/DrumMachine/evidence/README.md). Bạn chạy Lighthouse sau khi đã
+  có Controls và Looper để điểm 100 phủ cả hai.
+
+  Vì chưa nhìn thấy giao diện, có thể còn lỗi hiển thị ở các panel mới
+  (Controls, Looper, bố cục hai cột). Bạn chụp ở cả desktop và 375px gửi mình
+  thì mình sửa tiếp.
+
+[Image #3]
+  ⎿  [Image #4]
+
+> Performance hơi tệ, accessibility a1y tree khá ok nhỉ, tiện lưu 2 ảnh này vào
+  evidence luôn nhe
+
+  Read 1 file, ran 1 shell command (ctrl+o to expand)
+
+● Hai ảnh đã được copy vào evidence/. Giờ mình ghi chúng vào README, kèm điểm
+  đọc được từ ảnh và các điều kiện chạy.
+
+● Update(evidence\README.md)
+  ⎿  Added 8 lines
+       8  |---|---|---|
+       9  | Tương phản màu (WCAG 1.4.3, 1.4.11) | `node scripts/check-con
+          trast.mjs` đọc màu từ `src/styles/tokens.css`; 16/16 cặp đạt, t
+          hấp nhất 6.24:1 (chữ trên pad Kick) | [contrast.txt](contrast.t
+          xt) |
+      10  | Logic bàn phím, `aria-pressed`, nhật ký, meter | `npm test` (
+          Vitest + jsdom) | chạy lại lệnh để xem |
+      11 +| Lighthouse trong DevTools (Edge/Chrome) | Panel Lighthouse ch
+         +ạy trên `http://localhost:5173/` (Vite dev server), có đủ Contr
+         +ols và Looper. Điểm đọc từ ảnh lúc 08:25:29: Performance 69, **
+         +Accessibility 100**, Best Practices 100, SEO 91 | [lighthouse-d
+         +evtools.png](lighthouse-devtools.png) |                        
+      12 +| Accessibility tree (vùng Looper) | DevTools > Elements > Acce
+         +ssibility: `region "Looper"` chứa `status` (atomic), `button "G
+         +hi"` (role button, Pressed: false), các nút Phát, Chồng lớp, Xo
+         +á ở trạng thái disabled, `progressbar "Vị trí trong vòng"` (0-1
+         +00), `group "Chế độ phát"` | [a11y-tree-looper.png](a11y-tree-l
+         +ooper.png) |                                                   
+      13  
+      14 +Ghi chú về hai bằng chứng trên:                                
+      15 +                                                               
+      16 +- Lighthouse chạy trên **dev server** (cổng 5173), không phải b
+         +ản build (`npm run preview`, cổng 4173). Bản dev không nén và c
+         +hứa công cụ gỡ lỗi của React nên điểm Performance thấp hơn bản 
+         +thật; con số 69 chưa phản ánh bản nộp. Chạy lại trên bản build 
+         +trước khi kết luận.                                            
+      17 +- Mới có ảnh chụp, **chưa có file JSON** của Lighthouse (gate H
+         +1-09 yêu cầu JSON). Trong panel Lighthouse: nút ⋮ > Save as JSO
+         +N, lưu thành `evidence/lighthouse-a11y.report.json`.           
+      18 +- Ảnh a11y tree là vùng Looper, chưa phải pad. Gate H1-04 (pad 
+         +có tên và `aria-pressed`) cần thêm một ảnh chọn nút "Kick A" tr
+         +ong cây.                                                       
+      19 +                                                               
+      20  ## Cần chạy trong trình duyệt
+      21  
+      22  Chuẩn bị (trong folder `src/homeworks/DrumMachine`):
+
+● Update(evidence\README.md)
+  ⎿  Added 1 line, removed 1 line
+      59  | Console | Mở Console, gõ mỗi pad một lần: không có lỗi hay cả
+          nh báo | | `console.png` |
+      60  | Âm thanh | Nghe đủ 7 pad; giữ phím không bắn lặp; hi-hat (D) 
+          cắt tiếng open hat (W) | | ghi chú |
+      61  
+      62 -Lighthouse: điểm Accessibility = ___ (ngày ___).               
+      62 +Lighthouse Accessibility: **100** (DevTools, dev server 5173, t
+         +heo ảnh [lighthouse-devtools.png](lighthouse-devtools.png)). Cò
+         +n phải chạy lại trên bản build và lưu JSON.                    
+      63  
+      64  ## Phải kiểm lại
+      65  
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Mình đã lưu hai ảnh vào evidence/ và cập nhật README, nhưng chưa commit vì
+  lượt này bạn không yêu cầu.
+
+  Đã lưu
+
+  ┌──────────────────────────────────┬───────────────────────────────────────┐
+  │               Tệp                │               Nội dung                │
+  ├──────────────────────────────────┼───────────────────────────────────────┤
+  │                                  │ Lighthouse trong DevTools:            │
+  │ evidence/lighthouse-devtools.png │ Performance 69, Accessibility 100,    │
+  │                                  │ Best Practices 100, SEO 91            │
+  ├──────────────────────────────────┼───────────────────────────────────────┤
+  │                                  │ Accessibility tree của vùng Looper:   │
+  │ evidence/a11y-tree-looper.png    │ region, status, nút Ghi (Pressed:     │
+  │                                  │ false), các nút disabled, progressbar │
+  │                                  │  có nhãn, group "Chế độ phát"         │
+  └──────────────────────────────────┴───────────────────────────────────────┘
+
+  Cả hai ảnh nhìn hợp lý. Accessibility 100 với đủ Controls và Looper là kết quả
+  tốt. Cây a11y cho thấy status luôn có sẵn trong DOM, đúng như thiết kế.
+
+  Về điểm Performance 69
+
+  Mình không đọc được các chỉ số chi tiết (LCP, TBT...) vì ảnh bị cắt, nên chưa
+  biết nguyên nhân chính xác. Có một điều chắc chắn: Lighthouse của bạn chạy
+  trên localhost:5173, tức Vite dev server, chứ không phải bản build. Bản dev
+  không nén và có công cụ gỡ lỗi của React nên thường bị chấm thấp hơn bản thật.
+  Con số này chưa phản ánh bản nộp.
+
+  Bạn chạy lại trên bản build:
+
+  npm run build
+  npm run preview -- --port 4173
+
+  Rồi chạy Lighthouse ở http://localhost:4173/. Nếu điểm vẫn thấp, gửi mình phần
+  chỉ số hoặc mục Opportunities. Có một nghi phạm đáng ngờ: font Google Fonts
+  trong index.html là stylesheet chặn render, và mình sửa được nếu đúng là nó.
+
+  Còn thiếu cho H1-09
+
+  - File JSON của Lighthouse: gate yêu cầu JSON. Trong panel Lighthouse, bấm ⋮
+    rồi Save as JSON, lưu thành evidence/lighthouse-a11y.report.json.
+  - Ảnh a11y tree của một pad: ảnh hiện tại là Looper. Gate H1-04 cần ảnh chọn
+    nút "Kick A" để thấy tên và trạng thái pressed.
+  - Các mục kiểm tay còn lại: UniKey, 375px, Tab, giảm chuyển động, Console.
+
+  Mình đã ghi các điểm trên vào README, trong đó nói rõ điểm 100 là từ dev
+  server. Nếu muốn commit, gợi ý là docs(hw1): add lighthouse and a11y tree
+  screenshots, gồm hai file PNG và evidence/README.md.
+
+[Image #5]
+  ⎿  [Image #6]
+
+> lưu ảnh này vào evidence luôn nhe, thêm lỗi performance này vài ai falure
+  audit luôn, sau đó kiểm tra nâng cấp các bad performance này đi
+
+● Trước hết, mình đọc file audit để theo đúng khuôn mẫu, rồi thử xem sandbox có
+  tải được font về để tự lưu không.
+
+  Read 1 file, ran 1 shell command (ctrl+o to expand)
+
+● Sandbox có mạng nên mình đang tải font về tự phục vụ, bước này sẽ xử lý các
+  mục chặn render và phụ thuộc bên thứ ba trong báo cáo. Mình chỉ giữ hai tập
+  con latin và vietnamese. · summary
+
+  Ran 2 shell commands (ctrl+o to expand)
+
+● Mình đã đổi font xong. Tiếp theo, hook đang tải trước 7 file WAV (khoảng 281
+  KB) ngay khi mount, làm chậm phần hiển thị trên mạng 4G, nên mình sẽ dời việc
+  tải sang sau khi trang đã xong; viết test trước. · summary
+
+● Write(src\whenIdle.test.js)
+  ⎿  Wrote 69 lines to src\whenIdle.test.js
+       1 import { describe, it, expect, vi, beforeEach, afterEach } from
+         'vitest';
+       2 import { whenIdle } from './whenIdle.js';
+       3
+       4 function setReadyState(value) {
+       5   Object.defineProperty(document, 'readyState', { value, configu
+         rable: true });
+       6 }
+       7
+       8 beforeEach(() => {
+     … +61 lines (ctrl+o to expand)
+
+● Write(src\whenIdle.js)
+  ⎿  Wrote 30 lines to src\whenIdle.js
+       1 const FALLBACK_DELAY_MS = 200;
+       2
+       3 /**
+       4  * Chạy `fn` khi trang đã tải xong và trình duyệt rảnh, để việc
+         phụ (tải trước âm thanh) không tranh
+       5  * băng thông với phần hiển thị trang. Trình duyệt không có requ
+         estIdleCallback (Safari) thì đợi một nhịp.
+       6  * @param {() => void} fn
+       7  * @returns {() => void} hàm huỷ (dùng làm cleanup của effect)
+       8  */
+     … +22 lines (ctrl+o to expand)
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Giờ nối vào hook useDrumAudio và cập nhật các test prefetch cho khớp hành vi
+  mới.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Lỗi nằm ở hai bài test, không phải ở code: một test đọc engineOptions quá sớm,
+  test kia từ chối promise trước khi hook gắn handler. Mình sẽ sửa cả hai test.
+  · summary
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● 146/146 test, lint sạch. Mình build và kiểm tra bản thật: HTML đầu ra không
+  còn gọi Google, font được phục vụ cùng domain, kích thước bundle.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Bản build đã xong: HTML không còn gọi Google, hai font được phục vụ từ cùng
+  domain. Tiếp theo mình sẽ ghi kết quả vào audit, chỉ dựa trên những gì đã kiểm
+  chứng. · summary
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Escape backtick trong shell làm lệnh hỏng. Mình dừng tiến trình treo và kiểm
+  tra xem AI_FAILURE_AUDIT.md có bị ghi dở không.
+
+● Stop Task
+  ⎿  cd /c/Dev/Project/24520626_QuangPhuHung_MSIS207_Lab03 && node -e "
+     const fs=require('fs');… · stopped
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● File audit chưa bị sửa gì (vẫn 169 dòng, không có thay đổi), nên không bị ghi
+  dở. Mình dùng công cụ Edit để tránh lỗi escape.
+● Update(c:\Dev\Project\24520626_QuangPhuHung_MSIS207_Lab03\AI_FAILURE_AUDIT.md)
+  ⎿  Added 1 line, removed 1 line
+      1  # AI Failure Mode Audit — Lab 03
+      2  
+      3  > Deliverable bắt buộc (15% điểm, cùng nhóm với Atomic Git): ít 
+         nhất **3 lỗi AI thật** kèm bằng chứng và bản sửa.
+      4 -> Bốn mục dưới đây là lỗi thật xảy ra trong session làm Exercise
+        - 1. Bằng chứng mục 1-3 là output terminal và ảnh checklist; mục 
+        -4 là log Console đo trên Edge (gần với DevTools nhất). Khi gặp l
+        -ỗi có Profiler, Network hoặc Accessibility tree ở Ex2, Ex3 và ho
+        -mework, thay hoặc bổ sung vào đây để đủ yêu cầu "DevTools proof"
+        -.                                                               
+      4 +> Bốn mục đầu là lỗi thật xảy ra trong session làm Exercise 1 (b
+        +ằng chứng mục 1-3 là output terminal và ảnh checklist; mục 4 là 
+        +log Console đo trên Edge). Mục 5 xảy ra ở Homework 1, bằng chứng
+        + là ảnh Lighthouse chụp từ DevTools. Khi gặp lỗi có Profiler, Ne
+        +twork hoặc Accessibility tree ở Ex2, Ex3 và homework, thay hoặc 
+        +bổ sung vào đây để đủ yêu cầu "DevTools proof".                 
+      5  > Chỉ ghi điều đã xảy ra. Không bịa prompt, code, ảnh hay commit
+          hash. Các ô `(điền)` do bạn bổ sung.
+      6  
+      7  - **Sinh viên:** Quang Phú Hùng — 24520626
+
+● Update(c:\Dev\Project\24520626_QuangPhuHung_MSIS207_Lab03\AI_FAILURE_AUDIT.md)
+  ⎿  Added 1 line
+      17  | 2 | Khởi tạo (X0-09) | Cài ESLint bản mới nhất mà không kiểm 
+          peer dependency, `npm install` thất bại | Output `npm` (ERESOLV
+          E) | Đã sửa, chờ hash commit |
+      18  | 3 | Exercise 1 (E1-03) | 34 test pass nhưng gate `grep '<div'
+          ` vẫn ra 1 dòng do chính comment của AI; thêm cảnh báo giả của 
+          ESLint | Output `grep`, `eslint` | Đã sửa, chờ hash commit |
+      19  | 4 | Exercise 1 (E1-07) | Demo "ảnh lỗi" và favicon mặc định b
+          ắn lỗi đỏ vào Console, trái gate "Console sạch" | Log Console đ
+          o trên Edge | Đã sửa, chờ hash commit |
+      20 +| 5 | Homework 1 (H1-D) | AI thêm font Google Fonts (stylesheet
+         + bên thứ ba chặn render) và tải trước 7 file WAV lúc mount mà k
+         +hông đo Performance; Lighthouse Performance 69 | Ảnh Lighthouse
+         + (DevTools) | Đã sửa code, chờ đo lại và hash commit |         
+      21  
+      22  ## Lỗi 1 — Đọc sai cấu trúc folder của checklist và ghi nhầm là
+           "bắt buộc"
+      23  
+
+● Update(c:\Dev\Project\24520626_QuangPhuHung_MSIS207_Lab03\AI_FAILURE_AUDIT.md)
+  ⎿  Added 46 lines
+      168  ### Bài học
+      169  
+      170  Dữ liệu demo cho ca lỗi cũng phải qua gate "Console sạch". Luô
+           n đo bằng trình duyệt thật (Console, Network) trước khi báo xo
+           ng, không chỉ dựa vào test đơn vị.
+      171 +                                                              
+      172 +## Lỗi 5 — Thêm tài nguyên bên thứ ba chặn render mà không đo 
+          +Performance                                                   
+      173 +                                                              
+      174 +### Bối cảnh                                                  
+      175 +                                                              
+      176 +- **Task:** H1-D (làm đẹp giao diện, xem [WBS HW1](src/homewor
+          +ks/DrumMachine/TASK_DECOMPOSITION.md)), sau đó H1-09 (Lighthou
+          +se).                                                          
+      177 +- **Prompt gốc của bạn:** "Ok ổn nhưng giao diện xấu quá, upda
+          +te giao diện lên đi, bảng màu sáng 1 tí, phá cách cho các nút 
+          +luôn, ngoài ra thêm tí animation khi bấm tùy thuộc vào từng lo
+          +ại âm thanh."                                                 
+      178 +- **Điều AI tuyên bố:** báo `npm run build` thành công và các 
+          +grep sạch; không đo Performance trước khi giao. Sau khi bạn gử
+          +i điểm Lighthouse, AI ghi vào `evidence/README.md` rằng điểm P
+          +erformance 69 "chưa phản ánh bản nộp" vì chạy trên dev server.
+          + Đây là giả thuyết chưa được đo.                              
+      179 +                                                              
+      180 +### Lỗi                                                       
+      181 +                                                              
+      182 +Để dùng font Bricolage Grotesque, AI thêm vào `index.html` hai
+          + thẻ `preconnect` và một stylesheet từ `fonts.googleapis.com`.
+          + Request này nằm trên đường chặn render và kéo theo chuỗi HTML
+          +, CSS của Google, rồi file font. Cùng lúc, hook `useDrumAudio`
+          + tải trước cả 7 file WAV (khoảng 281 KB, cộng từ kích thước fi
+          +le trong `public/kits/acoustic/`) ngay lúc mount.             
+      183 +                                                              
+      184 +Lighthouse chạy trên dev server (`localhost:5173`) cho thấy ba
+          + nhóm cần tách:                                               
+      185 +                                                              
+      186 +- **Do lựa chọn của AI (có trong insight):** Render-blocking r
+          +equests, Network dependency tree, 3rd parties.                
+      187 +- **Đặc trưng của dev server, không quy cho AI:** Minify JavaS
+          +cript (2,959 KiB), Reduce unused JavaScript (1,366 KiB), User 
+          +Timing marks (3 user timings). Tổng 4,186 KiB gồm cả bundle de
+          +v nên không tách riêng được phần WAV.                         
+      188 +- **Chưa xác định nguyên nhân:** Forced reflow. Chưa có trace 
+          +để biết là code dự án hay công cụ dev.                        
+      189 +                                                              
+      190 +Việc tải trước WAV làm nặng LCP là **suy luận** (Lighthouse mô
+          + phỏng mạng chậm), chưa đo riêng.                             
+      191 +                                                              
+      192 +Dòng AI sinh ra:                                              
+      193 +                                                              
+      194 +```html                                                       
+      195 +<link rel="preconnect" href="https://fonts.googleapis.com" /> 
+      196 +<link rel="preconnect" href="https://fonts.gstatic.com" crosso
+          +rigin />                                                      
+      197 +<link rel="stylesheet" href="https://fonts.googleapis.com/css2
+          +?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&display=
+          +swap" />                                                      
+      198 +```                                                           
+      199 +                                                              
+      200 +### Bằng chứng                                                
+      201 +                                                              
+      202 +Ảnh Lighthouse trong DevTools, dev server `localhost:5173`, lú
+          +c 08:25:29:                                                   
+      203 +                                                              
+      204 +- [lighthouse-devtools.png](src/homeworks/DrumMachine/evidence
+          +/lighthouse-devtools.png): Performance 69, Accessibility 100, 
+          +Best Practices 100, SEO 91.                                   
+      205 +- [lighthouse-metrics-devtools.png](src/homeworks/DrumMachine/
+          +evidence/lighthouse-metrics-devtools.png): First Contentful Pa
+          +int 2.1 s, Largest Contentful Paint 3.6 s, Total Blocking Time
+          + 0 ms, Cumulative Layout Shift 0, Speed Index 2.1 s.          
+      206 +- [lighthouse-insights-devtools.png](src/homeworks/DrumMachine
+          +/evidence/lighthouse-insights-devtools.png): Render-blocking r
+          +equests (ước tính tiết kiệm 160 ms), Forced reflow, Network de
+          +pendency tree, 3rd parties, Minify JavaScript (2,959 KiB), Red
+          +uce unused JavaScript (1,366 KiB), Avoid enormous network payl
+          +oads (4,186 KiB).                                             
+      207 +                                                              
+      208 +### Bản sửa thủ công                                          
+      209 +                                                              
+      210 +- **Commit:** (điền hash từ `git log`)                        
+      211 +- **Thay đổi:** tự phục vụ font từ `public/fonts/` (hai tập co
+          +n `latin` 41 KB và `vietnamese` 8,6 KB, có `unicode-range` và 
+          +`font-display: swap`) kèm `<link rel="preload">`; xoá ba thẻ G
+          +oogle; dời tải trước WAV sang `whenIdle` (sau khi trang tải xo
+          +ng và trình duyệt rảnh). Kiểm tra trên bản build: `grep google
+          +apis|gstatic` trong `dist/` ra 0; JS 235 KB (gzip 74 KB), CSS 
+          +11,7 KB (gzip 3,25 KB).                                       
+      212 +- **Đo lại:** (điền: Lighthouse chạy trên `npm run preview` cổ
+          +ng 4173; ghi điểm Performance, FCP, LCP và lưu ảnh hoặc JSON v
+          +ào `evidence/`).                                              
+      213 +                                                              
+      214 +### Bài học                                                   
+      215 +                                                              
+      216 +Mọi tài nguyên bên thứ ba (font, script) là một request chặn r
+          +ender cần đo, không chỉ là lựa chọn thẩm mỹ. Đo Performance tr
+          +ên bản build chứ không phải dev server, và tách phần do mình g
+          +ây ra khỏi phần do công cụ dev. Giả thuyết "do dev server" phả
+          +i được kiểm lại bằng bản build trước khi viết thành kết luận. 
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Giờ mình cập nhật evidence/README.md với hai ảnh mới và các thay đổi, rồi chạy
+  lại toàn bộ kiểm tra lần cuối.
+
+● Update(evidence\README.md)
+  ⎿  Added 7 lines, removed 2 lines
+      11  | Lighthouse trong DevTools (Edge/Chrome) | Panel Lighthouse ch
+          ạy trên `http://localhost:5173/` (Vite dev server), có đủ Contr
+          ols và Looper. Điểm đọc từ ảnh lúc 08:25:29: Performance 69, **
+          Accessibility 100**, Best Practices 100, SEO 91 | [lighthouse-d
+          evtools.png](lighthouse-devtools.png) |
+      12  | Accessibility tree (vùng Looper) | DevTools > Elements > Acce
+          ssibility: `region "Looper"` chứa `status` (atomic), `button "G
+          hi"` (role button, Pressed: false), các nút Phát, Chồng lớp, Xo
+          á ở trạng thái disabled, `progressbar "Vị trí trong vòng"` (0-1
+          00), `group "Chế độ phát"` | [a11y-tree-looper.png](a11y-tree-l
+          ooper.png) |
+      13  
+      14 -Ghi chú về hai bằng chứng trên:                                
+      14 +| Lighthouse: chỉ số Performance (dev server) | First Contentfu
+         +l Paint 2.1 s, Largest Contentful Paint 3.6 s, Total Blocking T
+         +ime 0 ms, Cumulative Layout Shift 0, Speed Index 2.1 s | [light
+         +house-metrics-devtools.png](lighthouse-metrics-devtools.png) | 
+      15 +| Lighthouse: insight và diagnostics (dev server) | Render-bloc
+         +king requests (ước tính tiết kiệm 160 ms), Forced reflow, Netwo
+         +rk dependency tree, 3rd parties; Minify JavaScript 2,959 KiB, R
+         +educe unused JavaScript 1,366 KiB, payload 4,186 KiB | [lightho
+         +use-insights-devtools.png](lighthouse-insights-devtools.png) | 
+      16  
+      16 -- Lighthouse chạy trên **dev server** (cổng 5173), không phải b
+         -ản build (`npm run preview`, cổng 4173). Bản dev không nén và c
+         -hứa công cụ gỡ lỗi của React nên điểm Performance thấp hơn bản 
+         -thật; con số 69 chưa phản ánh bản nộp. Chạy lại trên bản build 
+         -trước khi kết luận.                                            
+      17 +Ghi chú về các bằng chứng trên:                                
+      18 +                                                               
+      19 +- Lighthouse chạy trên **dev server** (cổng 5173), không phải b
+         +ản build (`npm run preview`, cổng 4173). Các mục Minify JavaScr
+         +ipt, Reduce unused JavaScript và User Timing là đặc trưng của b
+         +ản dev. Các mục Render-blocking requests, Network dependency tr
+         +ee và 3rd parties đến từ stylesheet Google Fonts mà AI đã thêm;
+         + ghi ở Lỗi 5 của [AI_FAILURE_AUDIT.md](../../../../AI_FAILURE_A
+         +UDIT.md).                                                      
+      20 +- Đã sửa trong code (chưa đo lại bằng Lighthouse): font tự phục
+         + vụ + preload, bỏ ba thẻ Google, dời tải trước WAV sang lúc rản
+         +h. Điểm sau sửa phải đo trên bản build và ghi vào bảng; điểm 69
+         + ở trên là **trước** khi sửa.                                  
+      21 +- Forced reflow chưa rõ nguyên nhân. Nếu vẫn còn sau khi đo trê
+         +n bản build, mở insight đó trong Lighthouse để xem dòng mã gây 
+         +ra.                                                            
+      22  - Mới có ảnh chụp, **chưa có file JSON** của Lighthouse (gate H
+          1-09 yêu cầu JSON). Trong panel Lighthouse: nút ⋮ > Save as JSO
+          N, lưu thành `evidence/lighthouse-a11y.report.json`.
+      23  - Ảnh a11y tree là vùng Looper, chưa phải pad. Gate H1-04 (pad 
+          có tên và `aria-pressed`) cần thêm một ảnh chọn nút "Kick A" tr
+          ong cây.
+      24  
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Mình đã lưu ảnh, ghi Lỗi 5 vào audit và sửa phần Performance trong code. Nhưng
+  mình chưa đo lại bằng Lighthouse, nên chưa biết điểm có lên không. Mọi thay
+  đổi vẫn chưa commit, để bạn tự chia commit và thêm co-author.
+
+  Đã lưu
+
+  - evidence/lighthouse-metrics-devtools.png: FCP 2.1 s, LCP 3.6 s, TBT 0 ms,
+    CLS 0, Speed Index 2.1 s.
+  - evidence/lighthouse-insights-devtools.png: các insight và diagnostics.
+  - evidence/README.md có thêm hai dòng cho các ảnh này, kèm ghi chú điểm 69 là
+    trước khi sửa.
+
+  Lỗi 5 trong AI_FAILURE_AUDIT.md
+
+  Mục này nằm ở AI_FAILURE_AUDIT.md (mục 5 trong bảng tổng quan và phần "Lỗi
+  5"). Mình chỉ ghi điều có trong ảnh hoặc output mình đã chạy. Mình tách bạch
+  ba nhóm:
+
+  - Do AI: stylesheet Google Fonts chặn render, và tải trước 7 file WAV lúc
+    mount.
+  - Do dev server, không quy cho AI: Minify JS 2,959 KiB, Unused JS 1,366 KiB,
+    User Timing.
+  - Chưa rõ: Forced reflow, vì chưa có trace.
+
+  Việc tải trước WAV làm nặng LCP là suy luận, nên mình ghi rõ như vậy. Các ô
+  (điền) cho hash commit và điểm đo lại bạn tự bổ sung.
+
+  Đã sửa để cải thiện Performance
+
+  ┌─────────────────────────┬───────────────────────────────────────────────┐
+  │    Vấn đề trong ảnh     │                   Cách sửa                    │
+  ├─────────────────────────┼───────────────────────────────────────────────┤
+  │ Render-blocking         │ Tự phục vụ font từ public/fonts/ (hai tập con │
+  │ requests, Network       │  latin 41 KB và vietnamese 8,6 KB). Preload   │
+  │ dependency tree, 3rd    │ hai file, xoá ba thẻ Google. Bản build không  │
+  │ parties                 │ còn chuỗi googleapis/gstatic nào.             │
+  ├─────────────────────────┼───────────────────────────────────────────────┤
+  │                         │ Dời tải trước WAV sang lúc trang đã tải xong  │
+  │ Payload lớn, tranh băng │ và trình duyệt rảnh (whenIdle.js). Gõ phím    │
+  │  thông lúc tải trang    │ sớm thì engine vẫn tự tải khi cần, không mất  │
+  │                         │ tiếng.                                        │
+  └─────────────────────────┴───────────────────────────────────────────────┘
+
+  Bản build hiện tại: JS 235 KB (gzip 74 KB), CSS 11,7 KB (gzip 3,25 KB).
+
+  Mình không sửa:
+  - Minify và Unused JS là của bản dev, bản build đã được nén.
+  - Forced reflow: chưa biết nguồn nên không đoán mò.
+
+  Kết quả chạy thật
+
+  - npm test: 146/146 pass (15 file).
+  - npm run lint sạch; build thành công.
+  - Các grep cấm ra 0 dòng.
+  - Contrast: tất cả cặp màu đạt.
+
+  Hai test hook mình sửa là vì hành vi tải trước đã đổi sang bất đồng bộ, không
+  phải làm yếu test.
+
+  Việc bạn cần làm
+
+  Chạy lại Lighthouse trên bản build, không phải dev server:
+
+  npm run build
+  npm run preview -- --port 4173
+
+  Chạy Lighthouse ở http://localhost:4173/, rồi lưu ảnh và JSON vào evidence/.
+  Nếu điểm vẫn thấp thì gửi mình phần Insights, đặc biệt là Forced reflow nếu
+  còn.
+
+  Gợi ý chia commit:
+  1. perf(hw1): self-host font and defer audio prefetch gồm public/fonts/,
+     index.html, tokens.css, whenIdle.*, useDrumAudio.*.
+  2. docs(hw1): add lighthouse evidence and performance audit entry gồm 4 ảnh
+     PNG, evidence/README.md, AI_FAILURE_AUDIT.md.
+
+> tiện chia nhỏ ra commit luôn nhe, như cũ là để mình tự thêm cop author
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Mình đã chia thành 3 commit, cây làm việc sạch và không có dòng Co-Authored-By
+  nào (đã kiểm: 0 dòng).
+
+  ┌─────────────────────────────┬───────────────────────────────────────────┐
+  │           Commit            │                 Nội dung                  │
+  ├─────────────────────────────┼───────────────────────────────────────────┤
+  │ 401843f perf(hw1):          │ public/fonts/, index.html, tokens.css,    │
+  │ self-host font and defer    │ whenIdle.js và test, useDrumAudio.js và   │
+  │ audio prefetch              │ test                                      │
+  ├─────────────────────────────┼───────────────────────────────────────────┤
+  │ 5d74a88 docs(hw1): add      │ 4 ảnh PNG trong evidence/ và              │
+  │ lighthouse and a11y tree    │ evidence/README.md                        │
+  │ evidence                    │                                           │
+  ├─────────────────────────────┼───────────────────────────────────────────┤
+  │ d44880e docs: add           │                                           │
+  │ performance failure to ai   │ AI_FAILURE_AUDIT.md, thêm Lỗi 5           │
+  │ failure audit               │                                           │
+  └─────────────────────────────┴───────────────────────────────────────────┘
+
+  Lỗi 5 còn hai ô (điền) cho bạn: hash commit sửa (dùng 401843f) và điểm
+  Lighthouse đo lại trên bản build.
+
+[Image #7]
+
+> Ok ổn r, lưu ảnh vào eidence commit đi
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Update(evidence\README.md)
+  ⎿  Added 1 line, removed 1 line
+      17  Ghi chú về các bằng chứng trên:
+      18  
+      19  - Lighthouse chạy trên **dev server** (cổng 5173), không phải b
+          ản build (`npm run preview`, cổng 4173). Các mục Minify JavaScr
+          ipt, Reduce unused JavaScript và User Timing là đặc trưng của b
+          ản dev. Các mục Render-blocking requests, Network dependency tr
+          ee và 3rd parties đến từ stylesheet Google Fonts mà AI đã thêm;
+           ghi ở Lỗi 5 của [AI_FAILURE_AUDIT.md](../../../../AI_FAILURE_A
+          UDIT.md).
+      20 -- Đã sửa trong code (chưa đo lại bằng Lighthouse): font tự phục
+         - vụ + preload, bỏ ba thẻ Google, dời tải trước WAV sang lúc rản
+         -h. Điểm sau sửa phải đo trên bản build và ghi vào bảng; điểm 69
+         - ở trên là **trước** khi sửa.                                  
+      20 +- Đã sửa trong code: font tự phục vụ + preload, bỏ ba thẻ Googl
+         +e, dời tải trước WAV sang lúc rảnh. Điểm 69 ở trên là **trước**
+         + khi sửa; điểm **sau** khi sửa ở dòng kế tiếp.                 
+      21  - Forced reflow chưa rõ nguyên nhân. Nếu vẫn còn sau khi đo trê
+          n bản build, mở insight đó trong Lighthouse để xem dòng mã gây 
+          ra.
+      22  - Mới có ảnh chụp, **chưa có file JSON** của Lighthouse (gate H
+          1-09 yêu cầu JSON). Trong panel Lighthouse: nút ⋮ > Save as JSO
+          N, lưu thành `evidence/lighthouse-a11y.report.json`.
+      23  - Ảnh a11y tree là vùng Looper, chưa phải pad. Gate H1-04 (pad 
+          có tên và `aria-pressed`) cần thêm một ảnh chọn nút "Kick A" tr
+          ong cây.
+
+● Update(evidence\README.md)
+  ⎿  Added 2 lines
+      14  | Lighthouse: chỉ số Performance (dev server) | First Contentfu
+          l Paint 2.1 s, Largest Contentful Paint 3.6 s, Total Blocking T
+          ime 0 ms, Cumulative Layout Shift 0, Speed Index 2.1 s | [light
+          house-metrics-devtools.png](lighthouse-metrics-devtools.png) |
+      15  | Lighthouse: insight và diagnostics (dev server) | Render-bloc
+          king requests (ước tính tiết kiệm 160 ms), Forced reflow, Netwo
+          rk dependency tree, 3rd parties; Minify JavaScript 2,959 KiB, R
+          educe unused JavaScript 1,366 KiB, payload 4,186 KiB | [lightho
+          use-insights-devtools.png](lighthouse-insights-devtools.png) |
+      16  
+      17 +| Lighthouse sau khi sửa Performance | Panel Lighthouse chạy lú
+         +c 08:46:08 trên `http://localhost:4174/` (cổng preview): Perfor
+         +mance **100**, Accessibility **100**, Best Practices 100, SEO 9
+         +1 | [lighthouse-build-after.png](lighthouse-build-after.png) | 
+      18 +                                                               
+      19  Ghi chú về các bằng chứng trên:
+      20  
+      21  - Lighthouse chạy trên **dev server** (cổng 5173), không phải b
+          ản build (`npm run preview`, cổng 4173). Các mục Minify JavaScr
+          ipt, Reduce unused JavaScript và User Timing là đặc trưng của b
+          ản dev. Các mục Render-blocking requests, Network dependency tr
+          ee và 3rd parties đến từ stylesheet Google Fonts mà AI đã thêm;
+           ghi ở Lỗi 5 của [AI_FAILURE_AUDIT.md](../../../../AI_FAILURE_A
+          UDIT.md).
+
+● Update(evidence\README.md)
+  ⎿  Added 1 line, removed 1 line
+      66  | Console | Mở Console, gõ mỗi pad một lần: không có lỗi hay cả
+          nh báo | | `console.png` |
+      67  | Âm thanh | Nghe đủ 7 pad; giữ phím không bắn lặp; hi-hat (D) 
+          cắt tiếng open hat (W) | | ghi chú |
+      68  
+      69 -Lighthouse Accessibility: **100** (DevTools, dev server 5173, t
+         -heo ảnh [lighthouse-devtools.png](lighthouse-devtools.png)). Cò
+         -n phải chạy lại trên bản build và lưu JSON.                    
+      69 +Lighthouse Accessibility: **100** ở cả hai lần đo: dev server 5
+         +173 trước khi sửa Performance ([lighthouse-devtools.png](lighth
+         +ouse-devtools.png)) và cổng preview 4174 sau khi sửa ([lighthou
+         +se-build-after.png](lighthouse-build-after.png)). Performance: 
+         +69 trước, **100** sau. Còn thiếu file JSON của Lighthouse.     
+      70  
+      71  ## Phải kiểm lại
+      72  
+
+● Update(c:\Dev\Project\24520626_QuangPhuHung_MSIS207_Lab03\AI_FAILURE_AUDIT.md)
+  ⎿  Added 1 line, removed 1 line
+      209  
+      210  - **Commit:** (điền hash từ `git log`)
+      211  - **Thay đổi:** tự phục vụ font từ `public/fonts/` (hai tập co
+           n `latin` 41 KB và `vietnamese` 8,6 KB, có `unicode-range` và 
+           `font-display: swap`) kèm `<link rel="preload">`; xoá ba thẻ G
+           oogle; dời tải trước WAV sang `whenIdle` (sau khi trang tải xo
+           ng và trình duyệt rảnh). Kiểm tra trên bản build: `grep google
+           apis|gstatic` trong `dist/` ra 0; JS 235 KB (gzip 74 KB), CSS 
+           11,7 KB (gzip 3,25 KB).
+      212 -- **Đo lại:** (điền: Lighthouse chạy trên `npm run preview` cổ
+          -ng 4173; ghi điểm Performance, FCP, LCP và lưu ảnh hoặc JSON v
+          -ào `evidence/`).                                              
+      212 +- **Đo lại:** Lighthouse trong DevTools lúc 08:46:08 trên `loc
+          +alhost:4174` (cổng preview): Performance 69 lên **100**, Acces
+          +sibility 100, Best Practices 100, SEO 91. Ảnh: [lighthouse-bui
+          +ld-after.png](src/homeworks/DrumMachine/evidence/lighthouse-bu
+          +ild-after.png). Ảnh chỉ cho thấy các điểm tổng; chưa lưu FCP, 
+          +LCP sau khi sửa.                                              
+      213  
+      214  ### Bài học
+      215  
+
+● Update(c:\Dev\Project\24520626_QuangPhuHung_MSIS207_Lab03\AI_FAILURE_AUDIT.md)
+  ⎿  Added 1 line, removed 1 line
+      207  
+      208  ### Bản sửa thủ công
+      209  
+      210 -- **Commit:** (điền hash từ `git log`)                        
+      210 +- **Commit:** `401843f`                                       
+      211  - **Thay đổi:** tự phục vụ font từ `public/fonts/` (hai tập co
+           n `latin` 41 KB và `vietnamese` 8,6 KB, có `unicode-range` và 
+           `font-display: swap`) kèm `<link rel="preload">`; xoá ba thẻ G
+           oogle; dời tải trước WAV sang `whenIdle` (sau khi trang tải xo
+           ng và trình duyệt rảnh). Kiểm tra trên bản build: `grep google
+           apis|gstatic` trong `dist/` ra 0; JS 235 KB (gzip 74 KB), CSS 
+           11,7 KB (gzip 3,25 KB).
+      212  - **Đo lại:** Lighthouse trong DevTools lúc 08:46:08 trên `loc
+           alhost:4174` (cổng preview): Performance 69 lên **100**, Acces
+           sibility 100, Best Practices 100, SEO 91. Ảnh: [lighthouse-bui
+           ld-after.png](src/homeworks/DrumMachine/evidence/lighthouse-bu
+           ild-after.png). Ảnh chỉ cho thấy các điểm tổng; chưa lưu FCP, 
+           LCP sau khi sửa.
+      213  
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Mình đã lưu ảnh và commit thành 2 commit, cây làm việc sạch và không có dòng
+  Co-Authored-By nào (đã kiểm: 0 dòng).
+
+  ┌─────────────────────────────┬───────────────────────────────────────────┐
+  │           Commit            │                 Nội dung                  │
+  ├─────────────────────────────┼───────────────────────────────────────────┤
+  │ ac31164 docs(hw1): add      │ evidence/lighthouse-build-after.png và    │
+  │ lighthouse evidence after   │ evidence/README.md                        │
+  │ performance fix             │                                           │
+  ├─────────────────────────────┼───────────────────────────────────────────┤
+  │ c0d6a84 docs: record        │                                           │
+  │ performance fix result in   │ AI_FAILURE_AUDIT.md                       │
+  │ ai failure audit            │                                           │
+  └─────────────────────────────┴───────────────────────────────────────────┘
+
+  Kết quả đo lại theo ảnh: Performance 69 lên 100, Accessibility 100, Best
+  Practices 100, SEO 91.
+
+  Trong audit, ở Lỗi 5 mình điền ô "Đo lại" bằng các điểm trên, và điền hash sửa
+  là 401843f (commit có thật). Mình cũng đổi trạng thái ở bảng tổng quan thành
+  "Đã sửa và đo lại (Performance 69 lên 100)".
+
+  Có hai điểm cần bạn biết:
+  - Ảnh chạy ở cổng 4174, không phải 4173 như mình hướng dẫn. Mình ghi theo ảnh
+    và hiểu đó là cổng preview của bản build, vì cổng 4173 có thể đang bận. Nếu
+    đó không phải npm run preview thì bạn sửa lại dòng này trong README và
+    audit.
+  - Ảnh chỉ thấy điểm tổng, chưa có FCP/LCP sau khi sửa, và vẫn chưa có file
+    JSON của Lighthouse. Nếu cần nộp bằng chứng đầy đủ, bạn dùng nút ⋮ rồi Save
+    as JSON và lưu vào evidence/.
+
+  Trạng thái phần lõi hiện còn: H1-D, H1-08 và H1-09 chưa tick. Chúng vẫn cần
+  mấy phần kiểm tay còn lại: Tab, 375px, UniKey, giảm chuyển động, Console và
+  ảnh a11y tree của pad "Kick A".
