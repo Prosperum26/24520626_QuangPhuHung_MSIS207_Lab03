@@ -84,6 +84,8 @@
 
 .white[aria-pressed='true'] {
   background: var(--press-white);
+  /* Màu vàng so với trắng chỉ ~1,4:1, nên phím nhấn còn đổi hình: viền mực dày hơn (thấy rõ dù không phân biệt màu). */
+  box-shadow: inset 0 0 0 4px var(--ink);
 }
 
 /* Focus bàn phím: phím trắng vẽ khung bên trong (không bị phím đen che), phím đen vẽ bên ngoài. */

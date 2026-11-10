@@ -1,0 +1,15 @@
+ĐẠT  14.43:1 (cần 4.5) Chữ chính trên nền trang  --ink #1d1a4e / --paper #eef3ff
+ĐẠT  16.03:1 (cần 4.5) Chữ chính trên panel  --ink #1d1a4e / --surface #ffffff
+ĐẠT   7.44:1 (cần 4.5) Chữ phụ trên nền trang  --ink-soft #4b4785 / --paper #eef3ff
+ĐẠT   8.27:1 (cần 4.5) Chữ phụ trên panel  --ink-soft #4b4785 / --surface #ffffff
+ĐẠT  14.43:1 (cần 3) Viền panel, viền focus trên nền trang  --ink #1d1a4e / --paper #eef3ff
+ĐẠT  16.03:1 (cần 4.5) Chữ tên nốt trên phím trắng  --ink #1d1a4e / --key-white #ffffff
+ĐẠT  11.10:1 (cần 4.5) Chữ tên nốt trên phím trắng đang nhấn  --ink #1d1a4e / --press-white #ffd23f
+ĐẠT  11.10:1 (cần 4.5) Chữ trên nút Ghi đang bật (nền press-white)  --ink #1d1a4e / --press-white #ffd23f
+ĐẠT  16.03:1 (cần 3) Phím đen trên phím trắng (ranh giới nhìn thấy)  --key-black #1d1a4e / --key-white #ffffff
+ĐẠT  16.03:1 (cần 3) Phím đen trên nền panel  --key-black #1d1a4e / --surface #ffffff
+ĐẠT  10.15:1 (cần 3) Viền ink quanh phím đen đang nhấn (nền press-black)  --ink #1d1a4e / --press-black #3ee6c1
+ĐẠT  11.10:1 (cần 3) Viền ink quanh phím trắng đang nhấn (nền press-white)  --ink #1d1a4e / --press-white #ffd23f
+ĐẠT  16.03:1 (cần 3) Viền phím trắng trên nền panel  --ink #1d1a4e / --surface #ffffff
+
+Tất cả cặp đạt.

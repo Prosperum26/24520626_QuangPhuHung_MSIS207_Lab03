@@ -28,6 +28,14 @@ const pairs = [
   ['Chữ phụ trên nền trang', 'ink-soft', 'paper', TEXT],
   ['Chữ phụ trên panel', 'ink-soft', 'surface', TEXT],
   ['Viền panel, viền focus trên nền trang', 'ink', 'paper', UI],
+  ['Chữ tên nốt trên phím trắng', 'ink', 'key-white', TEXT],
+  ['Chữ tên nốt trên phím trắng đang nhấn', 'ink', 'press-white', TEXT],
+  ['Chữ trên nút Ghi đang bật (nền press-white)', 'ink', 'press-white', TEXT],
+  ['Phím đen trên phím trắng (ranh giới nhìn thấy)', 'key-black', 'key-white', UI],
+  ['Phím đen trên nền panel', 'key-black', 'surface', UI],
+  ['Viền ink quanh phím đen đang nhấn (nền press-black)', 'ink', 'press-black', UI],
+  ['Viền ink quanh phím trắng đang nhấn (nền press-white)', 'ink', 'press-white', UI],
+  ['Viền phím trắng trên nền panel', 'ink', 'surface', UI],
 ];
 
 let failed = 0;
