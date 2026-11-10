@@ -21,12 +21,14 @@ export function noteName(midi) {
   return `${SHARP_NAMES[pitchClassOf(midi)]}${octaveOf(midi)}`;
 }
 
-/** Tên cho trình đọc màn hình: "C#4" đọc thành "C thăng 4", "C4" đọc thành "C 4". */
+/**
+ * Tên cho trình đọc màn hình: "C#4" đọc thành "C thăng 4" (ký tự # dễ bị đọc sai).
+ * Nốt tự nhiên giữ nguyên "C4" để khớp chữ hiển thị trên phím (WCAG 2.5.3 Label in Name).
+ */
 export function spokenName(midi) {
   const name = SHARP_NAMES[pitchClassOf(midi)];
-  const letter = name[0];
-  const sharp = name.length > 1 ? ' thăng' : '';
-  return `${letter}${sharp} ${octaveOf(midi)}`;
+  if (name.length === 1) return `${name}${octaveOf(midi)}`;
+  return `${name[0]} thăng ${octaveOf(midi)}`;
 }
 
 /** Sinh danh sách phím từ phạm vi MIDI, không viết tay từng phím. */
@@ -55,4 +57,21 @@ export function groupByOctave(keys) {
     else groups.push({ octave: key.octave, keys: [key] });
   }
   return groups;
+}
+
+/** Cột (1..7) của phím trắng trong một quãng tám: C D E F G A B. CSS dùng cùng bảng này theo data-pc. */
+const WHITE_COLUMN = { 0: 1, 2: 2, 4: 3, 5: 4, 7: 5, 9: 6, 11: 7 };
+const COLUMNS_PER_OCTAVE = 7;
+
+/**
+ * Quãng đầu/cuối của đàn thiếu phím (A0..B0 chỉ có 2 phím trắng, C8 chỉ có 1).
+ * lead = số cột trắng thiếu ở đầu, trail = số cột trắng thiếu ở cuối; CSS dùng để co khung lại.
+ */
+export function octaveLayout(group) {
+  const whites = group.keys.filter((key) => !key.isBlack);
+  if (whites.length === 0) return { lead: 0, trail: 0 };
+  return {
+    lead: WHITE_COLUMN[whites[0].pitchClass] - 1,
+    trail: COLUMNS_PER_OCTAVE - WHITE_COLUMN[whites.at(-1).pitchClass],
+  };
 }

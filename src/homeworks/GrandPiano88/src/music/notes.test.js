@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { buildKeys, groupByOctave, midiToFreq, noteName, spokenName } from './notes.js';
+import { buildKeys, groupByOctave, midiToFreq, noteName, octaveLayout, spokenName } from './notes.js';
 
 describe('midiToFreq', () => {
   it('A4 (69) = 440 Hz', () => {
@@ -28,9 +28,9 @@ describe('noteName và spokenName', () => {
     expect(noteName(61)).toBe('C#4');
   });
 
-  it('spokenName đọc "thăng" và tách số quãng', () => {
+  it('spokenName đọc "thăng" cho nốt thăng; nốt tự nhiên giữ nguyên để khớp chữ trên phím', () => {
     expect(spokenName(61)).toBe('C thăng 4');
-    expect(spokenName(60)).toBe('C 4');
+    expect(spokenName(60)).toBe('C4');
   });
 });
 
@@ -81,5 +81,21 @@ describe('groupByOctave', () => {
     expect(groups).toHaveLength(9);
     expect(groups.slice(1, -1).every((g) => g.keys.length === 12)).toBe(true);
     expect(groups.reduce((n, g) => n + g.keys.length, 0)).toBe(88);
+  });
+});
+
+describe('octaveLayout', () => {
+  const groups = groupByOctave(buildKeys());
+
+  it('quãng đầu A0..B0: thiếu 5 cột trắng ở đầu (C D E F G), không thiếu ở cuối', () => {
+    expect(octaveLayout(groups[0])).toEqual({ lead: 5, trail: 0 });
+  });
+
+  it('quãng cuối chỉ có C8: không thiếu ở đầu, thiếu 6 cột ở cuối', () => {
+    expect(octaveLayout(groups.at(-1))).toEqual({ lead: 0, trail: 6 });
+  });
+
+  it('quãng đầy đủ không thiếu cột nào', () => {
+    expect(octaveLayout(groups[4])).toEqual({ lead: 0, trail: 0 });
   });
 });
