@@ -1,0 +1,28 @@
+.page {
+  display: grid;
+  gap: 2rem;
+  max-width: 72rem;
+  margin-inline: auto;
+  padding: clamp(1.5rem, 5vw, 3.5rem) 1rem 4rem;
+  /* Sóng animation của pad sát mép (crash phóng 1.7 lần) không được tạo thanh cuộn ngang ở 375px.
+     clip không tạo vùng cuộn mới như hidden. */
+  overflow-x: clip;
+}
+
+.masthead {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.title {
+  font-size: clamp(3.5rem, 15vw, 8rem);
+  font-weight: 800;
+  line-height: 0.85;
+  letter-spacing: -0.05em;
+}
+
+.lede {
+  max-width: 40ch;
+  color: var(--ink-soft);
+  font-size: 1.125rem;
+}
