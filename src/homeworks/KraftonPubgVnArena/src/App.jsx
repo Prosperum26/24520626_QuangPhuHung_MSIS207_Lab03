@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { createArenaApi } from './api/arena.js';
-import { RIVAL_CHANCE, SERVER_OFFSET_MS, createSampleCrates } from './domain/arenaConfig.js';
+import { RIVAL_CHANCE, SERVER_OFFSET_MS, SQUADS, createSampleCrates } from './domain/arenaConfig.js';
 import { CrateCard } from './components/CrateCard.jsx';
+import { Leaderboard } from './components/Leaderboard.jsx';
 import styles from './App.module.css';
 
 export function App() {
@@ -33,6 +34,8 @@ export function App() {
           ))}
         </ul>
       </section>
+
+      <Leaderboard squads={SQUADS} />
     </main>
   );
 }

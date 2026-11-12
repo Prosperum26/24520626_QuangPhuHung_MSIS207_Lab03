@@ -1,0 +1,93 @@
+/* Panel phẳng như Controls của Drum Kit: viền ink 2px, nền surface. */
+.board {
+  display: grid;
+  gap: 1rem;
+  padding: 1.25rem;
+  border: 2px solid var(--ink);
+  border-radius: var(--radius-panel);
+  background: var(--surface);
+}
+
+.controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+  gap: 1rem;
+}
+
+.field {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0;
+}
+
+.field label {
+  font-weight: 600;
+}
+
+/* Ô nhập và ô chọn đủ lớn để bấm (WCAG 2.5.8 tối thiểu 24px). */
+.field input,
+.field select {
+  min-height: 2.75rem;
+  padding: 0 0.75rem;
+  border: 2px solid var(--ink);
+  border-radius: 0.75rem;
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+}
+
+.count {
+  color: var(--ink-soft);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+.caption {
+  padding-bottom: 0.5rem;
+  color: var(--ink-soft);
+  text-align: left;
+}
+
+.table th,
+.table td {
+  padding: 0.5rem 0.4rem;
+  border-bottom: 2px solid var(--ink);
+  text-align: right;
+}
+
+/* Hạng và tên đội căn trái; tên đội được phép xuống dòng ở 375px. */
+.table th:first-child,
+.table td:first-child,
+.table tbody th {
+  text-align: left;
+}
+
+.table thead th {
+  font-size: 0.875rem;
+  overflow-wrap: anywhere;
+}
+
+/* Cột đang sắp xếp: nền vàng và dấu mũi tên, không chỉ dựa vào màu. */
+.table thead th[aria-sort='descending'] {
+  background: var(--accent);
+}
+
+.table thead th[aria-sort='descending']::after {
+  content: ' ↓';
+}
+
+@media (max-width: 30rem) {
+  .board {
+    padding: 1rem;
+  }
+
+  .table th,
+  .table td {
+    padding-inline: 0.25rem;
+    font-size: 0.9375rem;
+  }
+}
