@@ -57,7 +57,7 @@
 
 | ID | Task | File | Gate | Trạng thái |
 |---|---|---|---|---|
-| B-00 | Khởi tạo project Vite riêng: sao chép `package.json` (đổi `name`), `vite.config.js`, `eslint.config.js`, `index.html`, `src/main.jsx`, `src/test/setup.js` từ Ex1, rồi `npm install` | `package.json`, `vite.config.js`, `eslint.config.js`, `index.html`, `src/main.jsx`, `src/test/setup.js` | `npm test` và `npm run lint` chạy được | [ ] |
+| B-00 | Khởi tạo project Vite riêng: sao chép `package.json` (đổi `name`), `vite.config.js`, `eslint.config.js`, `index.html`, `src/main.jsx`, `src/test/setup.js` từ Ex1, rồi `npm install` | `package.json`, `vite.config.js`, `eslint.config.js`, `index.html`, `src/main.jsx`, `src/test/setup.js` | `npm test` và `npm run lint` chạy được | [x] |
 | B-01 | Chốt bộ trạng thái + `transition()` thuần | `src/fsm.js`, `src/fsm.test.js` | Test: mọi chuyển hợp lệ; cặp không hợp lệ giữ pha; `GHOSTED_EXIT` bất động với mọi sự kiện | [ ] |
 | B-02 | Reducer nhật ký tín hiệu bất biến + điểm dẫn xuất | `src/effort.js`, `src/effort.test.js` | Test: không mutate (`Object.freeze` mảng gốc); `100 × 0.1` vs `1 × 50`; `isRedFlag` đúng theo pha | [ ] |
 | B-03 | Component + `<output role="status">` cờ đỏ | `src/SituationshipAnalyzer.jsx`, `src/SituationshipAnalyzer.test.jsx` | Test: red flag khi `em < rival` ở `DATING_NO_LOVE`; không có cờ ở pha khác; `role="status"` có nội dung đúng | [ ] |
