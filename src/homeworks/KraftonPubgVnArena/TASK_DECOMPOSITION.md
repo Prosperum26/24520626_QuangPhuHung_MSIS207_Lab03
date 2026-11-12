@@ -56,7 +56,7 @@ Dự án dùng JSX/JS nên contract viết bằng JSDoc `@typedef` trong `src/do
 
 | ID | Task | File | Gate | Trạng thái |
 |---|---|---|---|---|
-| H3-00 | Khởi tạo project Vite riêng: sao chép `package.json` (đổi `name`), `vite.config.js`, `eslint.config.js`, `index.html`, `src/main.jsx`, `src/test/setup.js` từ Ex1, rồi `npm install` | `package.json`, `vite.config.js`, `eslint.config.js`, `index.html`, `src/main.jsx`, `src/test/setup.js` | `npm test` và `npm run lint` chạy được | [ ] |
+| H3-00 | Khởi tạo project Vite riêng: sao chép `package.json` (đổi `name`), `vite.config.js`, `eslint.config.js`, `index.html`, `src/main.jsx`, `src/test/setup.js` từ Ex1, rồi `npm install` | `package.json`, `vite.config.js`, `eslint.config.js`, `index.html`, `src/main.jsx`, `src/test/setup.js` | `npm test` và `npm run lint` chạy được | [x] |
 | H3-01 | Contract (JSDoc), dữ liệu mẫu 4 đội + crate, `formatVnd`, `getDropPhase` | `src/domain/*.js` | Test: định dạng VND; ma trận phase | [ ] |
 | H3-02 | `usePubgAirdropTimer` đúng slide (`Date.now() + serverOffsetMs`, interval 200ms, `visibilitychange` resync, trả `{ remainingMs, isLive }`) | `src/hooks/usePubgAirdropTimer.js` | Test fake timers: tab nền 1 phút, khi `visible` giá trị đúng ngay; đổi `targetEpochMs` thì tính lại | [ ] |
 | H3-03 | Cleanup interval/listener, an toàn StrictMode | `src/hooks/usePubgAirdropTimer.js` | Test: unmount gỡ cả interval và listener | [ ] |
