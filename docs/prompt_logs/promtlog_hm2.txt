@@ -1,0 +1,1634 @@
+
+● Mình đã lưu ảnh và commit thành 2 commit, cây làm việc sạch và không có dòng
+  Co-Authored-By nào (đã kiểm: 0 dòng).
+
+  ┌─────────────────────────────┬───────────────────────────────────────────┐
+  │           Commit            │                 Nội dung                  │
+  ├─────────────────────────────┼───────────────────────────────────────────┤
+  │ ac31164 docs(hw1): add      │ evidence/lighthouse-build-after.png và    │
+  │ lighthouse evidence after   │ evidence/README.md                        │
+  │ performance fix             │                                           │
+  ├─────────────────────────────┼───────────────────────────────────────────┤
+  │ c0d6a84 docs: record        │                                           │
+  │ performance fix result in   │ AI_FAILURE_AUDIT.md                       │
+  │ ai failure audit            │                                           │
+  └─────────────────────────────┴───────────────────────────────────────────┘
+
+  Kết quả đo lại theo ảnh: Performance 69 lên 100, Accessibility 100, Best
+  Practices 100, SEO 91.
+
+  Trong audit, ở Lỗi 5 mình điền ô "Đo lại" bằng các điểm trên, và điền hash sửa
+  là 401843f (commit có thật). Mình cũng đổi trạng thái ở bảng tổng quan thành
+  "Đã sửa và đo lại (Performance 69 lên 100)".
+
+  Có hai điểm cần bạn biết:
+  - Ảnh chạy ở cổng 4174, không phải 4173 như mình hướng dẫn. Mình ghi theo ảnh
+    và hiểu đó là cổng preview của bản build, vì cổng 4173 có thể đang bận. Nếu
+    đó không phải npm run preview thì bạn sửa lại dòng này trong README và
+    audit.
+  - Ảnh chỉ thấy điểm tổng, chưa có FCP/LCP sau khi sửa, và vẫn chưa có file
+    JSON của Lighthouse. Nếu cần nộp bằng chứng đầy đủ, bạn dùng nút ⋮ rồi Save
+    as JSON và lưu vào evidence/.
+
+  Trạng thái phần lõi hiện còn: H1-D, H1-08 và H1-09 chưa tick. Chúng vẫn cần
+  mấy phần kiểm tay còn lại: Tab, 375px, UniKey, giảm chuyển động, Console và
+  ảnh a11y tree của pad "Kick A".
+
+[Image #8]
+  ⎿  [Image #9]
+
+> ok xong homework 1, giờ brainstorm mình homework 2 đi, có vẻ chỉ tận dụng dc
+  1 chút của lab 2
+  ⎿  Referenced file ..\..\..\AI_FAILURE_AUDIT.md
+  ⎿  Read evidence\README.md (74 lines)
+  ⎿  Read src\whenIdle.js (31 lines)
+  ⎿  Read src\whenIdle.test.js (70 lines)
+  ⎿  Read src\styles\tokens.css (102 lines)
+  ⎿  SessionStart:compact hook error
+  ⎿  [bash C:\Users\Phu Hung\.claude\plugins\cache\anthropic-plugin-directory\cl
+     aude-memory\1.0.0-0afb7b2da7cc/hooks/scripts/memory-context.sh]:
+     C:/Users/Phu: line 1: syntax error near unexpected token `('
+
+● Skill(superpowers:brainstorming)
+  ⎿  Successfully loaded skill
+
+● Mình xếp đây là việc kiến trúc nên sẽ đi đủ quy trình, từ câu hỏi, phương án,
+  thiết kế đến spec và plan. HW2 là project Vite mới, nên mình đọc repo trước
+  rồi mới viết gì. · summary
+
+  Searched for 1 pattern, read 2 files, listed 1 directory, ran 1 shell command (ctrl+o to expand)
+
+● Mình đã đọc WBS của HW2, Context.md §4.8 (docs/Context.md) và code Lab 2. Dưới
+  đây là phần mình hiểu và các điểm cần chốt.
+
+  Mình hiểu thế này (bạn sửa giúp nếu sai)
+
+  Mục tiêu: Piano 88 phím phát đa âm bằng Web Audio, 8 voice với steal FIFO. Mỗi
+  phím là memo, bấm 1 phím chỉ render lại đúng phím đó, đo bằng Profiler. Có bộ
+  ghi và phát lại FIFO ở 0,5x/1x/2x, hủy được bằng AbortController. Làm trong
+  src/homeworks/GrandPiano88/, theo WBS H2-00 đến H2-11.
+
+  Dùng lại được từ Lab 2: chỉ ý tưởng. Hàng đợi FIFO của AudioTaskQueue (vanilla
+  JS) và shallowEqual+memo. Code đó không port thẳng sang React được.
+
+  Dùng lại được từ HW1 (nhiều hơn Lab 2):
+  - Khung project: vite/eslint/vitest config, tokens.css, check-contrast.mjs,
+    whenIdle.
+  - Pattern audioEngine (inject createContext để test bằng context giả).
+  - Looper dùng scheduler look-ahead theo đồng hồ AudioContext, tái dùng được
+    cho phát lại ở tốc độ khác.
+  - Cách làm aria-pressed + hit log + role="status", và dải dB meter.
+
+  Những chỗ slide mơ hồ hoặc dễ sai (mình sẽ ghi vào spec)
+
+  1. Code mẫu noteOn trong slide chưa có noteOff hoàn chỉnh và chưa dọn node.
+     WBS đã yêu cầu thêm.
+  2. Khi steal voice, phím bị cướp vẫn đang isPressed=true trên UI. Cần callback
+     onVoiceEnd để tắt đúng phím, nếu không phím kẹt sáng.
+  3. Slide ghi deltaMs và durationMs nhưng không nói đo bằng đồng hồ nào. Mình
+     đề xuất performance.now() lúc ghi, và phát lại bằng scheduler theo
+     ctx.currentTime thay vì setTimeout (nhịp không trôi, giống looper HW1).
+  4. Mô tả slide là "FIFO queue" nhưng thứ tự phát lại hiển nhiên là thứ tự ghi.
+     FIFO ở đây là hàng sự kiện, không cần cấu trúc phức tạp.
+
+  Một câu hỏi để chốt hướng
+
+  Với HW1 bạn chọn lõi + vài phần mở rộng. HW2 bạn muốn thế nào?
+
+  - A. Chỉ lõi, làm thật chắc (mình đề xuất). Lõi đã nặng: 88 phím, memo,
+    Profiler, steal, replay. Phần giảng viên sửa tại chỗ (180 giây) nằm ở đây,
+    ít thứ thừa thì dễ giải thích hơn.
+  - B. Lõi + ít phần mở rộng nhẹ, ví dụ chọn dạng sóng (sine/triangle/…), phím
+    tắt bàn phím máy tính (e.code), sustain pedal bằng phím Space.
+  - C. Lõi + mở rộng giống HW1, ví dụ master volume, meter, loop bản ghi, nhiều
+    âm sắc.
+
+  Bạn chọn A, B hay C? Chọn xong mình đi tiếp sang bước đề xuất 2-3 phương án
+  kiến trúc (cách giữ isPressed để memo hiệu quả, nhất là so sánh Set ở cha với
+  useSyncExternalStore).
+
+> <ide_opened_file>The user opened the file
+  c:\Dev\Project\24520626_QuangPhuHung_MSIS207_Lab03\AI_FAILURE_AUDIT.md in the
+  IDE. This may or may not be related to the current task.</ide_opened_file>
+
+> ok honmeowork 2 theo hướng A đi, khỏi mở rộng, mình cũng thấy nó khá nặng khi
+  tận dụng khá nhiều thứ từ lab 1 và 2. viết plan chi tiết vào task
+  decompoostion đi
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Write(TASK_DECOMPOSITION.md)
+  ⎿  Added 121 lines, removed 40 lines
+        1  # TASK_DECOMPOSITION — Homework 2: 88-Key Polyphonic Piano & F
+           IFO Sequencer
+        2  
+        3 -> WBS con của [TASK_DECOMPOSITION.md](../../../TASK_DECOMPOSIT
+          -ION.md). Mỗi prompt AI = đúng một task ID. Nối tiếp `memo()` v
+          -à `AudioTaskQueue` FIFO của Lab 2 (`C:\Dev\Project\24520626_Qu
+          -angPhuHung_MSIS207_Lab02\Homework2_Lab02`).                   
+        3 +> WBS con của [TASK_DECOMPOSITION.md](../../../TASK_DECOMPOSIT
+          +ION.md). Mỗi prompt AI = đúng một task ID. Nối tiếp `memo()` v
+          +à `AudioTaskQueue` FIFO của Lab 2 (`C:\Dev\Project\24520626_Qu
+          +angPhuHung_MSIS207_Lab02\Homework2_Lab02`), và tái dùng khung 
+          +project, pattern audio của [HW1 Drum Kit](../DrumMachine/TASK_
+          +DECOMPOSITION.md).                                            
+        4  > **Mỗi bài là một project Vite độc lập** (có `package.json`, 
+           `node_modules/` riêng). Chạy mọi lệnh `npm` ngay trong folder 
+           này; đường dẫn file bên dưới tính từ folder này.
+        5 +> **Hướng đã chốt: chỉ làm lõi, không phần mở rộng.** Lõi đã n
+          +ặng (88 phím, `memo`, Profiler, steal, replay). Ít thứ thừa th
+          +ì dễ giải thích khi bị sửa code tại chỗ.                      
+        6  
+        7  ## 1. Mục tiêu và phạm vi
+        8  
+        9  Piano 88 phím (A0 đến C8) phát đa âm bằng Web Audio, tối đa 8 
+           voice (steal FIFO), mỗi phím là component `React.memo`, kèm bộ
+            ghi và phát lại FIFO ở tốc độ 0,5x/1,0x/2,0x.
+       10  
+       11  **Ràng buộc cứng:**
+       12 +                                                              
+       13  - Sinh 88 phím **bằng thuật toán** (MIDI 21 đến 108: 52 trắng 
+           + 36 đen), tần số `440 * 2 ** ((midi - 69) / 12)`. Cấm hardcod
+           e 88 thẻ.
+       14  - 8 voice đồng thời; nốt thứ 9 lấy voice **cũ nhất** (`Map` gi
+           ữ thứ tự chèn).
+       15  - Nhấn 1 phím chỉ render lại **đúng phím đó** (Profiler), khôn
+           g phải cả 88.
+       16  - Click-free: ramp `exponentialRampToValueAtTime(0.0001, now +
+            0.04)` rồi mới `osc.stop()`; `disconnect` node.
+       17  - Stop Sequence/unmount hủy toàn bộ phát lại (AbortController)
+            và tắt oscillator.
+       16 -**Ngoài phạm vi:** velocity theo lực nhấn, MIDI thiết bị, lưu 
+          -bản ghi.                                                      
+       18 +- Cả bài đạt WCAG 2.2 AA (phím truy cập được bằng bàn phím, 37
+          +5px, tương phản), Lighthouse Accessibility 100.               
+       19  
+       18 -## 2. Contract                                                
+       20 +**Ngoài phạm vi (không làm):** velocity theo lực nhấn, MIDI th
+          +iết bị, lưu bản ghi, chọn dạng sóng, volume/meter, loop, susta
+          +in pedal, nhiều âm sắc, phím tắt bàn phím máy tính kiểu `a/s/d
+          +`.                                                            
+       21  
+       22 +## 2. Tái dùng từ Lab 1, Lab 2, HW1                           
+       23 +                                                              
+       24 +| Nguồn | Dùng lại | Không dùng lại |                         
+       25 +|---|---|---|                                                 
+       26 +| HW1 | `package.json` (đổi `name`), `vite.config.js`, `eslint
+          +.config.js`, `src/test/setup.js`, `index.html` (preload font),
+          + `public/fonts/`, `src/styles/tokens.css` (bỏ màu từng âm), `s
+          +cripts/check-contrast.mjs` | `kits`, looper, meter, HitLog, Co
+          +ntrols |                                                      
+       27 +| HW1 | Pattern `audioEngine`: nhận `createContext` từ ngoài đ
+          +ể test bằng context giả; `AudioContext` tạo lười; hook giữ eng
+          +ine trong `useRef`, tạo lại được sau StrictMode cleanup (`useD
+          +rumAudio.js`) | `AudioBufferSourceNode`; piano dùng `Oscillato
+          +rNode` |                                                      
+       28 +| HW1 | Bài học AI Failure 5: không thêm tài nguyên bên thứ ba
+          + chặn render; đo Lighthouse trên bản build, không đo trên dev 
+          +server | `whenIdle` (piano không tải trước file âm) |         
+       29 +| Lab 2 | Ý tưởng `memo` + so sánh nông (`React.memo` mặc định
+          + đã so nông, không port `shallowEqual` tự viết) | Code `AudioT
+          +askQueue` (vanilla JS, class, hàng đợi tác vụ); xem quyết định
+          + D4 |                                                         
+       30 +                                                              
+       31 +## 3. Quyết định thiết kế (cần bạn duyệt trước khi code)      
+       32 +                                                              
+       33 +| # | Quyết định | Lý do | Cách đảo nếu bị đổi yêu cầu |      
+       34 +|---|---|---|---|                                             
+       35 +| D1 | `isPressed` giữ trong **một `Set` ở `GrandPiano`** (`us
+          +eState`, bất biến: `new Set(prev).add(midi)`); mỗi phím nhận b
+          +oolean `pressed.has(midi)`. | Đơn giản, giải thích được. Cha r
+          +ender lại 1 lần mỗi lần bấm là **chấp nhận được**; điều cần ch
+          +ứng minh là 87 phím con không render. | Nếu Profiler cho thấy 
+          +chậm, chuyển sang `useSyncExternalStore` (mỗi phím tự đăng ký)
+          +. Chỉ làm khi đo được. |                                      
+       36 +| D2 | Phát lại dùng **một vòng `async` duy nhất** duyệt dòng 
+          +thời gian đã sắp xếp, mỗi bước `await sleepUntil(mốc tuyệt đối
+          +)`, không dùng chuỗi `setTimeout` lồng. | Mốc tuyệt đối từ lúc
+          + bắt đầu nên không cộng dồn sai số; chỉ có tối đa 1 timer đang
+          + chờ nên cleanup đơn giản. | Đổi tốc độ chỉ là đổi hệ số chia 
+          +ở một chỗ. |                                                  
+       37 +| D3 | Gain mỗi voice **0,1** (không phải 0,2 như slide), có *
+          +*attack 10 ms** từ 0. | 8 voice x 0,2 = 1,6 vượt 1,0 gây méo (
+          +clipping), mâu thuẫn mục tiêu "chống clipping". Gán gain đột n
+          +gột lúc start gây tiếng click. | Hằng số `VOICE_GAIN`, `ATTACK
+          +_S` ở `pianoConfig.js`. |                                     
+       38 +| D4 | Không port `AudioTaskQueue` của Lab 2. Hàng đợi FIFO ở 
+          +đây là **mảng sự kiện** được duyệt theo thứ tự ghi. | Slide gọ
+          +i là "FIFO queue" nhưng bài toán chỉ cần thứ tự ghi; thêm lớp 
+          +queue là abstraction thừa. | Nếu giảng viên bắt dùng queue, bọ
+          +c mảng bằng `shift()` ở `sequencer.js`. |                     
+       39 +| D5 | Sự kiện ghi tạo **lúc `noteOn`** (với `durationMs` điền
+          + lúc `noteOff`), không đẩy lúc `noteOff`. | Hợp âm: nốt nhấn t
+          +rước nhưng nhả sau sẽ bị đảo thứ tự nếu đẩy lúc nhả. | Thứ tự 
+          +trong mảng = thứ tự bắt đầu nốt. |                            
+       40 +| D6 | `deltaMs` = thời gian từ **lúc bắt đầu nốt trước** đến 
+          +lúc bắt đầu nốt này; nốt đầu `deltaMs = 0`. Đồng hồ ghi là `pe
+          +rformance.now()` (đơn điệu). | Slide không nói rõ; chốt một đị
+          +nh nghĩa để test được. Cắt khoảng lặng đầu bản ghi. | Một hàm 
+          +`startOffsets(events)` là nơi duy nhất cộng dồn. |            
+       41 +| D7 | Chỉ **một** thứ trong state là `Set` phím đang nhấn + `
+          +recorderStatus`. `PolyphonicSynth`, `AudioContext`, `Map` voic
+          +e, bản ghi nằm trong `useRef`. | Đổi chúng không được gây rend
+          +er (đúng quy tắc §4). | |                                     
+       42 +| D8 | Phím đàn là `<button>`; **roving tabindex**: chỉ một ph
+          +ím (mặc định C4, MIDI 60) có `tabIndex=0`, phím còn lại `-1`; 
+          +ArrowLeft/Right/Home/End di chuyển focus; Space/Enter nhấn giữ
+          +. | 88 điểm dừng Tab là trải nghiệm tệ và bị coi là bẫy bàn ph
+          +ím (WCAG 2.1.1, 2.4.3). `tabbable` là boolean, nên đổi focus c
+          +hỉ render lại 2 phím. | Nếu muốn đơn giản hơn: bỏ roving, chỉ 
+          +cần Tab qua 88 nút (không khuyến nghị). |                     
+       43 +| D9 | Con trỏ: `onPointerDown` nhấn; `onPointerUp`, `onPointe
+          +rLeave`, `onPointerCancel` nhả; không dùng pointer capture; ch
+          +ỉ `button === 0`. Cửa sổ mất focus (`blur`) thì `stopAll`. | K
+          +hông có glissando (kéo qua nhiều phím) nên đơn giản; tránh phí
+          +m kẹt. | |                                                    
+       44 +| D10 | Tất cả hằng số tập trung ở `src/pianoConfig.js`: `MIDI
+          +_MIN=21`, `MIDI_MAX=108`, `MAX_VOICES=8`, `SPEEDS=[0.5,1,2]`, 
+          +`RELEASE_S=0.04`, `VOICE_GAIN`, `ATTACK_S`. | Chuẩn bị cho thử
+          + thách trực tiếp (xem §7). | |                                
+       45 +                                                              
+       46 +## 4. Contract                                                
+       47 +                                                              
+       48  ```js
+       21 -/** @typedef {{ midi:number, noteName:string, isBlack:boolean,
+          - freqHz:number }} KeyDef */                                   
+       49 +/** @typedef {{ midi:number, noteName:string, isBlack:boolean,
+          + freqHz:number, pitchClass:number, octave:number }} KeyDef */ 
+       50  /** @typedef {{ midi:number, freqHz:number, durationMs:number,
+            deltaMs:number }} NoteEvent */   // trong hàng đợi FIFO
+       23 -// buildKeys(): KeyDef[]  (88 phần tử, midi 21..108)          
+       51  // midiToFreq(midi): number
+       25 -// class PolyphonicSynth { constructor(maxVoices=8); noteOn(mi
+          -di, freqHz); noteOff(midi); stopAll() }                       
+       26 -// PianoKey = memo(function PianoKey({ midi, noteName, isBlack
+          -, isPressed, onNoteOn, onNoteOff }) {...})                    
+       52 +// noteName(midi): string                 // "C#4"; nhãn đọc c
+          +ho trình đọc màn hình: spokenName(midi) = "C thăng 4"         
+       53 +// buildKeys(): KeyDef[]                  // 88 phần tử, midi 
+          +21..108, gọi một lần ở module-level                           
+       54 +// groupByOctave(keys): { octave:number, keys:KeyDef[] }[]    
+       55 +// class PolyphonicSynth { constructor(maxVoices=8, { createCo
+          +ntext, onSteal }); noteOn(midi, freqHz); noteOff(midi); stopAl
+          +l(); dispose(); get voiceCount() }                            
+       56 +// createRecorder({ now }): { start(); noteOn(midi, freqHz); n
+          +oteOff(midi); stop(): NoteEvent[]; get events() }             
+       57 +// playSequence(events, { speed, noteOn, noteOff, signal, now,
+          + sleep }): Promise<'done' | 'aborted'>                        
+       58 +// PianoKey = memo(function PianoKey({ midi, noteName, isBlack
+          +, pitchClass, isPressed, tabbable, onNoteOn, onNoteOff, onMove
+          +Focus }) {...})                                               
+       59  ```
+       60  
+       29 -- `onNoteOn`/`onNoteOff` ổn định tham chiếu (`useCallback`) và
+          - nhận `midi` để `memo` hoạt động; `isPressed` là boolean riêng
+          - từng phím (không truyền cả `Set` xuống).                     
+       30 -- `AudioContext` tạo lười sau thao tác người dùng.            
+       31 -- Phím bàn phím máy tính (tuỳ chọn) dùng `e.code`, `e.repeat`;
+          - phím đàn truy cập được bằng bàn phím (WCAG 2.1.1).           
+       32 -- Trong ví dụ lớp `PolyphonicSynth`, sửa lỗi gõ `this.cbx` → `
+          -this.ctx`, và bổ sung `noteOff`.                              
+       61 +- `onNoteOn`/`onNoteOff`/`onMoveFocus` ổn định tham chiếu (`us
+          +eCallback`, không phụ thuộc state) và nhận `midi` để `memo` ho
+          +ạt động; `isPressed`, `tabbable` là boolean riêng từng phím. K
+          +hông truyền cả `Set`, object, hay hàm mới mỗi render xuống `Pi
+          +anoKey`.                                                      
+       62 +- `onSteal(midi)` là callback của synth khi voice bị cướp lúc 
+          +phím còn đang giữ. `GrandPiano` dùng nó để bỏ `midi` khỏi `Set
+          +` (nếu không, phím bị cướp vẫn sáng).                         
+       63 +- `AudioContext` tạo lười ở lần nhấn đầu (sau thao tác người d
+          +ùng), gọi `resume()`.                                         
+       64 +- Trong ví dụ lớp `PolyphonicSynth` của slide: sửa `this.cbx` 
+          +thành `this.ctx` (nếu có), bổ sung `noteOff`, dọn node, gain 0
+          +,1 + attack (D3).                                             
+       65  
+       34 -## 2.1 Quy tắc state và bộ nhớ                                
+       66 +## 5. Quy tắc state và bộ nhớ                                 
+       67  
+       36 -- `PolyphonicSynth`, `AudioContext`, `Map` voice nằm trong `us
+          -eRef`/module, **không** vào state (đổi chúng không gây render)
+          -.                                                             
+       37 -- Chỉ `isPressed` từng phím nằm trong state (một `Set` ID ở `G
+          -randPiano`, mỗi `PianoKey` nhận boolean riêng). `buildKeys()` 
+          -gọi một lần (module-level), không tính lại mỗi render.        
+       38 -- Mỗi voice kết thúc: ramp, `osc.stop()`, `osc.disconnect()`, 
+          -`gain.disconnect()`, xoá khỏi `Map`; `onended` dọn tham chiếu.
+          - Test: sau `stopAll()` thì `voices.size === 0`.               
+       39 -- Một `AudioContext` duy nhất cho cả app; đóng khi unmount.   
+       40 -- Nếu Profiler cho thấy cha render 88 phần tử gây chậm, cân nh
+          -ắc `useSyncExternalStore` với store nhỏ để mỗi phím tự đăng ký
+          -; chỉ làm khi đo được.                                        
+       68 +- `PolyphonicSynth`, `AudioContext`, `Map` voice, recorder nằm
+          + trong `useRef`/module, **không** vào state. Hook giữ synth tr
+          +ong ref và tạo lại được sau cleanup của StrictMode (theo `useD
+          +rumAudio.js` của HW1).                                        
+       69 +- Chỉ `isPressed` từng phím (qua một `Set` ở `GrandPiano`) và 
+          +vài trạng thái UI của sequencer nằm trong state. `buildKeys()`
+          + gọi một lần ở module-level, không tính lại mỗi render.       
+       70 +- Mỗi voice kết thúc: ramp, `osc.stop()`, `osc.disconnect()`, 
+          +`gain.disconnect()`, xoá khỏi `Map`; `onended` dọn tham chiếu.
+          + Test: sau `stopAll()` thì `voiceCount === 0`.                
+       71 +- Một `AudioContext` duy nhất cho cả app; `dispose()` đóng khi
+          + unmount.                                                     
+       72 +- Effect có timer/listener đều có cleanup: `window` `blur`, `A
+          +bortController` của replay.                                   
+       73  
+       42 -## 3. Task                                                    
+       74 +## 6. Task                                                    
+       75  
+       76 +Thứ tự làm: H2-00 đến H2-07 (lõi đàn, có cổng Profiler) trước,
+          + rồi H2-08 đến H2-10 (ghi/phát lại), cuối cùng H2-11, H2-12.  
+       77 +                                                              
+       78  | ID | Task | File | Gate | Trạng thái |
+       79  |---|---|---|---|---|
+       46 -| H2-00 | Khởi tạo project Vite riêng: sao chép `package.json`
+          - (đổi `name`), `vite.config.js`, `eslint.config.js`, `index.ht
+          -ml`, `src/main.jsx`, `src/test/setup.js` từ Ex1, rồi `npm inst
+          -all` | `package.json`, `vite.config.js`, `eslint.config.js`, `
+          -index.html`, `src/main.jsx`, `src/test/setup.js` | `npm test` 
+          -và `npm run lint` chạy được | [ ] |                           
+       47 -| H2-01 | Spec + `midiToFreq` + tên nốt | `src/music/notes.js`
+          - | Test: A4 (69) = 440 Hz; A0 = 27,5 Hz; C8 ≈ 4186 Hz | [ ] | 
+       48 -| H2-02 | `buildKeys()` 88 phím, 52 trắng + 36 đen | `src/musi
+          -c/notes.js` | Test: độ dài 88, đếm trắng/đen đúng, midi 21..10
+          -8 | [ ] |                                                     
+       49 -| H2-03 | `PolyphonicSynth`: noteOn/noteOff, ADSR click-free |
+          - `src/audio/PolyphonicSynth.js` | Test (AudioContext giả): ram
+          -p trước stop, disconnect | [ ] |                              
+       50 -| H2-04 | Giới hạn 8 voice + steal FIFO | `src/audio/Polyphoni
+          -cSynth.js` | Test: nốt thứ 9 đẩy nốt đầu tiên; thứ tự đúng | [
+          - ] |                                                          
+       51 -| H2-05 | `PianoKey` bằng `memo`, `aria-pressed`, vùng bấm hợp
+          - lệ | `src/components/PianoKey.jsx` | Test: đổi `isPressed` củ
+          -a phím khác → không render lại | [ ] |                        
+       52 -| H2-06 | `GrandPiano` bố cục 88 phím + trạng thái pressed | `
+          -src/components/GrandPiano.jsx` | Profiler: nhấn 1 phím = 1 com
+          -ponent render | [ ] |                                         
+       53 -| H2-07 | Bộ ghi FIFO `{midi,freqHz,durationMs,deltaMs}` | `sr
+          -c/audio/recorder.js` | Test: thứ tự ghi giữ nguyên | [ ] |    
+       54 -| H2-08 | Phát lại bất đồng bộ 0,5x/1x/2x + `AbortController` 
+          -| `src/audio/sequencer.js` | Test: Stop hủy sớm, không còn tiế
+          -ng | [ ] |                                                    
+       55 -| H2-09 | UI Record/Play/Stop/Tốc độ, thông báo `role="status"
+          -` | `src/components/Sequencer.jsx` | Điều khiển bằng bàn phím;
+          - nhãn rõ | [ ] |                                              
+       56 -| H2-10 | CSS Modules, 375px (cuộn ngang có chủ đích cho bàn p
+          -hím piano hoặc co giãn) | `src/**/*.module.css` | Trang không 
+          -cuộn ngang ngoài vùng đàn; tương phản đạt | [ ] |             
+       57 -| H2-11 | Bằng chứng: Profiler render isolation, Lighthouse | 
+          -`evidence/` | Ảnh Profiler, JSON Lighthouse | [ ] |           
+       80 +| H2-00 | Khởi tạo project Vite riêng **từ HW1** (không từ Ex1
+          +): sao chép `package.json` (đổi `name` thành `msis207-lab03-hw
+          +2-piano`), `vite.config.js`, `eslint.config.js`, `index.html`,
+          + `public/fonts/`, `src/styles/tokens.css`, `src/test/setup.js`
+          +, `scripts/check-contrast.mjs`; viết `src/main.jsx` (`createRo
+          +ot` + `StrictMode`) và `src/pianoConfig.js` (D10); xoá phần ch
+          +ỉ dành cho drum; `npm install` | `package.json`, `vite.config.
+          +js`, `eslint.config.js`, `index.html`, `src/main.jsx`, `src/pi
+          +anoConfig.js`, `src/test/setup.js` | `npm test` và `npm run li
+          +nt` chạy được; không còn tham chiếu Google Fonts | [ ] |      
+       81 +| H2-01 | Spec + `midiToFreq` + `noteName` + `spokenName` | `s
+          +rc/music/notes.js` | Test: A4 (69) = 440 Hz; A0 (21) = 27,5 Hz
+          +; C8 (108) ≈ 4186,01 Hz; `noteName(61)` = `C#4`; `spokenName(6
+          +1)` = `C thăng 4` | [ ] |                                     
+       82 +| H2-02 | `buildKeys()` 88 phím, 52 trắng + 36 đen; `groupByOc
+          +tave()` | `src/music/notes.js` | Test: độ dài 88, đếm trắng/đe
+          +n đúng (52/36), midi 21..108 liên tục, `key` (midi) không trùn
+          +g; nhóm đầu (octave 0) có 3 phím, nhóm cuối (octave 8) có 1 ph
+          +ím | [ ] |                                                    
+       83 +| H2-03 | `PolyphonicSynth`: `noteOn`/`noteOff`, envelope clic
+          +k-free (attack 10 ms, release 40 ms) | `src/audio/PolyphonicSy
+          +nth.js` | Test (AudioContext giả): có ramp lên khi bắt đầu; `n
+          +oteOff` gọi `exponentialRampToValueAtTime(0.0001, now+0.04)` *
+          +*trước** `osc.stop`; sau `onended` có `disconnect` osc và gain
+          +; `noteOn` lặp cùng `midi` không tạo voice mới | [ ] |        
+       84 +| H2-04 | Giới hạn 8 voice + steal FIFO + `onSteal` + `stopAll
+          +` + `dispose` | `src/audio/PolyphonicSynth.js` | Test: nốt thứ
+          + 9 đẩy đúng nốt đầu tiên; thứ tự đúng qua nhiều vòng; `onSteal
+          +(midi)` được gọi đúng midi; `stopAll()` thì `voiceCount === 0`
+          +; `dispose()` đóng context; thay `maxVoices` bằng 4 thì giới h
+          +ạn là 4 | [ ] |                                               
+       85 +| H2-05 | `PianoKey` bằng `memo`: `aria-pressed`, `aria-label`
+          + = `spokenName`, `data-pc`, pointer + Space/Enter (`e.code`, c
+          +hặn `e.repeat`), vùng bấm hợp lệ | `src/components/PianoKey.js
+          +x` (+ `.test.jsx`) | Test: harness có 3 phím, mỗi phím bọc một
+          + `<Profiler>`; đổi `isPressed` của phím A thì chỉ `onRender` c
+          +ủa A chạy; pointerdown gọi `onNoteOn(midi)` đúng 1 lần; pointe
+          +rleave và pointercancel gọi `onNoteOff`; giữ Space không bắn l
+          +ặp | [ ] |                                                    
+       86 +| H2-06 | Hook `usePiano`: synth trong ref (lười, tạo lại sau 
+          +StrictMode), `Set` pressed bất biến, `press`/`release` ổn định
+          +, `onSteal`, `blur` thì nhả hết, unmount thì `dispose` | `src/
+          +usePiano.js` (+ `.test.jsx`) | Test: `press` thêm vào `Set`, `
+          +release` bỏ đi; nhấn 9 phím thì phím đầu không còn pressed; `w
+          +indow` `blur` thì rỗng; unmount thì `dispose` được gọi; tham c
+          +hiếu `press`/`release` không đổi giữa các render | [ ] |      
+       87 +| H2-07 | `GrandPiano`: bố cục 88 phím theo octave, roving tab
+          +index (D8), nối với `usePiano` | `src/components/GrandPiano.js
+          +x` (+ `.test.jsx`) | Test: render đúng 88 nút; chỉ 1 nút `tabI
+          +ndex=0`; ArrowRight chuyển focus sang nút kế; không có `key={i
+          +ndex}`. **Cổng Profiler (DevTools, thủ công):** ghi một lần nh
+          +ấn thì `GrandPiano` render 1 lần + **một** `PianoKey` render, 
+          +87 phím còn lại "Did not render"; lưu ảnh | [ ] |             
+       88 +| H2-08 | Bộ ghi FIFO `{midi,freqHz,durationMs,deltaMs}` (D5, 
+          +D6) | `src/audio/recorder.js` (+ `.test.js`) | Test (đồng hồ g
+          +iả): thứ tự ghi giữ nguyên; hợp âm (nhấn A, nhấn B, nhả A, nhả
+          + B) vẫn có thứ tự A rồi B; `deltaMs` nốt đầu = 0; `stop()` đón
+          +g nốt còn mở với `durationMs` đến lúc dừng; không ghi khi chưa
+          + `start()` | [ ] |                                            
+       89 +| H2-09 | Phát lại bất đồng bộ 0,5x/1x/2x + `AbortController` 
+          +(D2) | `src/audio/sequencer.js` (+ `.test.js`) | Test (fake ti
+          +mers): thời điểm `noteOn`/`noteOff` đúng ở 1x; ở 2x nhanh gấp 
+          +đôi, 0,5x chậm gấp đôi; abort giữa chừng thì không gọi thêm `n
+          +oteOn`, trả `'aborted'`, không còn timer (`vi.getTimerCount() 
+          +=== 0`); bản ghi rỗng trả `'done'` ngay; nốt cùng `midi` nhả t
+          +rước khi nhấn lại ở cùng mốc | [ ] |                          
+       90 +| H2-10 | UI `Sequencer`: Record/Stop ghi, Play/Stop phát, tốc
+          + độ (radio 0,5x/1x/2x), `role="status"` báo trạng thái; nối re
+          +corder + `playSequence` vào `GrandPiano` (replay gọi cùng `pre
+          +ss`/`release` nên phím sáng theo) | `src/components/Sequencer.
+          +jsx` (+ `.test.jsx`) | Test: Play vô hiệu khi chưa có bản ghi;
+          + Stop khi đang phát thì phím tắt hết, `voiceCount === 0`, stat
+          +us báo "Đã dừng"; đang phát không ghi lại; tốc độ vô hiệu khi 
+          +đang phát; unmount khi đang phát thì abort; điều khiển hoàn to
+          +àn bằng bàn phím, nút có nhãn rõ, `type="button"` | [ ] |     
+       91 +| H2-11 | CSS Modules + token màu: bàn phím piano cuộn ngang *
+          +*có chủ đích** trong vùng đàn (phím trắng tối thiểu ~28px nên 
+          +52 phím rộng hơn 375px); phần còn lại không cuộn ngang; vị trí
+          + phím đen bằng CSS theo `data-pc`, **không** inline `style`; f
+          +ocus-visible rõ; `prefers-reduced-motion`, `forced-colors` | `
+          +src/**/*.module.css`, `src/styles/tokens.css` | 375px: trang k
+          +hông cuộn ngang ngoài vùng đàn; vùng đàn cuộn được bằng bàn ph
+          +ím; `node scripts/check-contrast.mjs` đạt (chữ trên phím, viền
+          + phím đen/trắng 3:1, trạng thái pressed không chỉ dựa màu) | [
+          + ] |                                                          
+       92 +| H2-12 | Bằng chứng: Profiler render isolation, Lighthouse (t
+          +rên bản build), a11y tree, kiểm tay; ghi `AI_FAILURE_AUDIT.md`
+          + nếu gặp lỗi AI thật | `evidence/` | Ảnh Profiler, JSON Lighth
+          +ouse Accessibility 100, ảnh a11y tree phím "C thăng 4" (presse
+          +d), ảnh 375px, bảng kiểm tay ở `evidence/README.md` | [ ] |   
+       93  
+       59 -## 4. Commit gợi ý                                            
+       94 +## 7. Chuẩn bị cho thử thách trực tiếp (25% điểm)             
+       95  
+       61 -`docs(hw2): add piano spec` · `feat(hw2): midi to frequency an
+          -d 88 key generator` · `feat(hw2): polyphonic synth with fifo v
+          -oice stealing` · `feat(hw2): memoized PianoKey grid` · `feat(h
+          -w2): fifo recorder and abortable replay` · `test(hw2): profile
+          -r render isolation evidence`                                  
+       96 +Giảng viên đổi một yêu cầu trên code đang chạy, 180 giây. Các 
+          +thay đổi có thể gặp và vị trí sửa:                            
+       97  
+       63 -## 5. Cổng kiểm tra                                           
+       98 +| Thay đổi giả định | Sửa ở đâu |                             
+       99 +|---|---|                                                     
+      100 +| Đổi 8 voice thành 4 | `MAX_VOICES` trong `pianoConfig.js` | 
+      101 +| Đổi 88 phím thành 61 phím (MIDI 36 đến 96) | `MIDI_MIN`/`MID
+          +I_MAX`; số phím trắng/đen tự suy ra |                         
+      102 +| Thêm tốc độ 4x | `SPEEDS` trong `pianoConfig.js` |          
+      103 +| Steal "mới nhất" thay vì "cũ nhất" | Một dòng chọn khoá tron
+          +g `noteOn` của `PolyphonicSynth` (`keys().next()` đổi sang phầ
+          +n tử cuối) |                                                  
+      104 +| Đổi release 40 ms thành 100 ms | `RELEASE_S` |              
+      105 +| Chứng minh `memo` thật sự có tác dụng | Bỏ `memo` hoặc truyề
+          +n `Set` xuống, chạy Profiler, thấy cả 88 phím render, rồi hoàn
+          + tác |                                                        
+      106  
+      107 +## 8. Commit gợi ý                                            
+      108 +                                                              
+      109 +Dùng đúng nguyên văn các message đề bài chốt sẵn (đánh dấu *),
+          + thêm các commit nhỏ ở giữa. AI không tự commit.              
+      110 +                                                              
+      111 +1. `docs(hw2): add piano spec` * (file này)                   
+      112 +2. `chore(hw2): scaffold vite project from hw1` (H2-00)       
+      113 +3. `feat(hw2): midi to frequency and 88 key generator` * (H2-0
+          +1, H2-02)                                                     
+      114 +4. `feat(hw2): polyphonic synth with fifo voice stealing` * (H
+          +2-03, H2-04)                                                  
+      115 +5. `feat(hw2): memoized PianoKey grid` * (H2-05, H2-06, H2-07)
+      116 +6. `feat(hw2): fifo recorder and abortable replay` * (H2-08, H
+          +2-09, H2-10)                                                  
+      117 +7. `style(hw2): piano layout and 375px` (H2-11)               
+      118 +8. `test(hw2): profiler render isolation evidence` * (H2-12)  
+      119 +                                                              
+      120 +## 9. Cổng kiểm tra                                           
+      121 +                                                              
+      122  ```bash
+       66 -grep -rnE 'keyCode|alert\(|innerHTML' src   # 0 dòng          
+       67 -npm test -- src                                               
+      123 +grep -rnE 'keyCode|keypress|alert\(|innerHTML|dangerouslySetIn
+          +nerHTML' src   # 0 dòng                                       
+      124 +grep -rn "http://" src                                        
+          +               # 0 dòng                                       
+      125 +grep -rnE 'key=\{(i|idx|index)\}' src                         
+          +               # 0 dòng                                       
+      126 +npm test                                                      
+      127 +npm run lint                                                  
+      128 +npm run build                                                 
+      129 +node scripts/check-contrast.mjs                               
+      130  ```
+      131  
+       70 -DevTools: Profiler ghi một lần nhấn → chỉ `PianoKey` đó render
+          -; giữ 9 phím → voice cũ nhất tắt; Stop khi đang phát lại → im 
+          -lặng ngay.                                                    
+      132 +DevTools: Profiler ghi một lần nhấn thì chỉ `PianoKey` đó rend
+          +er; giữ 9 phím thì voice cũ nhất tắt **và phím đó hết sáng**; 
+          +Stop khi đang phát lại thì im lặng ngay; Lighthouse chạy trên 
+          +`npm run preview`, không chạy trên dev server.                
+      133  
+       72 -## 6. Dễ sai                                                  
+      134 +## 10. Lỗi trong slide / chỗ mơ hồ (đã xử lý)                 
+      135  
+       74 -- `memo` mất tác dụng vì truyền object/hàm mới mỗi render; tru
+          -yền cả `pressedSet`.                                          
+       75 -- Không ramp trước `stop` (tiếng pop); không `disconnect` → rò
+          - node; `noteOn` lặp khi giữ phím (thiếu `e.repeat`).          
+       76 -- Phím kẹt khi rời ngón khỏi phím (thiếu `onPointerLeave`/`onP
+          -ointerCancel`).                                               
+      136 +| Chỗ | Vấn đề | Xử lý |                                      
+      137 +|---|---|---|                                                 
+      138 +| Gain 0,2 mỗi voice | 8 voice x 0,2 = 1,6, vượt 1,0 nên méo; 
+          +trái mục tiêu "chống clipping" | D3: gain 0,1 |               
+      139 +| `noteOn` đặt gain đột ngột | Tiếng click lúc bắt đầu, chỉ lo
+          + click lúc kết thúc | D3: attack 10 ms |                      
+      140 +| Code mẫu thiếu `noteOff`, thiếu dọn node | Rò node, `Map` kh
+          +ông dọn | H2-03, H2-04 |                                      
+      141 +| Steal voice nhưng UI vẫn `isPressed` | Phím kẹt sáng | `onSt
+          +eal` (§4, H2-04, H2-06) |                                     
+      142 +| `PianoKey` chỉ có `onPointerDown`/`onPointerUp` | Rời ngón k
+          +hỏi phím thì kẹt; không có bàn phím | D9, D8, H2-05 |         
+      143 +| "FIFO queue" nhưng không nói đồng hồ, không định nghĩa `delt
+          +aMs` | Không test được | D4, D5, D6 |                         
+      144 +| 52 phím trắng không vừa 375px | Mâu thuẫn với "không cuộn ng
+          +ang" của WCAG 1.4.10 | H2-11: vùng đàn cuộn có chủ đích (bàn p
+          +hím nhạc là nội dung cần bố cục hai chiều, thuộc ngoại lệ của 
+          +1.4.10), phần còn lại không cuộn |                            
+      145 +| Slide gọi hợp âm tối đa 8 nhưng 10 ngón tay có thể chạm cùng
+          + lúc | Nốt thứ 9, 10 cướp voice | Đúng hành vi mong muốn; có t
+          +est H2-04 |                                                   
+      146 +                                                              
+      147 +## 11. Dễ sai                                                 
+      148 +                                                              
+      149 +- `memo` mất tác dụng vì truyền object/hàm mới mỗi render; tru
+          +yền cả `pressedSet`; `onNoteOn` phụ thuộc state nên đổi tham c
+          +hiếu.                                                         
+      150 +- Không ramp trước `stop` (tiếng pop); không `disconnect` (rò 
+          +node); `noteOn` lặp khi giữ phím (thiếu `e.repeat`).          
+      151 +- Phím kẹt khi rời ngón khỏi phím (thiếu `onPointerLeave`/`onP
+          +ointerCancel`) hoặc khi cửa sổ mất focus; phím kẹt sáng sau kh
+          +i bị steal.                                                   
+      152 +- Đẩy sự kiện ghi lúc `noteOff` làm đảo thứ tự hợp âm.        
+      153 +- Phát lại bằng chuỗi `setTimeout` lồng nhau cộng dồn sai số v
+          +à khó hủy; quên hủy timer khi Stop hoặc unmount.              
+      154 +- `AudioContext` bị đóng lúc StrictMode chạy cleanup rồi dùng 
+          +lại (cần tạo lại lười).                                       
+      155 +- Dùng `key={index}` khi map phím; dùng tên nốt làm key (có th
+          +ể trùng nếu bỏ octave). Dùng `midi` làm key.                  
+      156 +- Đặt vị trí phím đen bằng inline `style` (cấm). Dùng `data-pc
+          +` + CSS.                                                      
+      157 +- Đo Lighthouse trên dev server rồi kết luận Performance kém (
+          +xem Lỗi 5 trong [AI_FAILURE_AUDIT.md](../../../AI_FAILURE_AUDI
+          +T.md)).                                                       
+
+● Mình đã viết lại GrandPiano88/TASK_DECOMPOSITION.md
+  (src/homeworks/GrandPiano88/TASK_DECOMPOSITION.md) theo hướng A (chỉ làm lõi).
+  Chưa có dòng code nào, cũng chưa commit.
+
+  Cấu trúc file:
+  - Task: 13 task, H2-00 đến H2-12. Task nào cũng có file và gate kiểm chứng cụ
+    thể (H2-00 sao chép khung từ HW1, H2-01 đến H2-12 theo thứ tự làm).
+  - Tái dùng: một bảng nói rõ cái gì lấy từ HW1 và Lab 2, cái gì bỏ.
+  - Quyết định thiết kế: D1–D10, cần bạn duyệt.
+  - Phần còn lại: thử thách trực tiếp (§7), commit gợi ý (§8, dùng đúng nguyên
+    văn message đề bài chốt sẵn), cổng kiểm tra (§9), lỗi slide (§10), điểm dễ
+    sai (§11).
+
+  Các quyết định bạn nên đọc kỹ trước khi duyệt:
+  - D1: isPressed nằm trong một Set ở GrandPiano. Cha render 1 lần mỗi lần bấm,
+    87 phím con thì không. Nếu Profiler đo thấy chậm thì mới chuyển sang
+    useSyncExternalStore.
+  - D3: slide đặt gain 0,2 mỗi voice, 8 voice là 1,6 nên sẽ méo, trái với mục
+    tiêu "chống clipping". Mình đổi thành 0,1 và thêm attack 10 ms. Đây là lỗi
+    trong slide, cần báo theo AGENTS §7.
+  - D4: không port AudioTaskQueue của Lab 2. FIFO ở đây là mảng sự kiện duyệt
+    theo thứ tự ghi. Nếu giảng viên bắt buộc có queue thì bọc mảng lại là xong.
+  - D5 và D6: sự kiện ghi tạo lúc nhấn, không phải lúc nhả. Nếu đẩy lúc nhả thì
+    hợp âm bị đảo thứ tự. Mình cũng chốt định nghĩa của deltaMs.
+  - D8: roving tabindex cho 88 phím. Nếu không có thì Tab phải đi qua 88 nút, và
+    việc này vẫn thuộc lõi vì WCAG là tiêu chí của bài.
+
+  Hai điểm khác mà bạn có thể không đoán trước:
+  - Phím bị steal vẫn sáng: khi steal voice, phím bị cướp vẫn sáng trên UI.
+    Slide không nhắc, mình xử lý bằng callback onSteal.
+  - Vùng đàn cuộn ngang: 52 phím trắng không vừa 375px nên vùng đàn cuộn ngang
+    có chủ đích. Lập luận là nhạc cụ thuộc ngoại lệ của WCAG 1.4.10, bạn cân
+    nhắc xem có chấp nhận cách ghi này không.
+
+  Chưa kiểm chứng: mình chưa chạy được thử gì cho HW2, nên mọi gate trong file
+  đều là kế hoạch. Mình cũng chưa kiểm tra fireEvent.pointerDown có chạy đúng
+  trong jsdom hay không, sẽ thử ở H2-05.
+
+  Bạn duyệt (hoặc sửa D1–D10) thì mình bắt đầu từ H2-00. Mỗi lượt mình làm đúng
+  một task và đề xuất cách commit, bạn tự commit.
+
+> ok bắt đầu  làm tới H2-04 đi, giao diện thì lấy phong cách design của
+  homework 1 drum machine đi.
+
+  Read 1 file, ran 4 shell commands (ctrl+o to expand)
+
+● Lệnh ghi file hàng loạt bị lỗi quote trong bash, mình chuyển sang ghi từng
+  file bằng công cụ Write rồi chạy test.
+
+  Listed 1 directory (ctrl+o to expand)
+
+● Write(src\audio\PolyphonicSynth.js)
+  ⎿  Wrote 101 lines to src\audio\PolyphonicSynth.js
+       1 import { ATTACK_S, MAX_VOICES, RELEASE_FLOOR, RELEASE_S, VOICE_G
+         AIN } from '../pianoConfig.js';
+       2
+       3 const defaultCreateContext = () => (typeof AudioContext === 'und
+         efined' ? null : new AudioContext());
+       4
+       5 /**
+       6  * Đàn đa âm: mỗi nốt đang giữ là một voice (oscillator + gain).
+          Không biết gì về React.
+       7  * `voices` là Map midi -> { osc, gain }; Map giữ thứ tự chèn nê
+     … +95 lines (~3 KB) (ctrl+o to expand)
+
+● Write(src\audio\fakeAudio.js)
+  ⎿  Wrote 60 lines to src\audio\fakeAudio.js
+       1 /** AudioContext giả cho test: ghi lại thứ tự lệnh gọi, không ph
+         át tiếng. */
+       2 export function createFakeAudio() {
+       3   const calls = [];
+       4   const oscillators = [];
+       5   const gains = [];
+       6   const state = { closed: false, resumed: 0 };
+       7
+       8   const ctx = {
+       9     currentTime: 0,
+     … +51 lines (ctrl+o to expand)
+
+● Write(src\audio\PolyphonicSynth.test.js)
+  ⎿  Wrote 188 lines to src\audio\PolyphonicSynth.test.js
+       1 import { describe, it, expect, vi } from 'vitest';
+       2 import { PolyphonicSynth } from './PolyphonicSynth.js';
+       3 import { createFakeAudio } from './fakeAudio.js';
+       4 import { ATTACK_S, RELEASE_FLOOR, RELEASE_S, VOICE_GAIN } from '
+         ../pianoConfig.js';
+       5
+       6 function setup(maxVoices) {
+       7   const audio = createFakeAudio();
+       8   const onSteal = vi.fn();
+       9   const synth = new PolyphonicSynth(maxVoices, { createContext:
+     … +180 lines (~7 KB) (ctrl+o to expand)
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Test, lint, build đều sạch. Mình kiểm thêm xem test có bắt được lỗi thật không
+  (đổi tạm code, chạy test, rồi khôi phục).
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Cả ba lỗi cố ý đều bị test bắt, code đã khôi phục (40/40 pass). Giờ mình tick
+  các task đã kiểm chứng trong WBS.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Mình đã làm xong H2-00 đến H2-04 và tick 5 dòng này trong WBS. Chưa commit,
+  theo luật của bạn.
+
+  Kết quả chạy thật (trong GrandPiano88/):
+  - npm test: 40/40 pass, gồm 4 test cho pianoConfig, 15 cho notes, 21 cho
+    PolyphonicSynth.
+  - npm run lint: không có lỗi nào.
+  - npm run build: build được, không còn tham chiếu Google Fonts.
+  - Contrast script: 5/5 cặp màu đạt, mới có các cặp nền trang và panel. Màu
+    phím đàn mình bổ sung ở H2-11.
+  - Grep cấm (keyCode, alert(, innerHTML, http://…): 0 dòng.
+  - Kiểm tra mutation: mình cố ý phá code để xem test có bắt không.
+    - Steal nốt mới nhất thay vì nốt cũ nhất: 6 test fail.
+    - osc.stop chạy trước ramp: 3 test fail.
+    - Bỏ onSteal: 5 test fail.
+    - Sau đó mình đã khôi phục code (40/40 pass lại).
+
+  Đã làm:
+  - H2-00: khung project copy từ HW1, đổi tên package. Mình thêm
+    src/pianoConfig.js gom hằng số (D10), App.jsx placeholder và main.jsx. Giao
+    diện dùng lại tokens.css, font và App.module.css của HW1 (palette sáng, tiêu
+    đề lớn). Màu theo từng trống thay bằng 4 màu phím: --key-white,
+    --key-black, --press-white, --press-black.
+  - H2-01 và H2-02: src/music/notes.js có midiToFreq, noteName, spokenName,
+    buildKeys (88 phím, 52 trắng + 36 đen, đổi phạm vi thì số phím tự đổi) và
+    groupByOctave.
+  - H2-03 và H2-04: src/audio/PolyphonicSynth.js, class với private field.
+    - Mỗi voice có attack 10 ms, release 40 ms, và ramp chạy trước osc.stop.
+    - Hết tiếng thì disconnect osc và gain.
+    - Voice giữ trong Map, voice cũ nhất bị steal trước, và onSteal(midi) báo ra
+      ngoài để UI bỏ trạng thái nhấn.
+    - Có stopAll() và dispose().
+    - File fakeAudio.js là AudioContext giả dùng cho test.
+
+  Chưa kiểm chứng:
+  - Chưa nghe thử âm thanh thật. Test chỉ dùng context giả nên chỉ chứng minh
+    thứ tự lệnh gọi, không chứng minh không có tiếng click. Tới H2-07 khi có UI
+    thì cần bạn nghe thử.
+  - Giao diện mới chỉ có tiêu đề, chưa có phím nào, nên phần giao diện chưa có
+    gì để xem.
+
+  Đề xuất cách chia commit (bạn tự commit và thêm co-author, đã kiểm
+  node_modules/ và dist/ được ignore):
+  1. docs(hw2): add piano spec: TASK_DECOMPOSITION.md
+  2. chore(hw2): scaffold vite project from hw1: package.json,
+     package-lock.json, vite.config.js, eslint.config.js, index.html, public/,
+     scripts/, src/main.jsx, src/App.jsx, src/App.module.css, src/styles/,
+     src/test/, src/pianoConfig.js và test của nó
+  3. feat(hw2): midi to frequency and 88 key generator: src/music/
+  4. feat(hw2): polyphonic synth with fifo voice stealing: src/audio/
+
+  Dòng tick H2-00 đến H2-04 nằm trong TASK_DECOMPOSITION.md nên đi chung commit
+  1. Nếu muốn tách, bạn có thể dùng git add -p.
+
+  Bước tiếp theo là H2-05 (PianoKey với memo) khi bạn sẵn sàng.
+> chia nhỏ ra và commit đi và để mình tự thêm co author, còn giao diện ok ấy
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Mình đã commit thành 4 commit nhỏ, cây làm việc sạch, không có dòng
+  Co-Authored-By nào (đã kiểm: 0 dòng) để bạn tự thêm.
+
+  ┌────────────────────────────────────┬────────────────────────────────────┐
+  │               Commit               │              Nội dung              │
+  ├────────────────────────────────────┼────────────────────────────────────┤
+  │ 83cf891 docs(hw2): add piano spec  │ TASK_DECOMPOSITION.md (kèm tick    │
+  │                                    │ H2-00 đến H2-04)                   │
+  ├────────────────────────────────────┼────────────────────────────────────┤
+  │ 9aada6c chore(hw2): scaffold vite  │ khung project, config, font,       │
+  │ project from hw1                   │ tokens, pianoConfig                │
+  ├────────────────────────────────────┼────────────────────────────────────┤
+  │ 3926837 feat(hw2): midi to         │ src/music/                         │
+  │ frequency and 88 key generator     │                                    │
+  ├────────────────────────────────────┼────────────────────────────────────┤
+  │ 4b82965 feat(hw2): polyphonic      │ src/audio/                         │
+  │ synth with fifo voice stealing     │                                    │
+  └────────────────────────────────────┴────────────────────────────────────┘
+
+  Các cảnh báo LF/CRLF trong output là vô hại. Khi bạn thêm co-author, dùng git
+  rebase -i hoặc git commit --amend cho từng commit.
+
+  Bước tiếp theo là H2-05 (PianoKey bằng memo) khi bạn muốn tiếp.
+
+> Ok vậy tiếp tục hiện thực hiện tới H2-07 đi, tình hình hiện tại mình review
+  khá ok
+
+  Ran 2 shell commands (ctrl+o to expand)
+
+● Write(src\components\PianoKey.jsx)
+  ⎿  Wrote 69 lines to src\components\PianoKey.jsx
+       1 import { memo } from 'react';
+       2 import { spokenName } from '../music/notes.js';
+       3 import styles from './PianoKey.module.css';
+       4
+       5 const PRESS_CODES = new Set(['Space', 'Enter', 'NumpadEnter']);
+       6 const MOVE_CODES = new Set(['ArrowLeft', 'ArrowRight', 'Home', '
+         End']);
+       7
+       8 /**
+       9  * Một phím đàn. Bọc bằng `memo` nên chỉ render lại khi một tron
+     … +61 lines (~2 KB) (ctrl+o to expand)
+
+● Write(src\components\PianoKey.test.jsx)
+  ⎿  Wrote 188 lines to src\components\PianoKey.test.jsx
+       1 import { Profiler } from 'react';
+       2 import { describe, it, expect, vi } from 'vitest';
+       3 import { fireEvent, render, screen } from '@testing-library/reac
+         t';
+       4 import { PianoKey } from './PianoKey.jsx';
+       5
+       6 const baseProps = (over = {}) => ({
+       7   midi: 60,
+       8   noteName: 'C4',
+       9   isBlack: false,
+     … +179 lines (ctrl+o to expand)
+
+● Write(src\usePiano.js)
+  ⎿  Wrote 76 lines to src\usePiano.js
+       1 import { useCallback, useEffect, useRef, useState } from 'react'
+         ;
+       2 import { PolyphonicSynth } from './audio/PolyphonicSynth.js';
+       3 import { midiToFreq } from './music/notes.js';
+       4 import { MAX_VOICES } from './pianoConfig.js';
+       5
+       6 const EMPTY = new Set();
+       7
+       8 /**
+       9  * Nối PolyphonicSynth với React.
+     … +67 lines (ctrl+o to expand)
+
+● Write(src\usePiano.test.jsx)
+  ⎿  Wrote 95 lines to src\usePiano.test.jsx
+       1 import { StrictMode } from 'react';
+       2 import { describe, it, expect } from 'vitest';
+       3 import { act, renderHook } from '@testing-library/react';
+       4 import { usePiano } from './usePiano.js';
+       5 import { createFakeAudio } from './audio/fakeAudio.js';
+       6
+       7 function setup(options = {}, wrapper) {
+       8   const audio = createFakeAudio();
+       9   const hook = renderHook(() => usePiano({ createContext: () =>
+         audio.ctx, ...options }), { wrapper });
+     … +86 lines (ctrl+o to expand)
+
+  Read 1 file (ctrl+o to expand)
+
+● Write(src\components\GrandPiano.jsx)
+  ⎿  Wrote 81 lines to src\components\GrandPiano.jsx
+      1 import { useCallback, useEffect, useId, useRef, useState } from '
+        react';
+      2 import { buildKeys, groupByOctave, octaveLayout } from '../music/
+        notes.js';
+      3 import { DEFAULT_FOCUS_MIDI, MIDI_MAX, MIDI_MIN } from '../pianoC
+        onfig.js';
+      4 import { usePiano } from '../usePiano.js';
+      5 import { PianoKey } from './PianoKey.jsx';
+      6 import styles from './GrandPiano.module.css';
+      7
+     … +74 lines (ctrl+o to expand)
+
+● Write(src\components\GrandPiano.module.css)
+  ⎿  Wrote 58 lines to src\components\GrandPiano.module.css
+      1 /*
+      2  * Cuộn ngang là có chủ đích: 52 phím trắng không thể vừa 375px m
+        à vẫn chạm được (WCAG 1.4.10 miễn
+      3  * trừ nội dung cần bố cục hai chiều như bàn phím nhạc). Chỉ .scr
+        oller cuộn, phần còn lại của trang thì không.
+      4  * Mỗi quãng tám là lưới 7 cột trắng; phím đen đặt ở mép phải cột
+         của phím trắng bên trái nó (theo data-pc
+      5  * ở PianoKey.module.css). Quãng đầu và cuối thiếu phím nên co kh
+        ung bằng data-lead / data-trail.
+      6  */
+     … +52 lines (ctrl+o to expand)
+
+● Write(src\components\PianoKey.module.css)
+  ⎿  Wrote 124 lines to src\components\PianoKey.module.css
+       1 /*
+       2  * Vị trí theo pitch class (data-pc, 0 = C): phím trắng ở cột củ
+         a nó (C D E F G A B = 1..7);
+       3  * phím đen nằm ở mép phải cột của phím trắng bên trái nó, lệch
+         nửa bề rộng sang phải.
+       4  * Bảng cột này trùng WHITE_COLUMN trong src/music/notes.js.
+       5  * Nhấn: phím lún xuống đúng độ nổi (--lift) và đổi màu, nên vẫn
+          thấy được khi tắt animation.
+       6  */
+       7 .key {
+     … +117 lines (ctrl+o to expand)
+
+● Write(src\components\GrandPiano.test.jsx)
+  ⎿  Wrote 154 lines to src\components\GrandPiano.test.jsx
+       1 import { describe, it, expect, vi, beforeEach, afterEach } from
+         'vitest';
+       2 import { fireEvent, render, screen, within } from '@testing-libr
+         ary/react';
+       3 import { GrandPiano } from './GrandPiano.jsx';
+       4 import { spokenName } from '../music/notes.js';
+       5 import { createFakeAudio } from '../audio/fakeAudio.js';
+       6
+       7 // Đếm số lần PianoKey render: mỗi lần render gọi spokenName đún
+         g một lần (cho aria-label).
+     … +147 lines (ctrl+o to expand)
+
+● Mình đã viết xong PianoKey, usePiano và GrandPiano. Giờ nối vào App rồi chạy
+  test và lint.
+
+  Ran 2 shell commands (ctrl+o to expand)
+
+● Test, lint, build đều sạch (89/89). Mình kiểm tra mutation để chắc test thật
+  sự bắt lỗi memo.
+
+  Ran 2 shell commands (ctrl+o to expand)
+
+● Mình làm xong H2-05, H2-06, H2-07 ở mức code và test, rồi tick H2-05 và H2-06
+  trong WBS. H2-07 mình để ngỏ vì còn hai việc phải làm thủ công. Chưa commit.
+
+  Kết quả chạy thật (trong GrandPiano88/):
+  - npm test: 89/89 pass (trước đó là 40).
+  - npm run lint: không có lỗi.
+  - npm run build: build được.
+  - Grep cấm (keyCode, alert(, innerHTML, http://, <div, style={{, key={index}):
+    0 dòng.
+  - Kiểm tra mutation, mỗi lần mình phá một chỗ rồi khôi phục:
+    - Bỏ memo: 5 test fail.
+    - Truyền hàm mới mỗi render: 4 test fail.
+    - Bỏ onSteal: 4 test fail, cả ở cấp hook lẫn cấp component.
+    - Bỏ e.repeat: 1 test fail.
+
+  Đã làm:
+  - H2-05, PianoKey: bọc memo, mọi prop đều là giá trị nguyên thủy hoặc hàm ổn
+    định.
+    - Chuột/cảm ứng: nhấn bằng pointerdown, nhả bằng pointerup, leave và cancel.
+    - Bàn phím: Space/Enter nhấn giữ (có chặn e.repeat), mũi tên/Home/End đổi
+      phím đang focus.
+    - Phím mất focus thì nhả.
+  - H2-06, usePiano:
+    - Synth nằm trong ref, tạo lười, chạy được cả trong StrictMode.
+    - pressed là một Set bất biến, và trả lại đúng Set cũ khi không có gì đổi.
+    - press và release có tham chiếu ổn định.
+    - Có onSteal và nhả hết khi cửa sổ mất focus.
+  - H2-07, GrandPiano:
+    - Bố cục theo quãng tám bằng CSS Grid với data-pc, không dùng inline style.
+    - Roving tabindex: mặc định C4, chỉ một phím nằm trong thứ tự Tab.
+    - Lúc mở trang đàn tự cuộn tới quanh C4.
+    - Giao diện dùng phong cách HW1: viền dày, bóng đổ, phím lún khi nhấn.
+
+  Hai thay đổi nhỏ so với plan:
+  - spokenName(60) đổi từ "C 4" thành "C4". Phím C hiển thị chữ "C4", nên tên
+    đọc phải chứa đúng chữ đó (WCAG 2.5.3). Nốt thăng vẫn đọc "C thăng 4". Mình
+    đã sửa test và chú thích trong WBS.
+  - Test đếm render của memo không dùng <Profiler> như WBS cũ ghi. Mình thử rồi,
+    chính <Profiler> bị render lại theo cha nên onRender luôn chạy, test sẽ
+    sai. Thay vào đó mình đếm số lần gọi spokenName, vì mỗi lần PianoKey render
+    nó gọi hàm này đúng 1 lần. Cách này chạy qua cả GrandPiano thật. Cả hai test
+    đã ghi lại trong WBS.
+
+  Chưa kiểm chứng, nên H2-07 chưa tick:
+  - Ảnh Profiler: DevTools React Profiler, ghi một lần nhấn, chụp ảnh cho
+    evidence/. Kết quả mong đợi là GrandPiano render 1 lần + 1 PianoKey. Test tự
+    động đã khẳng định điều này, nhưng gate cần ảnh thật.
+  - Nghe thử và nhìn thử: mình chưa nghe âm thanh thật (test dùng context giả,
+    nên chưa chứng minh được là không có tiếng click). Mình cũng chưa nhìn bố
+    cục thật: vị trí phím đen và 2 quãng tám đầu/cuối là điểm dễ lệch nhất. Bạn
+    chạy npm run dev rồi xem giúp.
+
+  Đề xuất cách chia commit (bạn tự commit và thêm co-author):
+  1. feat(hw2): memoized PianoKey grid: src/components/, src/usePiano.js và
+     test, src/pianoConfig.js (thêm DEFAULT_FOCUS_MIDI), src/music/notes.js và
+     test (octaveLayout, sửa spokenName), src/App.jsx
+  2. docs(hw2): tick H2-05 and H2-06: TASK_DECOMPOSITION.md
+
+  Nếu muốn nhỏ hơn thì tách notes.js và test thành commit riêng (feat(hw2):
+  octave layout and label-in-name spoken names).
+
+  Bạn xem giao diện xong cho mình biết có lệch gì không, sau đó mình làm H2-08
+  (bộ ghi FIFO).
+
+> ok chia nhỏ ra commit đi, để mình tự thêm cop author như cũ và bắt đầu
+  brainstorm mình task sau đi
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Đã commit 4 commit nhỏ, cây sạch, 0 dòng Co-Authored-By.
+
+  ┌─────────┬─────────────────────────────────────────┐
+  │ Commit  │                Nội dung                 │
+  ├─────────┼─────────────────────────────────────────┤
+  │ 00d12ab │ octaveLayout và spokenName (src/music/) │
+  ├─────────┼─────────────────────────────────────────┤
+  │ 8322081 │ hook usePiano                           │
+  ├─────────┼─────────────────────────────────────────┤
+  │ eb10461 │ PianoKey + GrandPiano + App             │
+  ├─────────┼─────────────────────────────────────────┤
+  │ 708901c │ tick H2-05, H2-06 trong WBS             │
+  └─────────┴─────────────────────────────────────────┘
+
+  Brainstorm H2-08 đến H2-10 (ghi, phát lại, UI Sequencer)
+
+  Đây vẫn là phần của kế hoạch HW2 đã duyệt, nên các quyết định D2 (vòng async
+  mốc tuyệt đối), D5 (tạo sự kiện lúc nhấn) và D6 (định nghĩa deltaMs) giữ
+  nguyên. Phần còn lại cần quyết là cách nối chúng vào đàn.
+
+  Vấn đề: recorder phải nghe người chơi nhấn/nhả, nhưng không được ghi lại những
+  nốt do replay tự phát (nếu không thì phát lại sẽ tự ghi đè chính nó). Hiện
+  usePiano nằm bên trong GrandPiano, nên bên ngoài không chen vào được.
+
+  Mình đề xuất (nâng usePiano lên cha):
+  - Thêm component cha, ví dụ PianoStudio, gọi usePiano() một lần rồi truyền
+    xuống hai nhánh.
+  - GrandPiano nhận pressed, onNoteOn, onNoteOff làm props, trở thành component
+    thuần hiển thị. memo vẫn đúng vì các hàm vẫn ổn định.
+  - Khi người chơi nhấn, cha dùng một wrapper: press(midi) rồi
+    recorder.noteOn(midi). Replay gọi thẳng press/release thô nên không bị ghi.
+  - Tận dụng đúng quy tắc "nâng state lên" của bài in-class, giảng viên dễ hỏi.
+  - Nốt bị steal lúc đang ghi cũng phải đóng sự kiện. usePiano nhận thêm một
+    callback ngoài nối vào onSteal.
+  - Cái giá: các test GrandPiano hiện dùng hook nội bộ nên phải sửa, nhưng không
+    đổi nội dung.
+
+  Hai phương án khác mình không chọn:
+  - Recorder nằm trong usePiano: hook phình to, nhiều việc, khó giải thích.
+  - Replay đi qua một cờ isReplaying để recorder bỏ qua: thêm state phụ thuộc
+    thứ tự, dễ lỗi.
+
+  Câu hỏi cần bạn quyết: khi đang phát lại, người dùng có được tự chơi chồng lên
+  không?
+  - A. Cho phép (mình đề xuất). Đơn giản nhất vì cùng một synth, 8 voice dùng
+    chung, nốt nào đến sau thì steal theo FIFO. Test Stop vẫn dùng stopAll() để
+    im hẳn.
+  - B. Khóa phím trong lúc phát. Phải thêm trạng thái disabled truyền xuống 88
+    phím, và isDisabled đổi sẽ làm cả 88 phím render lại, phá luôn mục tiêu của
+    memo.
+
+  Bạn chọn A hay B? Xong câu này mình trình bày phần thiết kế chi tiết theo từng
+  mục để bạn duyệt trước khi ghi vào WBS.
+
+  Về H2-07, vẫn còn hai việc thủ công của bạn: ảnh React Profiler và nghe thử âm
+  thanh. Làm lúc nào tiện cũng được, không chặn việc brainstorm.
+
+> ok cho phép đi, react profiler và nghe thử từ từ mình test sau, bạn hoàn
+  thiện các task code còn lại đi
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Write(src\audio\recorder.js)
+  ⎿  Wrote 67 lines to src\audio\recorder.js
+       1 /** @typedef {{ midi:number, freqHz:number, durationMs:number, d
+         eltaMs:number }} NoteEvent */
+       2
+       3 const defaultNow = () => performance.now();
+       4
+       5 /**
+       6  * Bộ ghi: hàng đợi FIFO các NoteEvent, không biết gì về React h
+         ay âm thanh.
+       7  * - Sự kiện được tạo lúc nhấn (D5), nên thứ tự mảng = thứ tự bắ
+         t đầu nốt; hợp âm nhấn A rồi B nhả A rồi B
+     … +60 lines (ctrl+o to expand)
+
+● Write(src\audio\recorder.test.js)
+  ⎿  Wrote 129 lines to src\audio\recorder.test.js
+      1 import { describe, it, expect } from 'vitest';
+      2 import { createRecorder } from './recorder.js';
+      3
+      4 /** Đồng hồ giả: `clock.t` do test điều khiển. */
+      5 function setup() {
+      6   const clock = { t: 1000 };
+      7   const recorder = createRecorder({ now: () => clock.t });
+      8   return { recorder, clock };
+      9 }
+     … +120 lines (ctrl+o to expand)
+
+● Write(src\audio\sequencer.js)
+  ⎿  Wrote 81 lines to src\audio\sequencer.js
+       1 /** @typedef {import('./recorder.js').NoteEvent} NoteEvent */
+       2
+       3 const defaultNow = () => performance.now();
+       4
+       5 /**
+       6  * Chờ `ms` mili giây; bị huỷ (signal abort) thì dọn timer và từ
+          chối bằng signal.reason (AbortError).
+       7  * Luôn có tối đa một timer đang chờ, và hết chờ thì gỡ listener
+         : không để rò.
+       8  */
+     … +73 lines (ctrl+o to expand)
+
+● Write(src\audio\sequencer.test.js)
+  ⎿  Wrote 185 lines to src\audio\sequencer.test.js
+      1 import { describe, it, expect, vi, beforeEach, afterEach } from '
+        vitest';
+      2 import { buildTimeline, playSequence, sleep, startOffsets } from
+        './sequencer.js';
+      3
+      4 beforeEach(() => {
+      5   vi.useFakeTimers();
+      6 });
+      7 afterEach(() => {
+      8   vi.useRealTimers();
+     … +177 lines (ctrl+o to expand)
+  Ran 1 shell command (ctrl+o to expand)
+
+● Đây không phải lỗi logic. Mình sẽ để sleep bỏ qua timer đã tới hạn, để các nốt
+  trùng mốc phát cùng lúc. · summary
+
+● Update(src\audio\sequencer.js)
+  ⎿  Added 4 lines
+      12        reject(signal.reason);
+      13        return;
+      14      }
+      15 +    if (ms <= 0) {                                             
+      16 +      resolve(); // đã tới hạn (hoặc quá hạn): không cần timer,
+         + các nốt trùng mốc (hợp âm) phát cùng lúc                      
+      17 +      return;                                                  
+      18 +    }                                                          
+      19      const onAbort = () => {
+      20        clearTimeout(timer);
+      21        reject(signal.reason);
+
+  Ran 2 shell commands (ctrl+o to expand)
+
+● Write(src\useSequencer.js)
+  ⎿  Wrote 68 lines to src\useSequencer.js
+       1 import { useCallback, useEffect, useRef, useState } from 'react'
+         ;
+       2 import { playSequence } from './audio/sequencer.js';
+       3
+       4 /** 0.5 -> "0,5x", 1 -> "1x": dùng cho nhãn tốc độ và thông báo.
+          */
+       5 export const formatSpeed = (speed) => `${String(speed).replace('
+         .', ',')}x`;
+       6
+       7 /**
+     … +61 lines (ctrl+o to expand)
+
+● Write(src\components\Sequencer.jsx)
+  ⎿  Wrote 68 lines to src\components\Sequencer.jsx
+       1 import { useId } from 'react';
+       2 import { SPEEDS } from '../pianoConfig.js';
+       3 import { formatSpeed } from '../useSequencer.js';
+       4 import styles from './Sequencer.module.css';
+       5
+       6 /**
+       7  * Bảng điều khiển ghi và phát lại, thuần hiển thị (trạng thái n
+         ằm trong useSequencer).
+       8  * Vùng role="status" luôn có trong DOM (không tạo lại mỗi lần đ
+         ổi trạng thái) để trình đọc màn hình
+     … +60 lines (ctrl+o to expand)
+
+● Write(src\components\PianoStudio.jsx)
+  ⎿  Wrote 60 lines to src\components\PianoStudio.jsx
+       1 import { useCallback, useEffect, useState } from 'react';
+       2 import { createRecorder } from '../audio/recorder.js';
+       3 import { midiToFreq } from '../music/notes.js';
+       4 import { usePiano } from '../usePiano.js';
+       5 import { useSequencer } from '../useSequencer.js';
+       6 import { GrandPiano } from './GrandPiano.jsx';
+       7 import { Sequencer } from './Sequencer.jsx';
+       8 import styles from './PianoStudio.module.css';
+       9
+      10 /**
+     … +50 lines (ctrl+o to expand)
+
+● Write(src\components\PianoStudio.module.css)
+  ⎿  Wrote 5 lines to src\components\PianoStudio.module.css
+      1 .studio {
+      2   display: grid;
+      3   gap: 1.5rem;
+      4   min-width: 0;
+      5 }
+
+● Write(src\components\Sequencer.module.css)
+  ⎿  Wrote 102 lines to src\components\Sequencer.module.css
+       1 .sequencer {
+       2   display: grid;
+       3   gap: 1rem;
+       4   min-width: 0;
+       5   padding: 1.25rem;
+       6   border: 3px solid var(--ink);
+       7   border-radius: var(--radius-panel);
+       8   background: var(--surface);
+       9   box-shadow: 0 var(--lift) 0 var(--ink);
+      10 }
+     … +92 lines (ctrl+o to expand)
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Write(src\components\PianoStudio.test.jsx)
+  ⎿  Wrote 223 lines to src\components\PianoStudio.test.jsx
+       1 import { describe, it, expect, vi, beforeEach, afterEach } from
+         'vitest';
+       2 import { act, fireEvent, render, screen } from '@testing-library
+         /react';
+       3 import { PianoStudio } from './PianoStudio.jsx';
+       4 import { createFakeAudio } from '../audio/fakeAudio.js';
+       5
+       6 let audio;
+       7 beforeEach(() => {
+       8   vi.useFakeTimers();
+     … +215 lines (ctrl+o to expand)
+
+● Write(src\components\Sequencer.test.jsx)
+  ⎿  Wrote 62 lines to src\components\Sequencer.test.jsx
+       1 import { describe, it, expect, vi } from 'vitest';
+       2 import { fireEvent, render, screen } from '@testing-library/reac
+         t';
+       3 import { Sequencer } from './Sequencer.jsx';
+       4
+       5 const baseProps = (over = {}) => ({
+       6   status: 'idle',
+       7   count: 0,
+       8   speed: 1,
+       9   message: 'Sẵn sàng',
+     … +53 lines (ctrl+o to expand)
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Tất cả pass ngay lần đầu, nên mình kiểm mutation. Mình cũng thêm một test cho
+  đường "voice bị cướp lúc đang ghi" vì chưa có test nào phủ.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Ba mutation còn sống: hai cái do test yếu (M4, M6) và M2 tương đương về hành
+  vi nên mình sẽ giải thích sau. Mình sẽ sửa test. · summary
+
+  Ran 1 shell command (ctrl+o to expand)
+
+> tiện chia nhỏ ra commit luôn nhe, để mình tự thêm cop author
+
+● Mình sẽ chốt nốt H2-11 (kiểm tương phản màu phím) rồi chia commit ngay.
+
+  Ran 3 shell commands (ctrl+o to expand)
+
+● Mình đã hoàn thành code H2-08, H2-09 và H2-10, làm xong phần code của H2-11,
+  rồi commit thành 6 commit nhỏ, cây sạch, 0 dòng Co-Authored-By để bạn tự thêm.
+
+  Kết quả chạy thật (trong GrandPiano88/):
+  - npm test: 139/139 pass (10 file test).
+  - npm run lint: không có lỗi nào.
+  - npm run build: build được.
+  - Grep cấm (keyCode, alert(, innerHTML, http://, key={index}, style={{): 0
+    dòng.
+  - node scripts/check-contrast.mjs: 13/13 cặp màu đạt, thấp nhất 10,15:1. Kết
+    quả lưu ở evidence/contrast.txt.
+
+  Các commit:
+
+  ┌────────────────────────────────────┬────────────────────────────────────┐
+  │               Commit               │              Nội dung              │
+  ├────────────────────────────────────┼────────────────────────────────────┤
+  │ 069d9c5 feat(hw2): fifo recorder   │ recorder.js + test (H2-08)         │
+  ├────────────────────────────────────┼────────────────────────────────────┤
+  │ cc294db feat(hw2): abortable       │ sequencer.js + test (H2-09)        │
+  │ replay sequencer                   │                                    │
+  ├────────────────────────────────────┼────────────────────────────────────┤
+  │ 029f85f feat(hw2): usePiano        │ cha nhận được callback khi nốt bị  │
+  │ onSteal option for parent          │ cướp                               │
+  ├────────────────────────────────────┼────────────────────────────────────┤
+  │ 9fc5ffc feat(hw2): sequencer panel │ useSequencer, Sequencer,           │
+  │  and piano studio                  │ PianoStudio và GrandPiano chỉ còn  │
+  │                                    │ hiển thị (H2-10)                   │
+  ├────────────────────────────────────┼────────────────────────────────────┤
+  │ 7bbea28 style(hw2): piano key      │ cặp màu của phím đàn, phím trắng   │
+  │ contrast checks and pressed white  │ nhấn có thêm viền dày              │
+  │ key shape cue                      │                                    │
+  ├────────────────────────────────────┼────────────────────────────────────┤
+  │ e64fdab docs(hw2): tick H2-08 to   │ cập nhật WBS                       │
+  │ H2-10 and record D11               │                                    │
+  └────────────────────────────────────┴────────────────────────────────────┘
+
+  Đã làm:
+  - Recorder (D5, D6): sự kiện tạo lúc nhấn nên hợp âm đúng thứ tự. deltaMs tính
+    từ lúc bắt đầu nốt trước, nốt đầu bằng 0. Đồng hồ là performance.now().
+  - Sequencer (D2): một vòng async chờ theo mốc tuyệt đối nên sai số không cộng
+    dồn. Có test mô phỏng trễ 7 ms mỗi bước, nốt thứ 10 vẫn chỉ trễ 7 ms. Hủy
+    giữa chừng thì nhả các nốt đang giữ, không còn timer nào.
+  - PianoStudio (D11):
+    - Nâng usePiano lên cha. Người chơi nhấn thì vừa phát vừa ghi. Phát lại gọi
+      thẳng press/release nên không tự ghi lại.
+    - Người chơi được chơi chồng lên lúc phát lại (như bạn đã chọn), Dừng chỉ
+      nhả nốt của lần phát.
+    - UI Sequencer: nút Ghi (bật/tắt bằng aria-pressed), Phát, Dừng, radio tốc
+      độ 0,5x/1x/2x, và vùng role="status" báo trạng thái.
+
+  Kiểm tra mutation: mình cố ý phá code 6 lần để xem test có bắt không.
+  - Bỏ ghi lúc nhấn, hủy không nhả nốt, sleep tương đối (cộng dồn sai số): test
+    fail, đúng như mong đợi.
+  - Hai lần đầu test không bắt được: unmount chưa kiểm huỷ timer ngay lúc
+    unmount, và test hợp âm nhả theo thứ tự nhấn nên không phân biệt được đẩy
+    lúc nhấn hay lúc nhả. Mình đã sửa cả hai, giờ test bắt được.
+  - Một mutation vẫn sống: bỏ nối onSteal vào recorder. Nguyên nhân là kết quả
+    nghe/thấy khi phát lại giống hệt nhau, vì lúc phát lại nốt thứ 9 lại cướp
+    đúng nốt đó ở cùng thời điểm. Việc này chỉ đổi durationMs trong dữ liệu, và
+    hai nửa của đường nối đã có test riêng (usePiano gọi onSteal, recorder đóng
+    nốt ở noteOff). Mình ghi chú thẳng trong test.
+
+  Chưa kiểm chứng (cần bạn trong trình duyệt):
+  - H2-07: ảnh React Profiler và nghe thử, bạn đã nói sẽ làm sau.
+  - H2-11: bố cục ở 375px, vùng đàn cuộn ngang, và vị trí phím đen. WBS dòng
+    H2-11 vì vậy chưa tick.
+  - Giao diện Sequencer mình cũng chưa nhìn thật.
+  - Bản ghi và phát lại mới được test với đồng hồ giả. Chưa nghe nhịp thật, nên
+    bạn nghe thử xem có trôi nhịp không.
+
+  H2-12 (evidence): bạn làm được khi tiện: ảnh Profiler, Lighthouse JSON trên
+  npm run preview (không đo trên dev server, theo bài học Lỗi 5), ảnh a11y tree
+  phím "C thăng 4" đang nhấn, ảnh 375px. Mình chưa tạo evidence/README.md cho
+  HW2. Bạn gửi ảnh thì mình lưu và ghi vào đó, rồi tick các task còn lại.
+
+> ok chỉ mình thao tác để chụp các minh chứng cần thiết đi
+  ⎿  1 skill available
+
+● Dưới đây là các bước chụp minh chứng, theo thứ tự nên làm. Mình không có quyền
+  mở trình duyệt nên bạn thao tác, mình lo phần lưu ảnh và ghi README.
+
+  Chuẩn bị
+
+  Mở hai terminal trong src/homeworks/GrandPiano88:
+
+  # Terminal 1: dev server, dùng cho Profiler và a11y tree
+  npm run dev
+
+  # Terminal 2: bản build, dùng cho Lighthouse
+  npm run build
+  npm run preview -- --port 4173
+
+  Dev server ở http://localhost:5173, bản build ở http://localhost:4173. Bài học
+  Lỗi 5: Lighthouse chỉ đo ở 4173, không đo ở 5173.
+
+  1. Profiler: chỉ một phím render lại (gate H2-07)
+
+  Dùng tab Edge/Chrome thường có extension React DevTools, ở localhost:5173.
+
+  1. F12, mở tab Profiler của React DevTools. Bấm bánh răng, chọn mục Profiler,
+     bật Record why each component rendered.
+  2. Bấm chấm tròn xanh (Start profiling), rồi click đúng một phím trắng bất kỳ
+     (ví dụ D4) trên trang.
+  3. Bấm Stop. Ở khung Flamegraph, chọn commit đầu tiên (lúc nhấn).
+  4. Chụp ảnh. Mong đợi: một PianoKey có màu, 87 PianoKey còn lại màu xám ("Did
+     not render"). Các thành phần cha như PianoStudio, GrandPiano và Sequencer
+     cũng render lại, đó là đúng. Bấm vào PianoKey có màu, ô bên phải ghi
+     "isPressed changed".
+
+  Lưu thành evidence/profiler-one-key.png. Nếu thấy cả 88 phím cùng màu thì báo
+  mình, đó là lỗi cần sửa.
+
+  2. Cây accessibility: phím "C thăng 4" đang nhấn (gate H2-12)
+
+  1. Ở localhost:5173, mở Console (F12), dán lệnh sau để giữ phím C# bằng một
+     pointerdown mô phỏng:
+  document.querySelector('[data-midi="61"]').dispatchEvent(new
+  PointerEvent('pointerdown', { bubbles: true, button: 0 }))
+  2. Tab Elements, chọn nút data-midi="61" rồi mở tab Accessibility. Mong đợi:
+     Name "C thăng 4", Role button, Pressed: true.
+  3. Chụp ảnh, lưu thành evidence/a11y-tree-key-pressed.png.
+  4. Nhả phím bằng lệnh tương tự với pointerup:
+  document.querySelector('[data-midi="61"]').dispatchEvent(new
+  PointerEvent('pointerup', { bubbles: true, button: 0 }))
+
+  Ảnh này là input mô phỏng bằng Console, mình sẽ ghi rõ điều đó trong README.
+
+  3. Voice steal: nhấn 9 phím
+
+  1. Dán vào Console:
+  for (let m = 60; m < 69; m++)
+  document.querySelector(`[data-midi="${m}"]`).dispatchEvent(new
+  PointerEvent('pointerdown', { bubbles: true, button: 0 }))
+  2. Mong đợi: C4 (60) tắt, 8 phím 61 đến 68 sáng. Chụp ảnh thành
+     evidence/voice-steal.png.
+  3. Nhả hết:
+  for (let m = 60; m < 69; m++)
+  document.querySelector(`[data-midi="${m}"]`).dispatchEvent(new
+  PointerEvent('pointerup', { bubbles: true, button: 0 }))
+
+  4. 375px không cuộn ngang (gate H2-11)
+
+  1. Bật chế độ thiết bị bằng Ctrl+Shift+M, chọn Responsive, đặt 375 × 812.
+  2. Kiểm tra: toàn trang không có thanh cuộn ngang. Chỉ khung đàn được cuộn
+     ngang. Kéo khung đàn sang phải tới cuối để thấy C8.
+  3. Chụp một ảnh thấy cả panel Ghi/Phát lẫn khung đàn, lưu thành
+     evidence/375px.png.
+
+  5. Lighthouse trên bản build (gate H2-12)
+
+  Mở localhost:4173 trong cửa sổ ẩn danh (tắt extension để điểm không bị nhiễu).
+
+  1. F12, tab Lighthouse, chọn Mode: Navigation, Device: Desktop, tick
+     Accessibility và Performance.
+  2. Bấm Analyze.
+  3. Bấm menu ⋮ phía trên, chọn Save as JSON, lưu thành
+     evidence/lighthouse-a11y.report.json.
+  4. Chụp ảnh các điểm tổng, lưu thành evidence/lighthouse-build.png.
+
+  Mục tiêu: Accessibility 100. Nếu thấp hơn, bấm vào từng mục lỗi, chụp ảnh và
+  gửi mình xử lý.
+
+  6. Kiểm tay bàn phím và giao diện
+
+  Ở localhost:5173:
+
+  - Tab: bấm Tab từ đầu trang, kiểm tra thứ tự Ghi, các radio tốc độ, rồi nhảy
+    vào một phím (C4) có khung focus đậm. Dùng mũi tên để đổi phím, giữ Space để
+    nghe. Chụp ảnh khi khung focus nằm trên một phím, lưu thành
+    evidence/tab-focus.png.
+  - Sequencer: bấm Ghi, chơi vài nốt, bấm Ghi lần nữa. Chụp ảnh khi vùng trạng
+    thái hiện "Đã ghi N nốt" (evidence/sequencer.png). Rồi bấm Phát ở 0,5x, 1x
+    và 2x, và thử Dừng giữa chừng.
+  - Giảm chuyển động: DevTools, Ctrl+Shift+P, gõ "Rendering", mở nó. Chọn
+    Emulate CSS media feature prefers-reduced-motion: reduce. Phím vẫn phải lún
+    khi bấm. Chụp ảnh (evidence/reduced-motion.png).
+  - Console: chơi vài phím, ghi, phát, dừng. Mong đợi không có lỗi hay cảnh báo.
+    Chụp ảnh khung Console (evidence/console.png).
+
+  7. Nghe thử (không cần ảnh, chỉ cần báo lại)
+
+  - Bấm nhả liên tục ở nốt rất thấp (A0) và rất cao (C8): có nghe tiếng "pop"
+    hay click không?
+  - Nhấn 9 phím (lệnh ở bước 3): có bị méo tiếng không (8 voice cộng gain 0,1
+    mỗi voice)?
+  - Phát lại: nhịp có đều không, 2x có đúng gấp đôi không?
+
+  Khi chụp xong
+
+  Bạn gửi ảnh vào đây (hoặc bảo mình đã bỏ vào evidence/). Mình sẽ lưu ảnh, tạo
+  evidence/README.md cho HW2, tick H2-07, H2-11 và H2-12, rồi đề xuất cách chia
+  commit. Gặp điều gì lạ (cả 88 phím cùng render, phím đen lệch, tiếng pop,
+  Lighthouse dưới 100) thì gửi kèm ảnh để mình sửa trước.
+
+[Image #10]
+  ⎿  [Image #11]
+  ⎿  [Image #12]
+  ⎿  [Image #13]
+  ⎿  [Image #14]
+
+> ok r nè, xem lại đặt tên đúng và lưu đi, sau đó hoàn thiện các lỗi bạn thấy
+  cần và mình xuát promt log
+
+● Mình xem lại từng ảnh trước khi đặt tên, và kiểm tra thư mục evidence/ xem
+  file JSON của Lighthouse đã có chưa.
+
+  Listed 1 directory, ran 5 shell commands (ctrl+o to expand)
+● Chạy từng file thì pass, nhưng chạy cả bộ thì lỗi, nên mình đang tìm xem file
+  nào gây ra (nghi test PianoStudio mới sửa).
+
+  Ran 6 shell commands (ctrl+o to expand)
+
+● Bản commit sạch pass 139/139, nên lỗi nằm ở thay đổi chưa commit. Mình đang
+  loại trừ từng thay đổi (ảnh evidence, Sequencer.jsx, CSS).
+
+  Ran 2 shell commands (ctrl+o to expand)
+
+● Một file PNG trong evidence/ làm hỏng cả bộ test dù không test nào dùng ảnh,
+  nên mình sẽ giới hạn vitest chỉ quét src/ rồi chạy lại. · summary
+
+  Ran 6 shell commands (ctrl+o to expand)
+
+● Test lỗi do môi trường chứ không do code (pool=vmThreads vẫn pass 140/140),
+  nên mình đang kiểm tra xem có tiến trình vite dev nào của bạn chạy cùng thư
+  mục gây nhiễu không. · summary
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Đang có vite dev của bạn chạy ở thư mục này (PID 22536). Mình thử tách cache
+  của vitest khỏi cache của dev server để xem có phải nguyên nhân không.
+
+  Ran 3 shell commands (ctrl+o to expand)
+
+● Thủ phạm là thay đổi CSS của Sequencer (revert nó thì pass). Mình viết lại,
+  dời comment ra khỏi dòng khai báo, rồi chạy nhiều lần có cả ảnh evidence.
+
+  Ran 3 shell commands (ctrl+o to expand)
+
+● Trong bản sao ở thư mục khác (cùng nội dung) test pass 140/140. Mình chạy tiếp
+  mutation và lint ở bản sao để kiểm chứng thay đổi memo.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Write(evidence\README.md)
+  ⎿  Wrote 35 lines to evidence\README.md
+       1 # Bằng chứng kiểm chứng HW2 (H2-07, H2-11, H2-12)
+       2
+       3 Tệp này ghi lại cái gì đã kiểm, kiểm bằng cách nào, và cái gì cò
+         n phải kiểm tay. Chỉ đánh dấu một mục khi đã có tệp bằng chứng t
+         hật trong thư mục này.
+       4
+       5 ## Đã có
+       6
+       7 | Mục | Cách kiểm | Kết quả | Tệp |
+       8 |---|---|---|---|
+     … +27 lines (ctrl+o to expand)
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Mình đã lưu 5 ảnh, sửa hai lỗi giao diện và cập nhật WBS. Chưa commit. Bộ test
+  trong thư mục gốc đang lỗi môi trường (chi tiết bên dưới, cần bạn tắt dev
+  server).
+
+  1. Tên ảnh (đã xem lại nội dung từng ảnh)
+
+  Ảnh bạn gửi: Lighthouse
+  Lưu thành: evidence/lighthouse-build.png
+  Nội dung thật: cổng 4173, Performance 100, Accessibility 100, Best Practices
+    100, SEO 91
+  ────────────────────────────────────────
+  Ảnh bạn gửi: Profiler
+  Lưu thành: evidence/profiler-one-key.png
+  Nội dung thật: commit 1/10, PianoKey (Memo) key="45", "Props changed:
+    isPressed"
+  ────────────────────────────────────────
+  Ảnh bạn gửi: Cây accessibility
+  Lưu thành: evidence/a11y-tree-key-pressed.png
+  Nội dung thật: "C thăng 4", button, aria-pressed: true
+  ────────────────────────────────────────
+  Ảnh bạn gửi: Phím sáng + Console
+  Lưu thành: evidence/voice-steal.png
+  Nội dung thật: 8 phím sáng, C thăng 4 đã tắt
+  ────────────────────────────────────────
+  Ảnh bạn gửi: Chế độ điện thoại
+  Lưu thành: evidence/viewport-393px.png
+  Nội dung thật: 393 × 852 (preset iPhone), không phải 375
+
+  Ảnh cuối mình không đặt tên 375px.png, vì ảnh là 393 px. 375px thật vẫn chưa
+  có. Bạn chụp lại với Responsive 375 × 812 khi tiện.
+
+  Về ảnh steal: phím C thăng 4 (61) bạn nhấn ở bước a11y chưa được nhả, nên vòng
+  lặp sau đó có 9 phím khác nhau và phím cũ nhất là 61 chứ không phải 60. Ảnh
+  cho thấy phím đen C thăng 4 tắt, C4 sáng, đúng FIFO. Mình ghi đúng diễn biến
+  này vào evidence/README.md, cùng ghi chú rằng ảnh a11y và steal dùng input mô
+  phỏng bằng Console.
+
+  2. Lỗi mình thấy và đã sửa
+
+  - Panel Ghi/Phát ở màn hẹp: ở 393 px nút "Dừng" rớt xuống hàng riêng. Mình đổi
+    lưới nút thành 3 cột đều nhau, luôn một hàng.
+  - Sequencer render thừa: PianoStudio render lại mỗi lần nhấn phím nên kéo theo
+    Sequencer. Mình bọc Sequencer bằng memo và thêm test (nhấn/nhả phím thì
+    Sequencer không render).
+
+  Mình kiểm tra trong bản sao ở thư mục khác: test 140/140, lint sạch, build OK.
+  Khi cố ý bỏ memo, test mới bắt được (fail đúng 1 test).
+
+  3. Vấn đề cần bạn biết: npm test trong thư mục gốc đang lỗi
+
+  Chạy npm test trong GrandPiano88/ hiện lỗi cả 10 file với thông báo "Vitest
+  failed to find the current suite" (ở src/test/setup.js). Mình đã kiểm:
+
+  - Cùng nội dung ở một thư mục sao chép: 140/140 pass.
+  - Bản commit sạch (stash) cũng pass 139/139.
+  - Trong thư mục gốc với --pool=vmThreads cũng pass 140/140.
+  - Mình đã loại trừ: cache Vite, file ảnh trong evidence/, CSS, test mới.
+
+  Mình chưa tìm ra nguyên nhân. Nghi ngờ là dev server của bạn (npm run dev, PID
+  22536) đang chạy cùng thư mục, nhưng mình chưa xác minh được vì không tắt
+  tiến trình của bạn. Bạn tắt dev server (Ctrl+C) rồi chạy npm test. Nếu vẫn lỗi
+  thì báo mình, vì khi đó vấn đề nằm ở chỗ khác.
+
+  4. WBS
+
+  - H2-07: tick (có test tự động và ảnh Profiler; còn việc nghe thử của bạn).
+  - H2-11: chưa tick, còn chụp 375px.
+  - H2-12: chưa tick, còn: file JSON Lighthouse, 375px, Tab, giảm chuyển động,
+    Console cả luồng.
+
+  Danh sách đầy đủ nằm ở evidence/README.md. Ảnh Profiler chụp trước khi bọc
+  memo cho Sequencer, và chưa thấy rõ 87 phím còn lại ở trạng thái "Did not
+  render". Nếu bạn muốn chắc hơn, chụp thêm một ảnh ở chế độ Ranked.
+
+  5. Đề xuất cách chia commit (bạn tự commit)
+
+  1. fix(hw2): memoize Sequencer and keep its buttons on one row: Sequencer.jsx,
+     Sequencer.module.css, PianoStudio.test.jsx
+  2. test(hw2): profiler, a11y tree, steal and lighthouse evidence:
+     evidence/*.png, evidence/README.md
+  3. docs(hw2): tick H2-07 and update H2-11, H2-12 status: TASK_DECOMPOSITION.md
+
+  Khi chụp thêm các mục còn thiếu, gửi mình để mình lưu và tick nốt. Bạn xuất
+  prompt log lúc nào cũng được, mình không cần làm gì thêm cho phần đó.
+
+> ok mình tắt server rồi, kiểm tra lại xem và chia nhỏ tự commit luôn đi, mình
+  tự thêm co author sau
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Tắt dev server rồi mà vẫn lỗi, nên giả thuyết dev server sai. Khác biệt còn
+  lại giữa thư mục gốc và bản sao là evidence/ và dist/; mình thử loại từng cái.
+
+  Ran 3 shell commands (ctrl+o to expand)
+
+● Giờ chạy lại pass ổn định (140/140 hai lần liền). Mình chạy thêm vài lần để
+  chắc rồi commit.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Commit xong, nhưng test lỗi chập chờn ở các lần chạy sau dù hai lần đầu pass,
+  nên mình đang đo tần suất lỗi. · summary
+
+  Ran 5 shell commands (ctrl+o to expand)
+
+● Mình đã kiểm tra lại và commit xong 3 commit, 0 dòng Co-Authored-By để bạn tự
+  thêm.
+
+  Kết quả kiểm tra thật:
+  - npm test chạy 4 lần liên tiếp trong PowerShell: 140/140 pass cả 4 lần.
+  - npm run lint: không có lỗi. npm run build: build được.
+  - Contrast script: tất cả cặp đạt.
+
+  Về lỗi test lần trước, mình sửa lại kết luận:
+  - Giả thuyết dev server của bạn là sai. Mình đã chắc chắn dev server tắt rồi
+    mà lỗi vẫn còn.
+  - Bằng chứng mới: cùng thư mục, cùng nội dung, test pass trong PowerShell và
+    lỗi trong Git Bash của công cụ Bash mình đang dùng (lỗi "failed to find the
+    current suite", thỉnh thoảng pass ngẫu nhiên).
+  - Nên đây là lỗi môi trường của shell phía mình. Mình chưa tìm ra nguyên nhân
+    gốc. Code không có lỗi, và trong terminal bình thường của bạn npm test chạy
+    được.
+  - Mình không sửa gì thêm trong cấu hình, vì không có gì cần sửa.
+
+  Các commit:
+
+  ┌────────────────────────────────────────────────┬────────────────────────┐
+  │                     Commit                     │        Nội dung        │
+  ├────────────────────────────────────────────────┼────────────────────────┤
+  │ c632af5 fix(hw2): memoize Sequencer and keep   │ Sequencer.jsx, CSS,    │
+  │ its buttons on one row                         │ test                   │
+  ├────────────────────────────────────────────────┼────────────────────────┤
+  │ 6507004 test(hw2): profiler, a11y tree, steal  │ 5 ảnh +                │
+  │ and lighthouse evidence                        │ evidence/README.md     │
+  ├────────────────────────────────────────────────┼────────────────────────┤
+  │ 38bac96 docs(hw2): tick H2-07 and update       │ WBS                    │
+  │ H2-11, H2-12 status                            │                        │
+  └────────────────────────────────────────────────┴────────────────────────┘
+
+  Còn lại cho HW2 (bạn làm khi tiện, danh sách chi tiết ở evidence/README.md):
+  - File JSON của Lighthouse (hiện mới có ảnh).
+  - Ảnh 375px thật (ảnh hiện có là 393px).
+  - Tab qua trang, giảm chuyển động, Console cả luồng ghi/phát.
+  - Nghe thử âm thanh (pop khi nhấn/nhả, 9 phím có méo không, nhịp phát lại).
+
+  Gửi mình ảnh khi có, mình lưu và tick nốt H2-11 và H2-12. Phần prompt log bạn
+  tự xuất như đã nói.
