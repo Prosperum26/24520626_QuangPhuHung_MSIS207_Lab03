@@ -61,7 +61,7 @@
 | B-01 | Chốt bộ trạng thái + `transition()` thuần | `src/fsm.js`, `src/fsm.test.js` | Test: mọi chuyển hợp lệ; cặp không hợp lệ giữ pha; `GHOSTED_EXIT` bất động với mọi sự kiện | [x] |
 | B-02 | Reducer nhật ký tín hiệu bất biến + điểm dẫn xuất | `src/effort.js`, `src/effort.test.js` | Test: không mutate (`Object.freeze` mảng gốc); `100 × 0.1` vs `1 × 50`; `isRedFlag` đúng theo pha | [x] |
 | B-03 | Component + `<output role="status">` cờ đỏ | `src/SituationshipAnalyzer.jsx`, `src/SituationshipAnalyzer.test.jsx` | Test: red flag khi `em < rival` ở `DATING_NO_LOVE`; không có cờ ở pha khác; `role="status"` có nội dung đúng | [x] |
-| B-04 | Ghosting timer 5s + cleanup | `src/SituationshipAnalyzer.jsx` | Test (fake timers): hết 5s sang `GHOSTED_EXIT`; `AI_DO` trả lời hoặc Dừng Lại thì hủy; unmount không còn timer (`vi.getTimerCount() === 0`) | [ ] |
+| B-04 | Ghosting timer 5s + cleanup | `src/SituationshipAnalyzer.jsx` | Test (fake timers): hết 5s sang `GHOSTED_EXIT`; `AI_DO` trả lời hoặc Dừng Lại thì hủy; unmount không còn timer (`vi.getTimerCount() === 0`) | [x] |
 | B-05 | Form tín hiệu `useId` + label; CSS Modules 375px | `src/SituationshipAnalyzer.module.css`, `src/App.jsx` | Lighthouse a11y 100; 375px không cuộn ngang; `valueAsNumber` + `Number.isNaN` có test | [ ] |
 
 ### Chi tiết từng task

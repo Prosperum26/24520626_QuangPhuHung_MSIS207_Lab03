@@ -1,4 +1,4 @@
-import { useId, useReducer, useState } from 'react';
+import { useEffect, useId, useReducer, useState } from 'react';
 import { transition } from './fsm.js';
 import { createSignal, effortReducer, impactOf, isRedFlag } from './effort.js';
 
@@ -30,6 +30,7 @@ function reducer(state, action) {
 }
 
 const round1 = (n) => String(Math.round(n * 10) / 10);
+const GHOST_AFTER_MS = 5000;
 
 export function SituationshipAnalyzer() {
   const [state, dispatch] = useReducer(reducer, INITIAL);
@@ -48,9 +49,20 @@ export function SituationshipAnalyzer() {
   const canSend = !ghosted && Number.isInteger(steps) && steps >= 1;
   const can = (event) => transition(phase, event) !== phase;
 
+  // "Seen không rep": đang hẹn hò và tin cuối cùng là của em, chưa ai đó trả lời.
+  const awaitingReply = phase === 'DATING_NO_LOVE' && log.at(-1)?.actor === 'EM';
+
   let message = 'Ổn, chưa có dấu hiệu lạ.';
   if (ghosted) message = 'Kết thúc: đã bị bỏ rơi. Bấm Reset để thử lại.';
   else if (redFlag) message = `Cờ đỏ: em cố ${round1(emImpact)} điểm mà ai đó chỉ cần ${round1(rivalImpact)} điểm.`;
+  else if (awaitingReply) message = 'Đã xem, đang chờ rep...';
+
+  // Timer duy nhất của bài. Tín hiệu mới, đổi pha, Reset hay unmount đều chạy cleanup.
+  useEffect(() => {
+    if (!awaitingReply) return undefined;
+    const timerId = setTimeout(() => dispatch({ type: 'EVENT', event: 'GHOST' }), GHOST_AFTER_MS);
+    return () => clearTimeout(timerId);
+  }, [awaitingReply, log]);
 
   function handleSteps(e) {
     const n = e.target.valueAsNumber;
