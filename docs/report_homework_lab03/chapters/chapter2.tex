@@ -1,0 +1,40 @@
+\chapter{Homework 2: Grand Piano 88}
+\label{chap:hw2}
+
+88-key piano (52 white, 36 black), polyphonic synth with at most 8 voices and FIFO voice stealing, memoized keys, and a recorder with abortable replay at 0.5x, 1x and 2x.
+
+\section{Evidence}
+
+\evfig{hw2_lighthouse.png}{0.9}{Lighthouse on the production build: Performance 100, Accessibility 100, Best Practices 100, SEO 91}{fig:hw2-lh}
+\evfig{hw2_profiler.png}{0.9}{React Profiler: one key press re-renders one \texttt{PianoKey} (reason: \texttt{isPressed})}{fig:hw2-profiler}
+\evfig{hw2_steal.png}{0.9}{9 keys pressed: 8 stay lit, the oldest key was stolen (FIFO)}{fig:hw2-steal}
+\evfig{hw2_393.png}{0.3}{393 px viewport: only the keyboard area scrolls}{fig:hw2-393}
+
+\section{Verification}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{L{5.5cm} L{7.5cm}}
+\toprule
+\textbf{Check} & \textbf{Result} \\
+\midrule
+\texttt{npm test} & 10 files, 140 tests pass \\
+\texttt{npm run lint} & Clean \\
+Frequency of A4, A0, C8 & 440 Hz, 27.5 Hz, 4186.01 Hz \\
+Contrast & 13/13 pairs pass, lowest 10.15:1 \\
+Lighthouse (build) & 100 / 100 / 100 \\
+Profiler, one key press & One \texttt{PianoKey} re-rendered \\
+\bottomrule
+\end{tabular}
+\caption{Homework 2 results}
+\label{tab:hw2-verify}
+\end{table}
+
+Not done: 375 px screenshot (the one taken is 393 px), keyboard-tab and reduced-motion screenshots, listening test, screen reader test. The Profiler screenshot predates wrapping \texttt{Sequencer} in \texttt{memo}; a test now covers it. WBS items H2-11 and H2-12 stay unticked for these reasons.
+
+\section{Source Code}
+
+\begin{center}
+    \href{https://github.com/Prosperum26/24520626_QuangPhuHung_MSIS207_Lab03/tree/main/src/homeworks/GrandPiano88}
+    {\textbf{View Homework 2 on GitHub}}
+\end{center}
