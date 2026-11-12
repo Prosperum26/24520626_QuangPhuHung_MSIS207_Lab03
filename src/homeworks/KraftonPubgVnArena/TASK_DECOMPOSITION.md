@@ -61,8 +61,8 @@ Dự án dùng JSX/JS nên contract viết bằng JSDoc `@typedef` trong `src/do
 | H3-02 | `usePubgAirdropTimer` đúng slide (`Date.now() + serverOffsetMs`, interval 200ms, `visibilitychange` resync, trả `{ remainingMs, isLive }`) | `src/hooks/usePubgAirdropTimer.js` | Test fake timers: tab nền 1 phút, khi `visible` giá trị đúng ngay; đổi `targetEpochMs` thì tính lại | [x] |
 | H3-03 | Cleanup interval/listener, an toàn StrictMode | `src/hooks/usePubgAirdropTimer.js` | Test: unmount gỡ cả interval và listener | [x] |
 | H3-04 | API giả `reserveCrate` 200/409 | `src/api/arena.js` | Test: 409 theo cấu hình/rival; abort được | [x] |
-| H3-05 | Hook/reducer claim lạc quan + khoá `claimId` chống bấm đúp | `src/hooks/useCrateClaim.js` | Test: hai click liên tiếp chỉ một request | [ ] |
-| H3-06 | Rollback khi 409, hiển thị thông báo bằng chữ | `src/hooks/useCrateClaim.js` | Test: stock trở lại giá trị cũ, `role="alert"` | [ ] |
+| H3-05 | Hook/reducer claim lạc quan + khoá `claimId` chống bấm đúp | `src/hooks/useCrateClaim.js` | Test: hai click liên tiếp chỉ một request | [x] |
+| H3-06 | Rollback khi 409, hiển thị thông báo bằng chữ | `src/hooks/useCrateClaim.js` | Test: stock trở lại giá trị cũ, `role="alert"` | [x] |
 | H3-07 | UI crate/vé: đếm ngược, giá VND, nút Claim theo phase | `src/components/CrateCard.jsx` | Nút `disabled` khi không hợp lệ + lý do bằng chữ | [ ] |
 | H3-08 | Bảng xếp hạng + lọc đội + sắp xếp WWCD/Placement/Kill (dẫn xuất) | `src/components/Leaderboard.jsx` | Test: sắp xếp bất biến (`.toSorted`); 0 `useEffect` cho lọc/sắp xếp | [ ] |
 | H3-09 | CSS Modules, 375px, reduced-motion, a11y | `src/**/*.module.css` | 0 cuộn ngang; Lighthouse a11y 100 | [ ] |
