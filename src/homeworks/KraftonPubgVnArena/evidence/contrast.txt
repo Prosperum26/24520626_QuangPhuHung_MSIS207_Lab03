@@ -1,0 +1,16 @@
+ĐẠT  14.43:1 (cần 4.5) Chữ chính trên nền trang  --ink #1d1a4e / --paper #eef3ff
+ĐẠT  16.03:1 (cần 4.5) Chữ chính trên thẻ/panel  --ink #1d1a4e / --surface #ffffff
+ĐẠT   7.44:1 (cần 4.5) Chữ phụ trên nền trang  --ink-soft #4b4785 / --paper #eef3ff
+ĐẠT   8.27:1 (cần 4.5) Chữ phụ trên thẻ/panel  --ink-soft #4b4785 / --surface #ffffff
+ĐẠT   8.68:1 (cần 4.5) Chữ trên chip phase warmup  --ink #1d1a4e / --warmup #7cc6fe
+ĐẠT  10.15:1 (cần 4.5) Chữ trên chip phase live  --ink #1d1a4e / --live #3ee6c1
+ĐẠT   6.24:1 (cần 4.5) Chữ trên chip phase looted  --ink #1d1a4e / --looted #ff7a59
+ĐẠT   7.98:1 (cần 4.5) Chữ trên chip phase expired  --ink #1d1a4e / --expired #c9a7ff
+ĐẠT  11.10:1 (cần 4.5) Chữ nút Claim trên nền accent  --ink #1d1a4e / --accent #ffd23f
+ĐẠT   7.44:1 (cần 4.5) Chữ nút Claim bị vô hiệu (ink-soft) trên nền paper  --ink-soft #4b4785 / --paper #eef3ff
+ĐẠT  11.10:1 (cần 4.5) Chữ tiêu đề cột đang sắp xếp trên nền accent  --ink #1d1a4e / --accent #ffd23f
+ĐẠT   6.24:1 (cần 4.5) Chữ thông báo lỗi trên nền looted  --ink #1d1a4e / --looted #ff7a59
+ĐẠT  14.43:1 (cần 3) Viền thẻ, viền panel, viền focus trên nền trang  --ink #1d1a4e / --paper #eef3ff
+ĐẠT  16.03:1 (cần 3) Viền ô nhập/ô chọn trên panel  --ink #1d1a4e / --surface #ffffff
+
+Tất cả cặp đạt.

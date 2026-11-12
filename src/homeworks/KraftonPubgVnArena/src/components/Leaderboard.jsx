@@ -1,11 +1,11 @@
 import { useId, useState } from 'react';
 import styles from './Leaderboard.module.css';
 
-/** Cột có thể sắp xếp: khoá trường dữ liệu và nhãn hiển thị. Thêm cột mới chỉ cần thêm một dòng. */
+/** Cột có thể sắp xếp: khoá trường dữ liệu, nhãn đầy đủ (ô chọn) và nhãn ngắn (tiêu đề cột, vừa 375px). Thêm cột mới chỉ cần thêm một dòng. */
 const SORT_OPTIONS = [
-  { key: 'wwcdCount', label: 'WWCD' },
-  { key: 'placementPts', label: 'Placement Points' },
-  { key: 'killPts', label: 'Kill Points' },
+  { key: 'wwcdCount', label: 'WWCD', short: 'WWCD' },
+  { key: 'placementPts', label: 'Placement Points', short: 'Place' },
+  { key: 'killPts', label: 'Kill Points', short: 'Kill' },
 ];
 
 /**
@@ -62,7 +62,7 @@ export function Leaderboard({ squads }) {
             <th scope="col">Đội</th>
             {SORT_OPTIONS.map((option) => (
               <th key={option.key} scope="col" aria-sort={option.key === sortKey ? 'descending' : undefined}>
-                {option.label}
+                <abbr title={option.label}>{option.short}</abbr>
               </th>
             ))}
           </tr>

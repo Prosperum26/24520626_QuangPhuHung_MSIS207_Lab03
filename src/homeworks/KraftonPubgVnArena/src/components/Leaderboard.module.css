@@ -62,13 +62,18 @@
 /* Hạng và tên đội căn trái; tên đội được phép xuống dòng ở 375px. */
 .table th:first-child,
 .table td:first-child,
+.table th:nth-child(2),
 .table tbody th {
   text-align: left;
 }
 
 .table thead th {
   font-size: 0.875rem;
-  overflow-wrap: anywhere;
+  white-space: nowrap;
+}
+
+.table thead th abbr {
+  text-decoration: none;
 }
 
 /* Cột đang sắp xếp: nền vàng và dấu mũi tên, không chỉ dựa vào màu. */

@@ -1,0 +1,28 @@
+﻿[
+  {
+    "check": "không cuộn ngang ở 375px",
+    "scrollWidth": 375,
+    "clientWidth": 375,
+    "articles": 2,
+    "tableWidth": 307,
+    "ok": true
+  },
+  {
+    "check": "không cuộn ngang ở 320px",
+    "scrollWidth": 320,
+    "clientWidth": 320,
+    "articles": 2,
+    "tableWidth": 291.96875,
+    "ok": true
+  },
+  {
+    "check": "transition của nút Claim khi no-preference",
+    "transitionDuration": "0.07s, 0.07s",
+    "ok": true
+  },
+  {
+    "check": "transition của nút Claim khi reduce",
+    "transitionDuration": "0s",
+    "ok": true
+  }
+]
