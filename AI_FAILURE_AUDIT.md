@@ -18,6 +18,7 @@
 | 3 | Exercise 1 (E1-03) | 34 test pass nhưng gate `grep '<div'` vẫn ra 1 dòng do chính comment của AI; thêm cảnh báo giả của ESLint | Output `grep`, `eslint` | Đã sửa, chờ hash commit |
 | 4 | Exercise 1 (E1-07) | Demo "ảnh lỗi" và favicon mặc định bắn lỗi đỏ vào Console, trái gate "Console sạch" | Log Console đo trên Edge | Đã sửa, chờ hash commit |
 | 5 | Homework 1 (H1-D) | AI thêm font Google Fonts (stylesheet bên thứ ba chặn render) và tải trước 7 file WAV lúc mount mà không đo Performance; Lighthouse Performance 69 | Ảnh Lighthouse (DevTools) | Đã sửa và đo lại (Performance 69 lên 100) |
+| 6 | Homework 3 (H3-00 đến H3-08) | `npm test` fail ngẫu nhiên ("failed to find the current suite"); AI kết luận "flaky, chưa rõ nguyên nhân" và thử đổi cấu hình thay vì kiểm tra cách mình chạy test (thư mục và shell) | Output `npm test` nhiều lần, đối chứng với Ex1, HW1, HW2 | Đã sửa (chạy đúng folder), chờ hash commit |
 
 ## Lỗi 1 — Đọc sai cấu trúc folder của checklist và ghi nhầm là "bắt buộc"
 
@@ -214,3 +215,54 @@ Dòng AI sinh ra:
 ### Bài học
 
 Mọi tài nguyên bên thứ ba (font, script) là một request chặn render cần đo, không chỉ là lựa chọn thẩm mỹ. Đo Performance trên bản build chứ không phải dev server, và tách phần do mình gây ra khỏi phần do công cụ dev. Giả thuyết "do dev server" phải được kiểm lại bằng bản build trước khi viết thành kết luận.
+
+## Lỗi 6 — Chẩn đoán sai test "flaky" thay vì kiểm tra cách chạy test
+
+### Bối cảnh
+
+- **Task:** H3-00 đến H3-08 (dựng project HW3, xem [WBS HW3](src/homeworks/KraftonPubgVnArena/TASK_DECOMPOSITION.md)).
+- **Prompt gốc của bạn:** "Bắt đầu làm tới H3-04 đi, chia nhỏ và commit luôn nhe, để mình tự thêm cop author sau."
+- **Điều AI tuyên bố:** `npm test` "fail ngẫu nhiên trên máy này", "chưa tìm ra nguyên nhân gốc", rồi dùng `npx vitest run --pool=vmThreads` để lấy kết quả pass và báo cáo kèm cảnh báo.
+
+### Lỗi
+
+Trong folder HW3, `npm test` đôi lúc báo toàn bộ test file fail với lỗi ở `src/test/setup.js` (dòng `afterEach(cleanup)`), có lúc pass, có lúc fail. Ex1 và HW1 (cấu hình giống hệt) vẫn pass. Thay vì đối chứng cách chạy lệnh (thư mục làm việc, shell), AI thử đổi cấu hình: bật `reporters`, bật `globals`, sửa `setup.js`, xoá cache Vite, đổi `--pool`, copy cả project sang tên khác. Các thử nghiệm này không dừng được lỗi và phải hoàn nguyên. AI cũng kiểm tra xem có tiến trình vitest nào khác đang chạy không (không có), rồi vẫn để vấn đề mở và báo là "chưa tìm ra nguyên nhân gốc".
+
+Bạn chỉ ra nguyên nhân khả dĩ là AI không vào đúng folder bài khi chạy test (cấu trúc `src/` lồng nhau). Sau khi chạy lại đúng như vậy, test pass ngay.
+
+### Bằng chứng
+
+Output lỗi (lặp nhiều lần trong session):
+
+```text
+Error: Vitest failed to find the current suite. One of the following is possible:
+ ❯ src/test/setup.js:5:1
+      5| afterEach(cleanup);
+ Test Files  1 failed (1)
+      Tests  no tests
+```
+
+Sau khi chạy trong đúng folder bằng PowerShell (`Set-Location` tới `src\homeworks\KraftonPubgVnArena`), 4 lần liên tiếp:
+
+```text
+ Test Files  7 passed (7)
+      Tests  61 passed (61)
+```
+
+Đối chứng bằng cách chạy thêm test của Homework 2 (`src\homeworks\GrandPiano88`), 3 lần bằng PowerShell và 3 lần bằng Bash, đều:
+
+```text
+ Test Files  10 passed (10)
+      Tests  140 passed (140)
+```
+
+Giới hạn của bằng chứng: sau đó AI chạy lại HW3 bằng Bash (cả đường dẫn `C:/...` và `/c/...`, kể cả từ phiên đang ở gốc repo) thì cũng pass 6/6, nên **AI không tái hiện lại được lỗi và chưa xác nhận được cơ chế**. Quan sát duy nhất: phần lớn lần fail xảy ra khi thư mục làm việc chính của phiên Bash khác folder bài (AI chỉ `cd` trong từng lệnh); chưa đối chiếu hết các lần pass. Phần này phù hợp với giả thuyết của bạn nhưng chưa phải chứng minh.
+
+### Bản sửa thủ công
+
+- **Commit:** (điền hash từ `git log`)
+- **Thay đổi:** không đổi mã. Quy tắc làm việc: chạy `npm test` và `npm run lint` trong terminal đã đứng sẵn ở folder bài (PowerShell `Set-Location` tới folder bài), và không sửa `vite.config.js`/`setup.js` để né lỗi khi chưa đối chứng.
+
+### Bài học
+
+Khi kết quả test không ổn định giữa các lần chạy, bước đầu tiên là kiểm tra môi trường chạy (thư mục, shell) và đối chứng với project tương đương đang pass, không phải đổi cấu hình hay đổi pool. Cũng không được kết luận "flaky trên máy này" khi chưa có thí nghiệm kiểm soát.
