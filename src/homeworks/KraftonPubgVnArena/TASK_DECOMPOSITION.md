@@ -66,8 +66,8 @@ Dự án dùng JSX/JS nên contract viết bằng JSDoc `@typedef` trong `src/do
 | H3-07 | UI crate/vé: đếm ngược, giá VND, nút Claim theo phase | `src/components/CrateCard.jsx` | Nút `disabled` khi không hợp lệ + lý do bằng chữ | [x] |
 | H3-08 | Bảng xếp hạng + lọc đội + sắp xếp WWCD/Placement/Kill (dẫn xuất) | `src/components/Leaderboard.jsx` | Test: sắp xếp bất biến (`.toSorted`); 0 `useEffect` cho lọc/sắp xếp | [x] |
 | H3-09 | CSS Modules, 375px, reduced-motion, a11y | `src/**/*.module.css` | 0 cuộn ngang; Lighthouse a11y 100 | [x] |
-| H3-10 | Đo drift (tab nền) và chụp bằng chứng | `evidence/` | JSON/ảnh đo drift, ảnh 409 rollback | [ ] |
-| H3-11 | `AI_FAILURE_AUDIT.md` hoàn thiện từ lỗi thật | [../../../AI_FAILURE_AUDIT.md](../../../AI_FAILURE_AUDIT.md) | >= 3 lỗi có DevTools proof và bản sửa | [ ] |
+| H3-10 | Đo drift (tab nền) và chụp bằng chứng | `evidence/` | JSON/ảnh đo drift, ảnh 409 rollback | [x] |
+| H3-11 | `AI_FAILURE_AUDIT.md` hoàn thiện từ lỗi thật | [../../../AI_FAILURE_AUDIT.md](../../../AI_FAILURE_AUDIT.md) | >= 3 lỗi có DevTools proof và bản sửa | [x] |
 
 ## 4. Commit gợi ý
 

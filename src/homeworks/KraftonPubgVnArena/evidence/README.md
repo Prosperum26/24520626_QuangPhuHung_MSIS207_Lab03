@@ -19,11 +19,15 @@ npm run preview -- --port 4173
 | Lighthouse (CLI, mobile, bản build) | `npx lighthouse http://localhost:4173/` với Edge headless | Performance 100, **Accessibility 100**, Best Practices 100; không có audit a11y nào chưa đạt | [lighthouse.report.json](lighthouse.report.json), [lighthouse.report.html](lighthouse.report.html) |
 | 409 rollback trên trình duyệt thật | `node scripts/capture-409.mjs`: bấm Claim đến khi gặp 409 | Kho 1 → 0 (lạc quan) → 1 (rollback) và `role="alert"` hiện chữ | [409-rollback.json](409-rollback.json), [409-rollback.png](409-rollback.png) |
 | Drift khi tab nền | `node scripts/measure-drift.mjs <giây>` | Hook đúng ở tab nền 330 giây (drift 0), **nhưng chưa chứng minh được throttle**: xem "Kết quả đo drift" | [drift-330s.json](drift-330s.json) |
+| Lighthouse trong DevTools (Chrome) | Panel Lighthouse lúc 21:18:14 trên `http://localhost:4174/` (cổng preview) | Performance **100**, Accessibility **100**, Best Practices **100**, SEO 82 (SEO không thuộc yêu cầu của bài) | [lighthouse-devtools.png](lighthouse-devtools.png) |
+| Accessibility tree: nút Claim đang giữ chỗ | DevTools > Elements > Accessibility, chọn `button` Claim | `Name: "Claim"`, `Role: button`, `Disabled: true`, `Description: "Đang giữ chỗ…"`; trong DOM nút có `type="button"`, `disabled` và `aria-describedby` trỏ tới lý do bằng chữ; vùng `role="status"` rỗng nằm ngay dưới | [a11y-tree-claim-button.png](a11y-tree-claim-button.png) |
+| Accessibility tree: bảng xếp hạng | DevTools > Elements > Accessibility, bật "Show accessibility tree" | Có `main`, `region "Airdrop"` (list, `article "PVS Grand Finals VIP Ticket"`), `region "Bảng xếp hạng"` (heading level 2, `form` với `searchbox "Lọc theo tên đội"` và `combobox "Sắp xếp theo"`, một `status` atomic, `table "PVS Vietnam: điểm theo đội, giảm dần"` có `caption`, `rowgroup`, `row`); trang có tên `HW3 - KRAFTON x PUBG Vietnam Arena` | [a11y-tree-leaderboard.png](a11y-tree-leaderboard.png) |
 | Logic hook, claim, bảng xếp hạng | `npm test` (Vitest + jsdom), chạy trong folder bài | 61 test pass | chạy lại lệnh để xem |
 
 Lưu ý về giới hạn:
 
-- Lighthouse ở đây chạy bằng CLI (Edge headless, giả lập mobile). Rubric muốn bằng chứng từ DevTools nên bạn nên chụp thêm ảnh panel Lighthouse (mục 1 bên dưới).
+- Lighthouse có hai nguồn: CLI (Edge headless, giả lập mobile, có JSON) và panel DevTools (ảnh [lighthouse-devtools.png](lighthouse-devtools.png)); cả hai cho Accessibility 100. Chưa có file JSON xuất từ panel DevTools.
+- Chưa có ảnh Accessibility tree của đồng hồ đếm ngược (`<output>`) và chưa chụp ảnh tab tách riêng cho drift, Console, Tab bàn phím. Ảnh bảng xếp hạng cho thấy `<output>` của bộ đếm đội hiện là `status` atomic, xác nhận `<output>` có role `status` ngầm (liên quan Lỗi 7 trong audit).
 - Với API giả, 409 chỉ xảy ra khi đối thủ "lấy trước" (xác suất 35% mỗi lần bấm) hoặc kho server đã hết. Sau 409 kho hiển thị quay về giá trị cũ theo slide, nên có thể thấy "Còn lại 1" dù server đã hết; bấm tiếp sẽ nhận 409 nữa.
 
 ## Kết quả đo drift

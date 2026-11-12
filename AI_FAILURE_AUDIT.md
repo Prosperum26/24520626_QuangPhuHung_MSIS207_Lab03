@@ -19,7 +19,7 @@
 | 4 | Exercise 1 (E1-07) | Demo "ảnh lỗi" và favicon mặc định bắn lỗi đỏ vào Console, trái gate "Console sạch" | Log Console đo trên Edge | Đã sửa, chờ hash commit |
 | 5 | Homework 1 (H1-D) | AI thêm font Google Fonts (stylesheet bên thứ ba chặn render) và tải trước 7 file WAV lúc mount mà không đo Performance; Lighthouse Performance 69 | Ảnh Lighthouse (DevTools) | Đã sửa và đo lại (Performance 69 lên 100) |
 | 6 | Homework 3 (H3-00 đến H3-08) | `npm test` fail ngẫu nhiên ("failed to find the current suite"); AI kết luận "flaky, chưa rõ nguyên nhân" và thử đổi cấu hình thay vì kiểm tra cách mình chạy test (thư mục và shell) | Output `npm test` nhiều lần, đối chứng với Ex1, HW1, HW2 | Đã sửa (chạy đúng folder), chờ hash commit |
-| 7 | Homework 3 (H3-07) | Đồng hồ đếm ngược dùng `<output>` (role `status`, live region) mà không tắt thông báo: đổi mỗi giây sẽ bị trình đọc màn hình đọc liên tục; lỗi chỉ lộ ra vì test gặp hai phần tử `status` | Output test; Accessibility tree (chờ ảnh DevTools) | Đã sửa, chờ ảnh và hash commit |
+| 7 | Homework 3 (H3-07) | Đồng hồ đếm ngược dùng `<output>` (role `status`, live region) mà không tắt thông báo: đổi mỗi giây sẽ bị trình đọc màn hình đọc liên tục; lỗi chỉ lộ ra vì test gặp hai phần tử `status` | Output test; Accessibility tree (DevTools) | Đã sửa, chờ hash commit |
 
 ## Lỗi 1 — Đọc sai cấu trúc folder của checklist và ghi nhầm là "bắt buộc"
 
@@ -289,7 +289,7 @@ TestingLibraryElementError: Found multiple elements with the role "status"
  FAIL  src/components/CrateCard.test.jsx > CrateCard > Claim thành công: kho giảm, role="status" báo bằng chữ
 ```
 
-Ảnh Accessibility tree của đồng hồ (chờ bạn chụp theo [evidence/README.md](src/homeworks/KraftonPubgVnArena/evidence/README.md), mục 3): (điền tên file ảnh)
+Ảnh Accessibility tree trong DevTools: [a11y-tree-leaderboard.png](src/homeworks/KraftonPubgVnArena/evidence/a11y-tree-leaderboard.png). Ảnh này là của `<output>` đếm số đội trong bảng xếp hạng (không phải đồng hồ): nó hiện là `status` với `atomic: true`, xác nhận `<output>` có role `status` ngầm. Chưa có ảnh riêng cho `<output>` của đồng hồ đếm ngược, nên việc nó bị đọc mỗi giây vẫn là suy luận từ role ngầm chứ chưa kiểm bằng trình đọc màn hình.
 
 ### Bản sửa thủ công
 
