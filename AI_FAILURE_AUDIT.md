@@ -1,25 +1,16 @@
 # AI Failure Mode Audit — Lab 03
 
-> Deliverable bắt buộc (15% điểm, cùng nhóm với Atomic Git): ít nhất **3 lỗi AI thật** kèm bằng chứng và bản sửa.
-> Bốn mục đầu là lỗi thật xảy ra trong session làm Exercise 1 (bằng chứng mục 1-3 là output terminal và ảnh checklist; mục 4 là log Console đo trên Edge). Mục 5 xảy ra ở Homework 1, bằng chứng là ảnh Lighthouse chụp từ DevTools. Khi gặp lỗi có Profiler, Network hoặc Accessibility tree ở Ex2, Ex3 và homework, thay hoặc bổ sung vào đây để đủ yêu cầu "DevTools proof".
-> Chỉ ghi điều đã xảy ra. Không bịa prompt, code, ảnh hay commit hash. Các ô `(điền)` do bạn bổ sung.
-
-- **Sinh viên:** Quang Phú Hùng — 24520626
-- **Môn:** MSIS207 — Lab 03
-- **Công cụ AI:** Claude Code (Claude Sonnet 5.5)
-- **Prompt log liên quan:** (điền: đường dẫn trong `docs/prompt_logs/` sau khi export session)
-
 ## Tổng quan
 
-| # | Bài | Lỗi | Loại bằng chứng | Trạng thái |
-|---|---|---|---|---|
-| 1 | Cấu trúc repo (X0) | AI đặt `homeworks/` ở gốc repo, trong khi checklist đặt trong `src/`; còn tự bịa "bắt buộc" cho vị trí sai | Ảnh checklist + `git status` | Đã sửa, chờ hash commit |
-| 2 | Khởi tạo (X0-09) | Cài ESLint bản mới nhất mà không kiểm peer dependency, `npm install` thất bại | Output `npm` (ERESOLVE) | Đã sửa, chờ hash commit |
-| 3 | Exercise 1 (E1-03) | 34 test pass nhưng gate `grep '<div'` vẫn ra 1 dòng do chính comment của AI; thêm cảnh báo giả của ESLint | Output `grep`, `eslint` | Đã sửa, chờ hash commit |
-| 4 | Exercise 1 (E1-07) | Demo "ảnh lỗi" và favicon mặc định bắn lỗi đỏ vào Console, trái gate "Console sạch" | Log Console đo trên Edge | Đã sửa, chờ hash commit |
-| 5 | Homework 1 (H1-D) | AI thêm font Google Fonts (stylesheet bên thứ ba chặn render) và tải trước 7 file WAV lúc mount mà không đo Performance; Lighthouse Performance 69 | Ảnh Lighthouse (DevTools) | Đã sửa và đo lại (Performance 69 lên 100) |
-| 6 | Homework 3 (H3-00 đến H3-08) | `npm test` fail ngẫu nhiên ("failed to find the current suite"); AI kết luận "flaky, chưa rõ nguyên nhân" và thử đổi cấu hình thay vì kiểm tra cách mình chạy test (thư mục và shell) | Output `npm test` nhiều lần, đối chứng với Ex1, HW1, HW2 | Đã sửa (chạy đúng folder), chờ hash commit |
-| 7 | Homework 3 (H3-07) | Đồng hồ đếm ngược dùng `<output>` (role `status`, live region) mà không tắt thông báo: đổi mỗi giây sẽ bị trình đọc màn hình đọc liên tục; lỗi chỉ lộ ra vì test gặp hai phần tử `status` | Output test; Accessibility tree (DevTools) | Đã sửa, chờ hash commit |
+| # | Bài                           | Lỗi                                                                                                                                                                                                                               | Loại bằng chứng                                               | Trạng thái                                      |
+| - | ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- | ------------------------------------------------- |
+| 1 | Cấu trúc repo (X0)           | AI đặt `homeworks/` ở gốc repo, trong khi checklist đặt trong `src/`; còn tự bịa "bắt buộc" cho vị trí sai                                                                                                        | Ảnh checklist + `git status`                                  | Đã sửa, chờ hash commit                       |
+| 2 | Khởi tạo (X0-09)             | Cài ESLint bản mới nhất mà không kiểm peer dependency, `npm install` thất bại                                                                                                                                           | Output `npm` (ERESOLVE)                                        | Đã sửa, chờ hash commit                       |
+| 3 | Exercise 1 (E1-03)             | 34 test pass nhưng gate `grep '<div'` vẫn ra 1 dòng do chính comment của AI; thêm cảnh báo giả của ESLint                                                                                                              | Output `grep`, `eslint`                                      | Đã sửa, chờ hash commit                       |
+| 4 | Exercise 1 (E1-07)             | Demo "ảnh lỗi" và favicon mặc định bắn lỗi đỏ vào Console, trái gate "Console sạch"                                                                                                                                   | Log Console đo trên Edge                                       | Đã sửa, chờ hash commit                       |
+| 5 | Homework 1 (H1-D)              | AI thêm font Google Fonts (stylesheet bên thứ ba chặn render) và tải trước 7 file WAV lúc mount mà không đo Performance; Lighthouse Performance 69                                                                     | Ảnh Lighthouse (DevTools)                                       | Đã sửa và đo lại (Performance 69 lên 100)  |
+| 6 | Homework 3 (H3-00 đến H3-08) | `npm test` fail ngẫu nhiên ("failed to find the current suite"); AI kết luận "flaky, chưa rõ nguyên nhân" và thử đổi cấu hình thay vì kiểm tra cách mình chạy test (thư mục và shell)                      | Output `npm test` nhiều lần, đối chứng với Ex1, HW1, HW2 | Đã sửa (chạy đúng folder), chờ hash commit |
+| 7 | Homework 3 (H3-07)             | Đồng hồ đếm ngược dùng `<output>` (role `status`, live region) mà không tắt thông báo: đổi mỗi giây sẽ bị trình đọc màn hình đọc liên tục; lỗi chỉ lộ ra vì test gặp hai phần tử `status` | Output test; Accessibility tree (DevTools)                       | Đã sửa, chờ hash commit                       |
 
 ## Lỗi 1 — Đọc sai cấu trúc folder của checklist và ghi nhầm là "bắt buộc"
 
@@ -104,7 +95,26 @@ Phiên bản mới nhất của một gói không đảm bảo tương thích v�
 
 ### Lỗi
 
-Đề yêu cầu `grep -n '<div' DeveloperCard.jsx` ra 0 dòng. AI viết chú thích đầu file có chứa đúng chuỗi `<div>` ("Zero <div>: ..."), nên gate ra 1 dòng dù component không có thẻ `div` nào. Test render thật đã pass nên không bắt được. Ngoài ra `jsx-a11y/aria-role` báo lỗi giả vì prop dữ liệu `role="Mathematician"` của `DeveloperCard` bị hiểu là ARIA role.
+Đề yêu cầu `grep -n '<div' DeveloperCard.jsx` ra 0 dòng. AI viết chú thích đầu file có chứa đúng chuỗi `<div>` ("Zero 
+
+
+: ..."), nên gate ra 1 dòng dù component không có thẻ
+
+`div`
+
+Q nào. Test render thật đã pass nên không bắt được. Ngoài ra 
+
+`jsx-a11y/aria-role`
+
+ uabáo lỗi giả vì prop dữ liệu 
+
+`role="Mathematician"`
+
+ của
+
+`DeveloperCard`
+
+ ảng ị hiểu là ARIA role.
 
 Dòng AI sinh ra:
 

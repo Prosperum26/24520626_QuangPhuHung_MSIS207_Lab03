@@ -1,0 +1,1222 @@
+  ⎿  SessionStart:startup hook error
+  ⎿  [bash C:\Users\Phu Hung\.claude\plugins\cache\anthropic-plugin-directory\cl
+     aude-memory\1.0.0-0afb7b2da7cc/hooks/scripts/memory-context.sh]:
+     C:/Users/Phu: line 1: syntax error near unexpected token `('
+
+[Image #1]
+  ⎿  [Image #2]
+
+> OK Trong lúc mình thao tác hoàn thiện homework 2, bạn brainstorm hm3 xem
+
+● Skill(superpowers:brainstorming)
+  ⎿  Successfully loaded skill
+
+● Mình đang brainstorm để scope HW3, vì đây là bài kiến trúc mới chưa có code,
+  nên sẽ chỉ đọc context của repo chứ không viết code. · summary
+
+  Searched for 2 patterns (ctrl+o to expand)
+
+● The WBS for HW3 already exists. Let me read it in full.
+
+  Read 1 file (ctrl+o to expand)
+
+● HW3 chưa có code, mới có WBS (H3-00 đến H3-11) trong TASK_DECOMPOSITION.md
+  (src/homeworks/KraftonPubgVnArena/TASK_DECOMPOSITION.md). Mình phân loại là
+  architectural, nên chỉ brainstorm lúc này, chưa viết code hay scaffold gì. Bạn
+  đang làm HW2 nên mình không đụng vào repo.
+
+  Mình hiểu đề thế này
+
+  - Mục tiêu: một project Vite riêng gồm 3 phần. Phần 1 là đếm ngược airdrop
+    không trôi. Phần 2 là claim crate lạc quan có rollback khi 409. Phần 3 là
+    bảng xếp hạng đội có lọc và sắp xếp. Ngoài ra cần AI_FAILURE_AUDIT.md với ít
+    nhất 3 lỗi AI thật.
+  - Thành công: qua 3 cổng ở WBS §5 (tab nền 60-120 giây quay lại vẫn đúng giờ,
+    2 người tranh 1 suất thì 1 rollback có chữ, bấm đúp chỉ gửi 1 request). Test
+    và lint xanh. Bạn giải thích và sửa được trong 180 giây khi tắt AI.
+  - Giả định của mình: dùng lại WBS hiện có, không viết spec mới.
+
+  Chỗ slide và WBS lệch nhau
+
+  1. Slide dùng Date.now() trực tiếp, WBS dùng neo performance.now(). WBS đúng
+     hơn vì đổi giờ hệ thống không làm đồng hồ nhảy. Bạn nên giữ bản neo và nói
+     rõ trong audit là đã cải tiến slide.
+  2. Hook trong slide gọi setState 5 lần mỗi giây. WBS đã sửa bằng cách chỉ
+     setState khi số giây hiển thị đổi, và dùng một interval chung cho mọi card.
+  3. squadId trong slide chỉ có te, ces, ge, agg (The Expendables, Cerberus
+     Esports, GE, AGG), nhưng chữ trong slide lại ghi "Roy Esports". ge không
+     khớp với Roy, nên mình đề xuất thêm id roy như WBS đã gợi ý.
+  4. "Kill-Feed Filter" trong tiêu đề không có kiểu dữ liệu nào ở contract.
+     Contract chỉ có điểm tổng kết (killPts), không có sự kiện kill.
+  5. isLive: remainingMs === 0 trong slide chưa tính kho. Phase phải là hàm
+     thuần của (remainingMs, stock), như WBS đã chốt.
+  6. Slide không nói 409 đến từ đâu. Cổng "2 người bấm 1 suất" cần một "người
+     mua đối thủ" giả. Mình đề xuất API giả giữ kho thật ở phía server, có tuỳ
+     chọn tiêm rng và latency, kèm một cờ để rival lấy suất cuối trong test.
+
+  Hướng thiết kế mình đề xuất
+
+  - Timer: hàm thuần computeRemaining(now, target) kèm một ticker dùng chung
+    (200ms và visibilitychange). Hook usePubgAirdropTimer đăng ký vào ticker, và
+    now() tiêm được để test dùng fake timers.
+  - Claim: reducer cộng useRef giữ inFlightClaimId. Rollback theo claimId, trả
+    đúng phần đã trừ, không ghi đè stock mới hơn.
+  - Leaderboard: lọc và sắp xếp tính trực tiếp trong render bằng .toSorted,
+    không dùng useEffect.
+  - Không thêm thư viện. Mỗi quyết định nằm một chỗ, theo Agents.md (AGENTS.md)
+    §3.
+
+  Một câu cần bạn chốt
+
+  "Kill-Feed Filter" bạn muốn hiểu thế nào?
+  - A (mình khuyên): coi nó là bộ lọc đội cộng sắp xếp theo killPts, đúng
+    contract và WBS §1, không thêm dữ liệu mới.
+  - B: thêm danh sách sự kiện kill giả (ai hạ ai) có lọc theo đội. Việc này nặng
+    hơn, ngoài contract và có thể không được chấm.
+
+  Bạn chọn xong thì mình trình bày design theo từng phần (domain, timer, claim,
+  UI, evidence). Khi HW2 xong, mình bắt đầu từ H3-00 và H3-01.
+
+> Cái A nhe và ưu tiên làm theo slide thay vì WBS, viết cập nhật file task
+  decompoisiton đi
+
+● Write(src\homeworks\KraftonPubgVnArena\TASK_DECOMPOSITION.md)
+  ⎿  Added 58 lines, removed 24 lines
+       2  
+       3  > WBS con của [TASK_DECOMPOSITION.md](../../../TASK_DECOMPOSITI
+          ON.md). Mỗi prompt AI = đúng một task ID. Nối tiếp HW3 Lab 2 (f
+          lash-sale, timer không trôi, `C:\Dev\Project\24520626_QuangPhuH
+          ung_MSIS207_Lab02\Homework3_Lab02`).
+       4  > **Mỗi bài là một project Vite độc lập** (có `package.json`, `
+          node_modules/` riêng). Chạy mọi lệnh `npm` ngay trong folder nà
+          y; đường dẫn file bên dưới tính từ folder này.
+       5 +> **Nguyên tắc ưu tiên (đã chốt):** khi slide và WBS cũ lệch nh
+         +au thì **theo slide**. Phần WBS cũ không mâu thuẫn slide được g
+         +iữ lại; phần mâu thuẫn chuyển xuống §6 làm nâng cấp tuỳ chọn.  
+       6  
+       7  ## 1. Mục tiêu và phạm vi
+       8  
+       9  "PVS Finals Ticket & G-Coin Contraband Crate Arena": đếm ngược 
+          airdrop không trôi, giữ hàng lạc quan với rollback khi 409, bản
+          g xếp hạng đội có lọc/sắp xếp, và `AI_FAILURE_AUDIT.md` (>= 3 l
+          ỗi AI).
+      10  
+      10 -**Ràng buộc cứng:**                                            
+      11 -- `usePubgAirdropTimer(targetEpochMs, serverOffsetMs = 0)`: `Ma
+         -th.max(0, targetEpochMs - (Date.now() + serverOffsetMs))`, tính
+         - lại mỗi 200ms **và** ngay khi `visibilitychange` sang `visible
+         -`; cleanup interval và listener.                               
+      12 -- Giá tiền VND bằng `Intl.NumberFormat('vi-VN', { style: 'curre
+         -ncy', currency: 'VND' })`.                                     
+      13 -- Claim: khoá chống bấm đúp bằng `claimId` đang bay; trừ kho lạ
+         -c quan; **rollback** khi server trả 409 "Looted Out".          
+      14 -- Bảng xếp hạng: lọc/sắp xếp theo WWCD, Placement Points, Kill 
+         -Points bằng state dẫn xuất (0 effect).                         
+      15 -**Ngoài phạm vi:** thanh toán thật, đăng nhập, WebSocket.      
+      11 +**Ba yêu cầu của slide:**                                      
+      12 +1. **Zero-drift airdrop hook:** đổi `Date.now()` delta timer củ
+         +a Lab 2 thành `usePubgAirdropTimer(targetEpochMs, serverOffsetM
+         +s = 0)`, có resync `visibilitychange` để tab nền không bao giờ 
+         +trôi.                                                          
+      13 +2. **Optimistic claim và 409 rollback:** claim vé PVS Grand Fin
+         +als VIP (giá VND) và G-Coin Crate, trừ kho lạc quan, tự rollbac
+         +k khi server trả 409 "Looted Out", khoá `claimId` đang bay chốn
+         +g bấm đúp.                                                     
+      14 +3. **Leaderboard "Kill-Feed Filter":** lọc và sắp xếp đội theo 
+         +WWCD, Placement Points, Kill Points. **Đã chốt phương án A:** "
+         +Kill-Feed Filter" = lọc đội + sắp xếp theo `killPts`, không thê
+         +m danh sách sự kiện kill.                                      
+      15  
+      17 -## 2. Contract                                                 
+      16 +**Ràng buộc cứng (theo slide):**                               
+      17 +- Hook đúng công thức slide: `Math.max(0, targetEpochMs - (Date
+         +.now() + serverOffsetMs))`, tính lại bằng `setInterval` **200ms
+         +** và **ngay khi** `visibilitychange` sang `visible`; cleanup `
+         +clearInterval` và `removeEventListener`; effect phụ thuộc `[tar
+         +getEpochMs, serverOffsetMs]`; trả về `{ remainingMs, isLive: re
+         +mainingMs === 0 }`.                                            
+      18 +- Giá tiền VND bằng `Intl.NumberFormat('vi-VN', ...)` (`style: 
+         +'currency', currency: 'VND'`).                                 
+      19 +- Claim: khoá chống bấm đúp bằng `claimId` đang bay; trừ kho lạ
+         +c quan; **rollback** khi 409.                                  
+      20 +- Bảng xếp hạng: lọc/sắp xếp bằng state dẫn xuất (0 `useEffect`
+         +).                                                             
+      21  
+      22 +**Ngoài phạm vi:** thanh toán thật, đăng nhập, WebSocket, danh 
+         +sách sự kiện kill.                                             
+      23 +                                                               
+      24 +## 2. Contract (theo `pubg-vn-arena-contract.ts` của slide)    
+      25 +                                                               
+      26  ```ts
+      20 -type DropPhase = 'WARMUP' | 'AIRDROP_LIVE' | 'LOOTED_OUT' | 'EX
+         -PIRED';                                                        
+      21 -interface PubgCrateDrop { readonly id: string; readonly title: 
+         -string; readonly priceVnd: number; readonly remainingStock: num
+         -ber; readonly dropEpochMs: number }                            
+      22 -interface PubgVnSquadStanding { readonly squadId: string; reado
+         -nly squadName: string; readonly wwcdCount: number; readonly pla
+         -cementPts: number; readonly killPts: number }                  
+      23 -// squadId: 'te' | 'ces' | 'ge' | 'agg' (+ id cho Roy Esports n
+         -ếu dùng, vd 'roy')                                             
+      27 +export type DropPhase = 'WARMUP' | 'AIRDROP_LIVE' | 'LOOTED_OUT
+         +' | 'EXPIRED';                                                 
+      28 +                                                               
+      29 +export interface PubgCrateDrop {                               
+      30 +  readonly id: string;                                         
+      31 +  readonly title: string;          // vd 'PVS Finals VIP Pass +
+         + 5,000 G-Coin'                                                 
+      32 +  readonly priceVnd: number;       // định dạng bằng Intl.Numbe
+         +rFormat('vi-VN')                                               
+      33 +  readonly remainingStock: number;                             
+      34 +  readonly dropEpochMs: number;                                
+      35 +}                                                              
+      36 +                                                               
+      37 +export interface PubgVnSquadStanding {                         
+      38 +  readonly squadId: string;        // 'te' | 'ces' | 'ge' | 'ag
+         +g'                                                             
+      39 +  readonly squadName: string;                                  
+      40 +  readonly wwcdCount: number;      // Winner Winner Chicken Din
+         +ner                                                            
+      41 +  readonly placementPts: number;                               
+      42 +  readonly killPts: number;                                    
+      43 +}                                                              
+      44  ```
+      45  
+      26 -- Phase là hàm thuần của (`remainingMs`, `stock`): `WARMUP` trư
+         -ớc giờ drop, `AIRDROP_LIVE` khi tới giờ và còn hàng, `LOOTED_OU
+         -T` khi hết hàng, `EXPIRED` sau thời hạn. Quy tắc nằm một chỗ.  
+      27 -- API giả (`reserveCrate`): có latency, trả 200 hoặc 409; tiêm 
+         -được rng/latency để test tất định; tôn trọng `AbortSignal`.    
+      28 -- Dữ liệu mẫu và thời điểm drop đặt trong module cấu hình (một 
+         -chỗ), có `serverOffsetMs` để mô phỏng lệch đồng hồ.            
+      29 -- **Đồng hồ đơn điệu (đã chốt)**: khi khởi tạo lấy `anchor = { 
+         -wall: Date.now() + serverOffsetMs, perf: performance.now() }`; 
+         -thời gian hiện tại = `anchor.wall + (performance.now() - anchor
+         -.perf)`; còn lại = `Math.max(0, targetEpochMs - now)`. Đổi giờ 
+         -hệ thống không làm nhảy. Hàm `now()` tiêm được vào hook để test
+         - tất định. Tính lại `anchor` khi `visibilitychange` sang `visib
+         -le` hoặc `serverOffsetMs` đổi.                                 
+      30 -- **Một nhịp chung**: một interval dùng chung cho mọi card đếm 
+         -ngược thay vì mỗi card một interval; cleanup khi không còn ai đ
+         -ăng ký.                                                        
+      31 -- **Cập nhật tối thiểu**: chỉ `setState` khi giá trị hiển thị (
+         -giây) đổi, tránh render 5 lần/giây.                            
+      32 -- **Claim**: khoá `inFlightClaimId` trong `useRef` (không cần r
+         -ender); state chỉ cho `stock` và `error`; rollback theo `claimI
+         -d`, không ghi đè trạng thái mới hơn.                           
+      46 +Dự án dùng JSX/JS nên contract viết bằng JSDoc `@typedef` trong
+         + `src/domain/`, giữ nguyên tên trường như trên.                
+      47  
+      48 +- **Squad (4 đội theo slide):** The Expendables = `te`, Cerberu
+         +s Esports = `ces`, Roy Esports = `ge`, AGG = `agg`. Slide chỉ l
+         +iệt kê 4 id nhưng chữ ghi "Roy Esports"; ánh xạ Roy = `ge` theo
+         + thứ tự là **giả định**, cần xác nhận với đề.                  
+      49 +- **Phase** là hàm thuần của (`remainingMs`, `remainingStock`, 
+         +mốc hết hạn): `WARMUP` trước giờ drop, `AIRDROP_LIVE` khi tới g
+         +iờ và còn hàng, `LOOTED_OUT` khi hết hàng, `EXPIRED` sau thời h
+         +ạn. Slide chỉ có `isLive: remainingMs === 0` nên **phase là phầ
+         +n mở rộng**: `isLive` của hook chỉ nói đã tới giờ, còn kho do `
+         +getDropPhase` quyết. Quy tắc nằm một chỗ.                      
+      50 +- **API giả `reserveCrate`:** có latency, trả 200 hoặc 409; kho
+         + "thật" nằm phía server giả; tiêm được rng/latency và cờ "rival
+         + lấy suất cuối" để test tất định; tôn trọng `AbortSignal`.     
+      51 +- **Cấu hình:** dữ liệu mẫu và thời điểm drop đặt một chỗ, có `
+         +serverOffsetMs` để mô phỏng lệch đồng hồ.                      
+      52 +- **Hook timer (đúng slide):** `useState(calcRemaining)`; trong
+         + effect gọi `syncClock()` ngay, `window.setInterval(syncClock, 
+         +200)`, `visibilitychange` gọi `syncClock` khi `document.visibil
+         +ityState === 'visible'`.                                       
+      53 +- **Claim:** khoá `inFlightClaimId` trong `useRef` (không cần r
+         +ender); state chỉ cho `stock` và `error`; rollback theo `claimI
+         +d`, trả lại đúng phần đã trừ, không ghi đè trạng thái mới hơn. 
+      54 +                                                               
+      55  ## 3. Task
+      56  
+      57  | ID | Task | File | Gate | Trạng thái |
+      58  |---|---|---|---|---|
+      59  | H3-00 | Khởi tạo project Vite riêng: sao chép `package.json` 
+          (đổi `name`), `vite.config.js`, `eslint.config.js`, `index.html
+          `, `src/main.jsx`, `src/test/setup.js` từ Ex1, rồi `npm install
+          ` | `package.json`, `vite.config.js`, `eslint.config.js`, `inde
+          x.html`, `src/main.jsx`, `src/test/setup.js` | `npm test` và `n
+          pm run lint` chạy được | [ ] |
+      39 -| H3-01 | Spec, kiểu dữ liệu, dữ liệu mẫu, `formatVnd`, `getDro
+         -pPhase` | `src/domain/*.js` | Test: định dạng VND; ma trận phas
+         -e | [ ] |                                                      
+      40 -| H3-02 | `usePubgAirdropTimer` (200ms + `visibilitychange`, đồ
+         -ng hồ neo `performance.now()`, `now()` tiêm được) | `src/hooks/
+         -usePubgAirdropTimer.js` | Test với fake timers: sau 1 phút nền,
+         - khi `visible` giá trị đúng ngay | [ ] |                       
+      41 -| H3-03 | Cleanup interval/listener, an toàn StrictMode | `src/
+         -hooks/usePubgAirdropTimer.js` | Test: unmount gỡ cả hai | [ ] |
+      42 -| H3-04 | API giả `reserveCrate` 200/409 | `src/api/arena.js` |
+         - Test: 409 theo cấu hình; abort được | [ ] |                   
+      60 +| H3-01 | Contract (JSDoc), dữ liệu mẫu 4 đội + crate, `formatV
+         +nd`, `getDropPhase` | `src/domain/*.js` | Test: định dạng VND; 
+         +ma trận phase | [ ] |                                          
+      61 +| H3-02 | `usePubgAirdropTimer` đúng slide (`Date.now() + serve
+         +rOffsetMs`, interval 200ms, `visibilitychange` resync, trả `{ r
+         +emainingMs, isLive }`) | `src/hooks/usePubgAirdropTimer.js` | T
+         +est fake timers: tab nền 1 phút, khi `visible` giá trị đúng nga
+         +y; đổi `targetEpochMs` thì tính lại | [ ] |                    
+      62 +| H3-03 | Cleanup interval/listener, an toàn StrictMode | `src/
+         +hooks/usePubgAirdropTimer.js` | Test: unmount gỡ cả interval và
+         + listener | [ ] |                                              
+      63 +| H3-04 | API giả `reserveCrate` 200/409 | `src/api/arena.js` |
+         + Test: 409 theo cấu hình/rival; abort được | [ ] |             
+      64  | H3-05 | Hook/reducer claim lạc quan + khoá `claimId` chống bấ
+          m đúp | `src/hooks/useCrateClaim.js` | Test: hai click liên tiế
+          p chỉ một request | [ ] |
+      65  | H3-06 | Rollback khi 409, hiển thị thông báo bằng chữ | `src/
+          hooks/useCrateClaim.js` | Test: stock trở lại giá trị cũ, `role
+          ="alert"` | [ ] |
+      66  | H3-07 | UI crate/vé: đếm ngược, giá VND, nút Claim theo phase
+           | `src/components/CrateCard.jsx` | Nút `disabled` khi không hợ
+          p lệ + lý do bằng chữ | [ ] |
+      46 -| H3-08 | Bảng xếp hạng + lọc đội + sắp xếp (dẫn xuất) | `src/c
+         -omponents/Leaderboard.jsx` | Test: sắp xếp bất biến; 0 `useEffe
+         -ct` cho lọc/sắp xếp | [ ] |                                    
+      67 +| H3-08 | Bảng xếp hạng + lọc đội + sắp xếp WWCD/Placement/Kill
+         + (dẫn xuất) | `src/components/Leaderboard.jsx` | Test: sắp xếp 
+         +bất biến (`.toSorted`); 0 `useEffect` cho lọc/sắp xếp | [ ] |  
+      68  | H3-09 | CSS Modules, 375px, reduced-motion, a11y | `src/**/*.
+          module.css` | 0 cuộn ngang; Lighthouse a11y 100 | [ ] |
+      69  | H3-10 | Đo drift (tab nền) và chụp bằng chứng | `evidence/` |
+           JSON/ảnh đo drift, ảnh 409 rollback | [ ] |
+      70  | H3-11 | `AI_FAILURE_AUDIT.md` hoàn thiện từ lỗi thật | [../..
+          /../AI_FAILURE_AUDIT.md](../../../AI_FAILURE_AUDIT.md) | >= 3 l
+          ỗi có DevTools proof và bản sửa | [ ] |
+     ...
+      79  - Kho còn 1, hai người cùng bấm: một thành công, một rollback k
+          èm thông báo chữ.
+      80  - Bấm đúp nhanh: chỉ một request đi.
+      81  
+      61 -## 6. Dễ sai (nguồn ghi vào audit)                             
+      82 +## 6. Khác biệt so với WBS cũ và nâng cấp tuỳ chọn             
+      83  
+      84 +Đã chuyển từ **bắt buộc** sang **tuỳ chọn** vì mâu thuẫn hoặc v
+         +ượt slide. Chỉ làm khi H3-02 đã xanh và bạn giải thích được:   
+      85 +                                                               
+      86 +| Mục WBS cũ | Slide | Quyết định |                            
+      87 +|---|---|---|                                                  
+      88 +| Neo đồng hồ `performance.now()` thay `Date.now()` | Slide dùn
+         +g `Date.now() + serverOffsetMs` | Theo slide. Hạn chế: người dù
+         +ng đổi giờ hệ thống thì đồng hồ nhảy. Ghi nhận trong audit/READ
+         +ME. |                                                          
+      89 +| `now()` tiêm được vào hook | Slide không có | Test dùng `vi.u
+         +seFakeTimers()` và `vi.setSystemTime()` thay vì tiêm. |        
+      90 +| Một interval dùng chung cho mọi card | Slide: mỗi hook một in
+         +terval | Theo slide. Chỉ có ít card nên chi phí nhỏ. |         
+      91 +| Chỉ `setState` khi số giây đổi | Slide: `setRemainingMs` mỗi 
+         +200ms | Theo slide. Tối ưu sau nếu Profiler cho thấy render thừ
+         +a. |                                                           
+      92 +| Phase gồm 4 giá trị | Slide có `DropPhase` 4 giá trị nhưng `i
+         +sLive` chỉ theo thời gian | Giữ `getDropPhase` thuần, `isLive` 
+         +của hook không đổi. |                                          
+      93 +                                                               
+      94 +## 7. Dễ sai (nguồn ghi vào audit)                             
+      95 +                                                               
+      96  - `setSeconds(s => s - 1)` trong `setInterval` (drift).
+      97  - `useEffect(..., [])` giữ closure cũ; không cleanup khi đổi mụ
+          c tiêu.
+      98  - Quên rollback hoặc rollback ghi đè trạng thái mới hơn (dùng c
+          ập nhật theo claim, không theo snapshot cũ).
+      99 +- Quên gỡ listener `visibilitychange`, hoặc không `syncClock()`
+         + ngay khi mount nên hiển thị 0 một nhịp.                       
+
+● Mình đã cập nhật TASK_DECOMPOSITION.md
+  (src/homeworks/KraftonPubgVnArena/TASK_DECOMPOSITION.md) theo slide và phương
+  án A. Mình chưa chạy gì và chưa đụng vào code hay commit.
+
+  Thay đổi chính
+  - Hook timer: đúng công thức slide: Date.now() + serverOffsetMs, setInterval
+    200ms, resync khi visibilitychange, trả { remainingMs, isLive }.
+  - Phương án A: ghi rõ "Kill-Feed Filter" là lọc đội cộng sắp xếp theo killPts.
+    Không có danh sách sự kiện kill (đã đưa vào "Ngoài phạm vi").
+  - Contract: copy nguyên theo pubg-vn-arena-contract.ts, viết bằng JSDoc.
+  - Task ID: giữ nguyên H3-00 đến H3-11 nên file WBS tổng không bị lệch.
+  - §6 (mới): chuyển các phần của WBS cũ mâu thuẫn slide xuống mục tuỳ chọn. Đó
+    là neo performance.now(), now() tiêm được, interval dùng chung và setState
+    khi số giây đổi. Mỗi mục có ghi chú đã chọn gì và hạn chế gì.
+
+  Hai điểm cần bạn xác nhận
+  1. Roy Esports = ge là suy đoán của mình theo thứ tự te, ces, ge, agg. Slide
+     chỉ liệt kê 4 id mà chữ ghi "Roy Esports", nên có thể slide sai. Mình đã
+     ghi rõ là giả định trong file.
+  2. Tradeoff khi theo slide: hook dùng Date.now() thì người dùng đổi giờ hệ
+     thống sẽ làm đồng hồ nhảy. Nó cũng gây re-render 5 lần mỗi giây. Cả hai đã
+     ghi ở §6, và nếu giảng viên hỏi thì đây là chỗ nên nói rõ.
+
+  Khi HW2 xong thì mình bắt đầu từ H3-00.
+
+> Bắt đầu làm tới H3-04 đi, chia nhỏ và commit luôn nhe, để mình tự thêm cop
+  author sau.
+
+  Ran 5 shell commands (ctrl+o to expand)
+
+● Đang làm H3-00: scaffold chạy lệnh test báo lỗi "failed to find the current
+  suite", mình đang kiểm tra xem Ex1 có test mẫu đang pass không để so sánh.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Khác biệt là Ex1 dùng vitest 5.0.5 (theo lockfile) còn bản mới cài ra là
+  5.1.0. Mình copy lockfile của Ex1 để khoá cùng phiên bản rồi cài lại.
+
+  Ran 40 shell commands (ctrl+o to expand)
+
+● Tests pass (21, sau khi bỏ test yếu) khi chạy bằng pool vmThreads; lint sạch.
+  Commit H3-03 rồi sang H3-04.
+
+  Ran 2 shell commands (ctrl+o to expand)
+
+● Cả npm test (mặc định) lẫn vmThreads đều pass 29/29, lint sạch. Commit H3-04
+  và chạy kiểm tra grep theo Agents.md.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● H3-00 đến H3-04 đã xong và commit, mỗi task một commit. Cuối cùng npm test
+  pass 29/29 và npm run lint sạch, nhưng npm test từng fail ngẫu nhiên trong lúc
+  làm (xem bên dưới). grep "http://" src ra 0 dòng. Chưa kiểm tra bằng DevTools
+  hay Profiler.
+
+  ┌─────────┬───────┬────────────────────────────────────────────────────────┐
+  │ Commit  │ Task  │                        Nội dung                        │
+  ├─────────┼───────┼────────────────────────────────────────────────────────┤
+  │ 92b55d3 │ H3-00 │ Scaffold Vite, Vitest và ESLint, copy lockfile từ Ex1. │
+  │         │       │  Có kèm cập nhật WBS theo slide.                       │
+  ├─────────┼───────┼────────────────────────────────────────────────────────┤
+  │ 4913936 │ H3-01 │ JSDoc contract, 4 đội theo slide, createSampleCrates,  │
+  │         │       │ formatVnd, getDropPhase. Có test.                      │
+  ├─────────┼───────┼────────────────────────────────────────────────────────┤
+  │         │       │ usePubgAirdropTimer đúng slide: Date.now() +           │
+  │ 8f8db5d │ H3-02 │ serverOffsetMs, interval 200ms, resync                 │
+  │         │       │ visibilitychange.                                      │
+  ├─────────┼───────┼────────────────────────────────────────────────────────┤
+  │ 29d5ed0 │ H3-03 │ Test cleanup khi unmount, StrictMode (một interval),   │
+  │         │       │ đổi targetEpochMs.                                     │
+  ├─────────┼───────┼────────────────────────────────────────────────────────┤
+  │ 16e1b40 │ H3-04 │ createArenaApi().reserveCrate trả 200 hoặc 409. Tiêm   │
+  │         │       │ được rng, latencyMs, rivalChance, và hỗ trợ abort.     │
+  └─────────┴───────┴────────────────────────────────────────────────────────┘
+
+  Các commit không có dòng Co-Authored-By, để bạn tự thêm. Mình chỉ git add file
+  của HW3, không đụng vào GrandPiano88 của HW2. Mình có tick [x] H3-00 đến
+  H3-04 trong WBS.
+
+  Quyết định thiết kế
+  - getDropPhase: nhận { remainingMs, remainingStock, isExpired }. Hook bị chặn
+    ở 0 nên không biết đã quá hạn bao lâu, vì vậy mình thêm
+    isDropExpired(dropEpochMs, nowMs). Thứ tự ưu tiên là WARMUP → EXPIRED →
+    LOOTED_OUT → AIRDROP_LIVE, giả định hết hạn thắng hết hàng. Bạn xem lại thứ
+    tự này nhé.
+  - API giả: server giữ kho thật. Kho chỉ bị trừ lúc phản hồi, nên request bị
+    abort giữa chừng không làm mất hàng. rivalChance mô phỏng người khác lấy
+    suất cuối, đúng cổng "2 người tranh 1 suất" ở WBS.
+
+  Vấn đề: npm test fail ngẫu nhiên
+  - Trong folder HW3, npm test đôi lúc báo "Vitest failed to find the current
+    suite" ở setup.js rồi fail toàn bộ.
+  - Ex1 và DrumMachine có cấu hình giống hệt thì không bị. Bản copy folder HW3
+    sang tên khác cũng không bị.
+  - Mình chưa tìm ra nguyên nhân. Đã loại trừ phiên bản package, cache, và
+    process vitest khác đang chạy. Khi bị, npx vitest run --pool=vmThreads luôn
+    pass. Lần cuối (commit H3-04) cả hai cách đều pass.
+  - Nếu bạn gặp lại, chạy bằng --pool=vmThreads để kiểm tra tạm. Mình không đổi
+    pool trong config vì chưa biết hậu quả với fake timers và AbortSignal ở các
+    task sau.
+
+  Việc có thể đưa vào audit: đây là một lỗi thật đã gặp khi dựng project. Nội
+  dung audit do bạn tự viết từ bằng chứng thật, mình không bịa.
+
+  Tiếp theo là H3-05 (claim lạc quan và khoá claimId) khi bạn sẵn sàng.
+
+> ok tiếp tục hoàn thiện tới h3-08 đi, phong cách giao diện lấy từ 2 homeowkr
+  trước luôn
+
+  Listed 1 directory, ran 4 shell commands (ctrl+o to expand)
+
+● Đang làm H3-07: đã xong tokens, font, formatCountdown; giờ viết CrateCard, CSS
+  và App.
+
+  Read 1 file, ran 1 shell command (ctrl+o to expand)
+
+● Write(src\homeworks\KraftonPubgVnArena\src\components\CrateCard.jsx)
+  ⎿  Wrote 81 lines to
+     src\homeworks\KraftonPubgVnArena\src\components\CrateCard.jsx
+       1 import { useId } from 'react';
+       2 import { DROP_WINDOW_MS, getDropPhase } from '../domain/dropPhas
+         e.js';
+       3 import { formatCountdown } from '../domain/formatCountdown.js';
+       4 import { formatVnd } from '../domain/formatVnd.js';
+       5 import { useCrateClaim } from '../hooks/useCrateClaim.js';
+       6 import { usePubgAirdropTimer } from '../hooks/usePubgAirdropTime
+         r.js';
+       7 import styles from './CrateCard.module.css';
+       8
+     … +73 lines (ctrl+o to expand)
+
+● Write(src\homeworks\KraftonPubgVnArena\src\components\CrateCard.module.css)
+  ⎿  Wrote 107 lines to
+     src\homeworks\KraftonPubgVnArena\src\components\CrateCard.module.css
+       1 /* Thẻ nổi kiểu Drum Kit: viền ink dày, bóng đổ cứng, nút lún xu
+         ống đúng --lift khi bấm. */
+       2 .card {
+       3   display: grid;
+       4   gap: 1rem;
+       5   padding: 1.25rem;
+       6   border: 3px solid var(--ink);
+       7   border-radius: var(--radius-panel);
+       8   background: var(--surface);
+       9   box-shadow: 0 var(--lift) 0 var(--ink);
+     … +98 lines (ctrl+o to expand)
+
+● Write(src\homeworks\KraftonPubgVnArena\src\App.module.css)
+  ⎿  Wrote 40 lines to src\homeworks\KraftonPubgVnArena\src\App.module.css
+       1 .page {
+       2   display: grid;
+       3   gap: 2rem;
+       4   max-width: 72rem;
+       5   margin-inline: auto;
+       6   padding: clamp(1.5rem, 5vw, 3.5rem) 1rem 4rem;
+       7   overflow-x: clip;
+       8 }
+       9
+      10 .masthead {
+     … +30 lines (ctrl+o to expand)
+
+● Write(src\homeworks\KraftonPubgVnArena\src\App.jsx)
+  ⎿  Added 33 lines, removed 2 lines
+       1 +import { useState } from 'react';                              
+       2 +import { createArenaApi } from './api/arena.js';               
+       3 +import { RIVAL_CHANCE, SERVER_OFFSET_MS, createSampleCrates } f
+         +rom './domain/arenaConfig.js';                                 
+       4 +import { CrateCard } from './components/CrateCard.jsx';        
+       5 +import styles from './App.module.css';                         
+       6 +                                                               
+       7  export function App() {
+       8 +  // Khởi tạo một lần: giờ drop tính từ lúc tải trang, API giả 
+         +giữ kho server.                                                
+       9 +  const [crates] = useState(() => createSampleCrates());       
+      10 +  const [api] = useState(() =>                                 
+      11 +    createArenaApi({                                           
+      12 +      stock: Object.fromEntries(crates.map((c) => [c.id, c.rema
+         +iningStock])),                                                 
+      13 +      rivalChance: RIVAL_CHANCE,                               
+      14 +    }),                                                        
+      15 +  );                                                           
+      16 +                                                               
+      17    return (
+       3 -    <main>                                                     
+       4 -      <h1>KRAFTON x PUBG Vietnam Arena</h1>                    
+      18 +    <main className={styles.page}>                             
+      19 +      <header>                                                 
+      20 +        <hgroup className={styles.masthead}>                   
+      21 +          <h1 className={styles.title}>PVS Arena</h1>          
+      22 +          <p className={styles.lede}>Săn vé PVS Grand Finals và
+         + G-Coin Crate khi airdrop mở.</p>                              
+      23 +        </hgroup>                                              
+      24 +      </header>                                                
+      25 +                                                               
+      26 +      <section className={styles.section} aria-labelledby="crat
+         +es-heading">                                                   
+      27 +        <h2 id="crates-heading">Airdrop</h2>                   
+      28 +        <ul className={styles.crates}>                         
+      29 +          {crates.map((crate) => (                             
+      30 +            <li key={crate.id}>                                
+      31 +              <CrateCard crate={crate} reserveCrate={api.reserv
+         +eCrate} serverOffsetMs={SERVER_OFFSET_MS} />                   
+      32 +            </li>                                              
+      33 +          ))}                                                  
+      34 +        </ul>                                                  
+      35 +      </section>                                               
+      36      </main>
+      37    );
+      38  }
+● Write(src\homeworks\KraftonPubgVnArena\src\App.test.jsx)
+  ⎿  Added 3 lines, removed 2 lines
+       3  import { App } from './App.jsx';
+       4  
+       5  describe('App', () => {
+       6 -  it('render landmark main và tiêu đề', () => {                
+       6 +  it('render landmark main, tiêu đề và danh sách crate', () => 
+         +{                                                              
+       7      render(<App />);
+       8      expect(screen.getByRole('main')).toBeInTheDocument();
+       9 -    expect(screen.getByRole('heading', { level: 1 })).toHaveTex
+         -tContent('PUBG Vietnam Arena');                                
+       9 +    expect(screen.getByRole('heading', { level: 1 })).toHaveTex
+         +tContent('PVS Arena');                                         
+      10 +    expect(screen.getAllByRole('article')).toHaveLength(2);    
+      11    });
+      12  });
+
+● Write(src\homeworks\KraftonPubgVnArena\src\components\CrateCard.test.jsx)
+  ⎿  Wrote 94 lines to
+     src\homeworks\KraftonPubgVnArena\src\components\CrateCard.test.jsx
+       1 import { afterEach, beforeEach, describe, expect, it, vi } from
+         'vitest';
+       2 import { act, fireEvent, render, screen } from '@testing-library
+         /react';
+       3 import { DROP_WINDOW_MS } from '../domain/dropPhase.js';
+       4 import { CrateCard } from './CrateCard.jsx';
+       5
+       6 const START = new Date('2026-01-01T00:00:00Z').getTime();
+       7
+       8 const makeCrate = (overrides = {}) => ({
+     … +86 lines (ctrl+o to expand)
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Lỗi flaky quen thuộc; chạy lại bằng pool vmThreads để lấy kết quả thật.
+
+  Ran 3 shell commands (ctrl+o to expand)
+
+● Write(src\homeworks\KraftonPubgVnArena\src\components\Leaderboard.jsx)
+  ⎿  Wrote 84 lines to
+     src\homeworks\KraftonPubgVnArena\src\components\Leaderboard.jsx
+      1 import { useId, useState } from 'react';
+      2 import styles from './Leaderboard.module.css';
+      3
+      4 /** Cột có thể sắp xếp: khoá trường dữ liệu và nhãn hiển thị. Thê
+        m cột mới chỉ cần thêm một dòng. */
+      5 const SORT_OPTIONS = [
+      6   { key: 'wwcdCount', label: 'WWCD' },
+      7   { key: 'placementPts', label: 'Placement Points' },
+      8   { key: 'killPts', label: 'Kill Points' },
+      9 ];
+     … +75 lines (ctrl+o to expand)
+
+● Write(src\homeworks\KraftonPubgVnArena\src\components\Leaderboard.module.css)
+  ⎿  Wrote 93 lines to
+     src\homeworks\KraftonPubgVnArena\src\components\Leaderboard.module.css
+      1 /* Panel phẳng như Controls của Drum Kit: viền ink 2px, nền surfa
+        ce. */
+      2 .board {
+      3   display: grid;
+      4   gap: 1rem;
+      5   padding: 1.25rem;
+      6   border: 2px solid var(--ink);
+      7   border-radius: var(--radius-panel);
+      8   background: var(--surface);
+      9 }
+     … +84 lines (ctrl+o to expand)
+
+● Write(src\homeworks\KraftonPubgVnArena\src\components\Leaderboard.test.jsx)
+  ⎿  Wrote 74 lines to
+     src\homeworks\KraftonPubgVnArena\src\components\Leaderboard.test.jsx
+       1 import { readFileSync } from 'node:fs';
+       2 import { describe, expect, it } from 'vitest';
+       3 import { fireEvent, render, screen, within } from '@testing-libr
+         ary/react';
+       4 import { SQUADS } from '../domain/arenaConfig.js';
+       5 import { Leaderboard } from './Leaderboard.jsx';
+       6
+       7 /** Tên đội theo thứ tự hàng trong tbody. */
+       8 const squadOrder = () =>
+       9   within(screen.getAllByRole('rowgroup')[1])
+     … +65 lines (ctrl+o to expand)
+
+● Update(src\homeworks\KraftonPubgVnArena\src\App.jsx)
+  ⎿  Added 2 lines
+      33            ))}
+      34          </ul>
+      35        </section>
+      36 +                                                               
+      37 +      <Leaderboard squads={SQUADS} />                          
+      38      </main>
+      39    );
+      40  }
+
+● Update(src\homeworks\KraftonPubgVnArena\src\App.jsx)
+  ⎿  Added 2 lines, removed 1 line
+      1  import { useState } from 'react';
+      2  import { createArenaApi } from './api/arena.js';
+      3 -import { RIVAL_CHANCE, SERVER_OFFSET_MS, createSampleCrates } fr
+        -om './domain/arenaConfig.js';                                   
+      3 +import { RIVAL_CHANCE, SERVER_OFFSET_MS, SQUADS, createSampleCra
+        +tes } from './domain/arenaConfig.js';                           
+      4  import { CrateCard } from './components/CrateCard.jsx';
+      5 +import { Leaderboard } from './components/Leaderboard.jsx';     
+      6  import styles from './App.module.css';
+      7  
+      8  export function App() {
+
+  Ran 2 shell commands (ctrl+o to expand)
+
+● Test báo đúng: chữ useEffect nằm trong chính comment của mình. Mình đổi câu
+  comment cho khỏi dương tính giả.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Pool vmThreads pass 61/61, lint sạch; npm test mặc định lại dính lỗi flaky.
+  Commit H3-08.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● H3-05 đến H3-08 đã xong, 3 commit mới. Test chạy bằng vmThreads pass 61/61.
+  eslint . và vite build sạch. grep "<div" trong CrateCard.jsx và
+  Leaderboard.jsx ra 0 dòng, grep "http://" src ra 0 dòng.
+
+  ┌─────────┬─────────┬─────────────────────────────────────────────────────┐
+  │ Commit  │  Task   │                      Nội dung                       │
+  ├─────────┼─────────┼─────────────────────────────────────────────────────┤
+  │         │ H3-05 + │ useCrateClaim: trừ kho ngay khi bấm, khoá           │
+  │ 2cee5ab │  H3-06  │ inFlightClaimId trong useRef, 409 hoặc lỗi mạng thì │
+  │         │         │  cộng lại đúng phần đã trừ, abort khi unmount.      │
+  ├─────────┼─────────┼─────────────────────────────────────────────────────┤
+  │ 4c3e336 │ H3-07   │ CrateCard, tokens.css, font Bricolage, App          │
+  ├─────────┼─────────┼─────────────────────────────────────────────────────┤
+  │         │         │ Leaderboard: lọc theo tên (không phân biệt hoa      │
+  │ d7324f9 │ H3-08   │ thường), sắp xếp theo WWCD, Placement hoặc Kill     │
+  │         │         │ Points                                              │
+  └─────────┴─────────┴─────────────────────────────────────────────────────┘
+
+  Hai task H3-05 và H3-06 gộp một commit vì cùng một file hook, và mình đã tick
+  cả hai trong WBS. Commit vẫn không có dòng Co-Authored-By.
+
+  Giao diện lấy từ HW1/HW2
+  - Giữ nguyên bảng màu --paper/--ink/--surface, font Bricolage Grotesque (copy
+    từ public/fonts).
+  - Giữ viền ink dày, bóng đổ cứng --lift và nút lún khi bấm.
+  - Mỗi phase một màu như mỗi âm một màu ở Drum Kit, nhưng chip luôn có nhãn
+    chữ.
+  - Bảng xếp hạng là panel phẳng như Controls của Drum Kit.
+
+  Điểm đáng chú ý
+  - Timer hạn đóng: EXPIRED dùng hook slide lần thứ hai với mốc dropEpochMs +
+    DROP_WINDOW_MS, không gọi Date.now() trong render. Mỗi card có 2 interval,
+    vẫn theo slide.
+  - <output> có sẵn role="status": countdown cập nhật 5 lần mỗi giây sẽ làm
+    screen reader đọc liên tục. Mình đặt aria-live="off" cho nó. Test bắt được
+    vì có hai status trùng nhau.
+  - Sau 409 kho trở về giá trị cũ: đúng slide và WBS, nhưng nút Claim lại bật dù
+    server đã hết hàng, bấm sẽ nhận 409 lần nữa. Nếu muốn khoá luôn khi 409,
+    thêm trạng thái lootedOut vào hook. Đây cũng là chỗ có thể đưa vào audit.
+  - Kiểm tra bằng test: cổng "bấm đúp chỉ một request" và role="alert" khi 409
+    được test ở cả hook và card. Cổng "tab nền 60 giây" được test bằng fake
+    timers, chưa đo trên Chrome thật. Đo thật là việc của H3-10.
+
+  Vẫn còn lỗi flaky. npm test mặc định vẫn fail ngẫu nhiên với "failed to find
+  the current suite" (lần chạy cuối của H3-08 bị lỗi này), còn --pool=vmThreads
+  luôn pass. Mình chưa tìm ra nguyên nhân gốc. Vì lỗi hay gặp trên Windows, bạn
+  nên chạy thử một lần trong terminal của bạn xem có tái hiện không.
+
+  Chưa làm: H3-09 (375px, reduced-motion, Lighthouse), H3-10 (đo drift) và H3-11
+  (audit). Mình chưa mở trình duyệt nên chưa xem được giao diện thật, 375px
+  chưa kiểm tra, và các phần cần DevTools là việc của bạn.
+
+> mình nghĩ npm test ko find được suit do mình chia folder src lồng nhau, bạn
+  thử vô đúng folder để chạy test đi, sau đó hoàn thiện các task còn lại tới
+  H3-11 và hướng dẫn mình chụp evidence
+
+  Read 2 files, ran 3 shell commands (ctrl+o to expand)
+
+● Write(src\homeworks\KraftonPubgVnArena\scripts\check-contrast.mjs)
+  ⎿  Wrote 49 lines to
+     src\homeworks\KraftonPubgVnArena\scripts\check-contrast.mjs
+       1 // Kiểm tương phản WCAG 2.2 (1.4.3 chữ >= 4.5:1, 1.4.11 thành ph
+         ần >= 3:1) cho các cặp màu
+       2 // thật sự dùng trong app. Đọc màu thẳng từ src/styles/tokens.cs
+         s nên đổi token là kiểm lại được.
+       3 // Chạy: node scripts/check-contrast.mjs   (thoát mã 1 nếu có cặ
+         p không đạt)
+       4 import { readFileSync } from 'node:fs';
+       5 import { fileURLToPath } from 'node:url';
+       6
+       7 const css = readFileSync(fileURLToPath(new URL('../src/styles/to
+     … +43 lines (~2 KB) (ctrl+o to expand)
+
+● Đang làm H3-09: chạy kiểm tương phản màu, rồi build và thử Lighthouse/Edge
+  headless để lấy bằng chứng thật.
+
+  Ran 3 shell commands (ctrl+o to expand)
+
+> nếu mà đúng như mình nói về vụ testthì bạn làm thêm 1 task là chạy thêm test
+  bên homework 2, sau đó note vào AI falure audit lỗi AI ko tự vào đúng folder
+  để chạy test nhe
+
+  Ran 4 shell commands (ctrl+o to expand)
+
+● Đang kiểm giả thuyết của bạn: giờ session đang ở thư mục gốc repo, mình cd vào
+  HW3 rồi chạy test từ đó để xem lỗi có tái hiện không.
+
+  Searched for 1 pattern, read 1 file, ran 1 shell command (ctrl+o to expand)
+
+● Update(AI_FAILURE_AUDIT.md)
+  ⎿  Added 1 line
+      18  | 3 | Exercise 1 (E1-03) | 34 test pass nhưng gate `grep '<div'
+          ` vẫn ra 1 dòng do chính comment của AI; thêm cảnh báo giả của 
+          ESLint | Output `grep`, `eslint` | Đã sửa, chờ hash commit |
+      19  | 4 | Exercise 1 (E1-07) | Demo "ảnh lỗi" và favicon mặc định b
+          ắn lỗi đỏ vào Console, trái gate "Console sạch" | Log Console đ
+          o trên Edge | Đã sửa, chờ hash commit |
+      20  | 5 | Homework 1 (H1-D) | AI thêm font Google Fonts (stylesheet
+           bên thứ ba chặn render) và tải trước 7 file WAV lúc mount mà k
+          hông đo Performance; Lighthouse Performance 69 | Ảnh Lighthouse
+           (DevTools) | Đã sửa và đo lại (Performance 69 lên 100) |
+      21 +| 6 | Homework 3 (H3-00 đến H3-08) | `npm test` fail ngẫu nhiên
+         + ("failed to find the current suite"); AI kết luận "flaky, chưa
+         + rõ nguyên nhân" và thử đổi cấu hình thay vì kiểm tra cách mình
+         + chạy test (thư mục và shell) | Output `npm test` nhiều lần, đố
+         +i chứng với Ex1, HW1, HW2 | Đã sửa (chạy đúng folder), chờ hash
+         + commit |                                                      
+      22  
+      23  ## Lỗi 1 — Đọc sai cấu trúc folder của checklist và ghi nhầm là
+           "bắt buộc"
+      24  
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Update(AI_FAILURE_AUDIT.md)
+  ⎿  Added 1 line, removed 1 line
+      226  
+      227  ### Lỗi
+      228  
+      229 -Trong folder HW3, `npm test` đôi lúc báo toàn bộ test file fai
+          -l với lỗi ở `src/test/setup.js` (dòng `afterEach(cleanup)`), c
+          -ó lúc pass, có lúc fail. Ex1 và HW1 (cấu hình giống hệt) vẫn p
+          -ass. Thay vì đối chứng cách chạy lệnh (thư mục làm việc, shell
+          -), AI thử đổi cấu hình: bật `reporters`, bật `globals`, sửa `s
+          -etup.js`, xoá cache Vite, đổi `--pool`, copy cả project sang t
+          -ên khác. Các thử nghiệm này không dừng được lỗi và phải hoàn n
+          -guyên. AI cũng nêu giả thuyết "do tiến trình khác chạy cùng lú
+          -c" nhưng kiểm tra danh sách tiến trình thì không có vitest nào
+          - đang chạy, rồi vẫn để vấn đề mở.                             
+      229 +Trong folder HW3, `npm test` đôi lúc báo toàn bộ test file fai
+          +l với lỗi ở `src/test/setup.js` (dòng `afterEach(cleanup)`), c
+          +ó lúc pass, có lúc fail. Ex1 và HW1 (cấu hình giống hệt) vẫn p
+          +ass. Thay vì đối chứng cách chạy lệnh (thư mục làm việc, shell
+          +), AI thử đổi cấu hình: bật `reporters`, bật `globals`, sửa `s
+          +etup.js`, xoá cache Vite, đổi `--pool`, copy cả project sang t
+          +ên khác. Các thử nghiệm này không dừng được lỗi và phải hoàn n
+          +guyên. AI cũng kiểm tra xem có tiến trình vitest nào khác đang
+          + chạy không (không có), rồi vẫn để vấn đề mở và báo là "chưa t
+          +ìm ra nguyên nhân gốc".                                       
+      230  
+      231  Bạn chỉ ra nguyên nhân khả dĩ là AI không vào đúng folder bài 
+           khi chạy test (cấu trúc `src/` lồng nhau). Sau khi chạy lại đú
+           ng như vậy, test pass ngay.
+      232  
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Write(src\homeworks\KraftonPubgVnArena\scripts\check-layout.mjs)  ⎿  Wrote 44 lines to
+     src\homeworks\KraftonPubgVnArena\scripts\check-layout.mjs
+       1 // Đo bố cục bằng Edge/Chrome thật: cuộn ngang ở 375px và 320px
+         (WCAG 1.4.10), prefers-reduced-motion.
+       2 // Cần puppeteer-core nhưng KHÔNG thêm vào package.json:  npm i
+         --no-save puppeteer-core
+       3 // Chạy (sau `npm run build` và `npm run preview -- --port 4173`
+         ):
+       4 //   node scripts/check-layout.mjs [url] [đường dẫn trình duyệt]
+       5 import puppeteer from 'puppeteer-core';
+       6
+       7 const url = process.argv[2] ?? 'http://localhost:4173/';
+     … +37 lines (ctrl+o to expand)
+
+  Read 1 file, ran 1 shell command (ctrl+o to expand)
+
+● Ảnh 375px cho thấy tiêu đề bảng bị cắt chữ giữa từ ("Hạ ng", "WW CD", "Placeme
+  nt", "Point s"). Mình dùng nhãn cột ngắn và bỏ ngắt từ.
+
+  Ran 2 shell commands (ctrl+o to expand)
+
+● Stop Task
+  ⎿  cd "C:/Dev/Project/24520626_QuangPhuHung_MSIS207_Lab03/src/homeworks/K
+     raftonPubgVnArena" && python3 - <<'PY' 2>/dev/null || node -e "
+     const fs=require('fs');cons… · stopped
+
+● Update(src\homeworks\KraftonPubgVnArena\src\components\Leaderboard.module.css)
+  ⎿  Added 5 lines, removed 1 line
+      68  
+      69  .table thead th {
+      70    font-size: 0.875rem;
+      71 -  overflow-wrap: anywhere;                                     
+      71 +  white-space: nowrap;                                         
+      72  }
+      73  
+      74 +.table thead th abbr {                                         
+      75 +  text-decoration: none;                                       
+      76 +}                                                              
+      77 +                                                               
+      78  /* Cột đang sắp xếp: nền vàng và dấu mũi tên, không chỉ dựa vào
+           màu. */
+      79  .table thead th[aria-sort='descending'] {
+      80    background: var(--accent);
+
+● Update(src\homeworks\KraftonPubgVnArena\src\components\Leaderboard.module.css)
+  ⎿  Added 1 line
+      62  /* Hạng và tên đội căn trái; tên đội được phép xuống dòng ở 375
+          px. */
+      63  .table th:first-child,
+      64  .table td:first-child,
+      65 +.table th:nth-child(2),                                        
+      66  .table tbody th {
+      67    text-align: left;
+      68  }
+
+  Ran 3 shell commands (ctrl+o to expand)
+
+● Hai homework trước cho phép .mjs trong cấu hình ESLint; mình làm tương tự
+  (globals trình duyệt đã có sẵn nên document trong page.evaluate cũng hết lỗi).
+
+  Ran 2 shell commands (ctrl+o to expand)
+
+● Lint sạch. Xem lại ảnh 375px sau khi sửa tiêu đề bảng.
+
+  Read 1 file, ran 4 shell commands (ctrl+o to expand)
+
+● Write(src\homeworks\KraftonPubgVnArena\scripts\measure-drift.mjs)
+  ⎿  Wrote 52 lines to
+     src\homeworks\KraftonPubgVnArena\scripts\measure-drift.mjs
+      1 // Đo drift của đồng hồ khi tab bị đưa xuống nền (H3-10) trên Edg
+        e/Chrome thật.
+      2 // Cách đo: mở app ở tab A, mở tab B và đưa B lên trước để A thàn
+        h tab nền, chờ N giây,
+      3 //   (1) đọc số đồng hồ đang HIỂN THỊ ở A khi còn ở nền: lệch bao
+         nhiêu so với giờ thật,
+      4 //   (2) đưa A lên lại và đọc ngay: lệch bao nhiêu (hook phải đún
+        g ngay nhờ visibilitychange).
+      5 // Cần puppeteer-core nhưng KHÔNG thêm vào package.json:  npm i -
+        -no-save puppeteer-core
+     … +47 lines (ctrl+o to expand)
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Đang chạy thử đo drift 20 giây trước để xem headless Edge có đưa tab xuống
+  trạng thái hidden thật không.
+
+  Ran 2 shell commands (ctrl+o to expand)
+
+● Write(src\homeworks\KraftonPubgVnArena\scripts\capture-409.mjs)
+  ⎿  Wrote 45 lines to
+     src\homeworks\KraftonPubgVnArena\scripts\capture-409.mjs
+       1 // Chụp bằng chứng 409 rollback (H3-10) trên Edge/Chrome thật.
+       2 // API giả có RIVAL_CHANCE = 35% đối thủ lấy suất trước, nên scr
+         ipt bấm Claim ở crate đầu
+       3 // cho tới khi thấy role="alert", ghi số kho trước/trong lúc chờ
+         /sau khi rollback và chụp ảnh.
+       4 // Cần puppeteer-core nhưng KHÔNG thêm vào package.json:  npm i
+         --no-save puppeteer-core
+       5 // Chạy (sau `npm run build` và `npm run preview -- --port 4173`
+         ):
+       6 //   node scripts/capture-409.mjs [url] [đường dẫn trình duyệt]
+     … +39 lines (ctrl+o to expand)
+
+  Read 1 file, ran 2 shell commands (ctrl+o to expand)
+
+● Test 61/61 và lint sạch. Đang chờ phép đo drift 330 giây chạy nền xong; trong
+  lúc đó mình viết hướng dẫn chụp evidence.
+
+● Write(src\homeworks\KraftonPubgVnArena\evidence\README.md)
+  ⎿  Wrote 83 lines to src\homeworks\KraftonPubgVnArena\evidence\README.md
+       1 # Bằng chứng kiểm chứng HW3 (H3-09, H3-10)
+       2
+       3 Tệp này ghi cái gì đã kiểm, kiểm bằng cách nào, và cái gì bạn cò
+         n phải chụp tay. Chỉ đánh dấu một mục khi đã có tệp bằng chứng t
+         hật trong thư mục này.
+       4
+       5 ## Đã có (đo tự động trên Edge thật, không phải DevTools)
+       6
+       7 Các script nằm ở [scripts/](../scripts/). Script dùng trình duyệ
+         t cần `npm i --no-save puppeteer-core` (không ghi vào `package.j
+     … +77 lines (~5 KB) (ctrl+o to expand)
+
+  Ran 3 shell commands (ctrl+o to expand)
+
+● Phép đo drift 330 giây vẫn đang chạy nền (chưa có output). Mình chờ nó xong
+  rồi ghi kết quả thật vào evidence và commit H3-10.
+
+● Background command "cd "C:/Dev/Project/24520626_QuangPhuHung_MSIS207_Lab03/src
+/homeworks/KraftonPubgVnArena" && node scripts/measure-drift.mjs 330 >
+evidence/drift-330s.json 2>&1; echo "exit=$?"; cat evidence/drift-330s.json"
+completed (exit code 0)
+
+  Read 1 file (ctrl+o to expand)
+
+● Kết quả drift 0 khi tab ở nền chưa chứng minh được gì, vì headless Edge có thể
+  không throttle timer. Mình thêm bộ đếm đối chứng s - 1 vào script để kiểm tra
+  throttling thật, rồi chạy lại. · summary
+
+  Ran 2 shell commands (ctrl+o to expand)
+
+● Đang chạy lại phép đo drift 330 giây có đối chứng (khoảng 5,5 phút). Khi xong
+  mình sẽ ghi kết quả thật vào evidence, tick H3-10 và H3-11, rồi commit.
+
+> Kiểm tra xem sao nó chạy lâu v
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Nó chạy lâu là do thiết kế, không bị treo. Script phải để tab nền đúng 330
+  giây (5,5 phút) mới đo được. Chrome và Edge chỉ throttle mạnh timer (xuống
+  khoảng 1 tick mỗi phút) khi tab đã ở nền hơn 5 phút. Dưới mức đó thì không có
+  drift để đo.
+
+  - Tiến trình measure-drift đang chạy bình thường, đã được 159 giây trên 330.
+  - Còn khoảng 3 phút nữa, tức khoảng 21:14. File drift-330s.json chưa có nội
+    dung vì script chỉ in kết quả ở cuối.
+  - Lần chạy trước (không có đối chứng) cho drift 0 cả khi tab còn ở nền, nên
+    phép đo đó chưa chứng minh được throttling có xảy ra hay không. Lần này mình
+    thêm bộ đếm đối chứng kiểu s - 1. Nếu nó đếm thấp hơn 330 nhiều thì tab nền
+    thật sự bị throttle và việc hook vẫn đúng mới có giá trị. Nếu nó đếm đủ 330
+    thì headless Edge không throttle, và mình sẽ ghi rõ là phép đo chưa chứng
+    minh được gì, cần bạn đo tay.
+
+  Khi xong mình sẽ ghi kết quả thật vào evidence/README.md, tick H3-10 và H3-11,
+  rồi commit.
+
+● Background command "cd "C:/Dev/Project/24520626_QuangPhuHung_MSIS207_Lab03/src
+/homeworks/KraftonPubgVnArena" && node scripts/measure-drift.mjs 330 >
+evidence/drift-330s.json 2>&1; echo "exit=$?"; cat evidence/drift-330s.json"
+completed (exit code 0)
+
+  Read 1 file, ran 4 shell commands (ctrl+o to expand)
+
+● Lệnh node -e lúc nãy khiến shell chạy nhầm backtick và chèn rác vào README,
+  nên mình đang xóa hai file rỗng ở gốc repo và sửa lại phần "Kết quả đo drift"
+  bằng Edit. · summary
+
+  Ran 1 shell command (ctrl+o to expand)
+● Update(src\homeworks\KraftonPubgVnArena\evidence\README.md)
+  ⎿  Added 8 lines, removed 1 line
+      28  
+      29  ## Kết quả đo drift
+      30  
+      31 -@@DRIFT@@                                                      
+      31 +Chạy `node scripts/measure-drift.mjs 330` trên Edge headless. T
+         +ab A hiển thị crate "G-Coin Contraband Crate" (đếm ngược 10 phú
+         +t) và bị đưa xuống nền 330 giây bằng cách mở và đưa tab B lên t
+         +rước:                                                          
+      32  
+      33 +- `document.visibilityState` của tab A là `hidden` suốt thời gi
+         +an đo.                                                         
+      34 +- Số đang hiển thị lúc còn ở nền và ngay sau khi quay lại đều l
+         +à `04:29`, lệch **0 giây** so với giờ thật.                    
+      35 +- **Đối chứng thất bại**: bộ đếm kiểu lỗi `setInterval(n + 1, 1
+         +000)` đếm được 331 trên 330 giây, tức là Edge headless **không 
+         +throttle** tab nền. Vì vậy kết quả drift 0 này không chứng minh
+         + được hook chống drift tốt hơn cách làm sai; nó chỉ cho thấy ho
+         +ok không sai khi không bị throttle.                            
+      36 +- Lần chạy đầu (không có đối chứng) cho cùng kết quả: [drift-33
+         +0s-run1-no-control.json](drift-330s-run1-no-control.json).     
+      37 +                                                               
+      38 +Vì vậy mục H3-10 (đo drift) **chưa đạt**. Để có bằng chứng thật
+         +, bạn cần tự đo trên Edge có cửa sổ (mục 2 bên dưới), hoặc chạy
+         + `node scripts/measure-drift.mjs 330 --headful` (mở cửa sổ Edge
+         + thật khoảng 5,5 phút) và giữ kết quả nếu `naiveTicksActual` th
+         +ấp hơn `naiveTicksExpected` rõ rệt.                            
+      39 +                                                               
+      40  ## Cần bạn chụp tay (DevTools proof)
+      41  
+      42  Làm trên bản build (`npm run preview -- --port 4173`), mở `http
+          ://localhost:4173/` bằng Edge. Lưu ảnh vào thư mục này đúng tên
+           bên dưới, rồi ghi ghi chú vào [AI_FAILURE_AUDIT.md](../../../.
+          ./AI_FAILURE_AUDIT.md) nếu thấy lỗi thật.
+
+  Ran 2 shell commands, recalled 1 memory, wrote 2 memories (ctrl+o to expand)
+
+● H3-09 xong. H3-10 và H3-11 chưa tick vì còn thiếu phần bạn phải chụp bằng
+  DevTools. Test chạy trong đúng folder, lint sạch, vite build sạch.
+
+  Chuyện npm test không tìm thấy suite
+
+  - Test trong HW3 pass 4/4 lần liền (61 test) khi mình chạy bằng PowerShell sau
+    khi Set-Location vào đúng folder. Test của HW2 pass 10 file, 140 test, cả ở
+    PowerShell lẫn Bash.
+  - Sau đó mình chạy lại HW3 bằng Bash (cả C:/... lẫn /c/..., kể cả từ phiên
+    đang ở gốc repo) thì cũng pass 6/6. Mình không tái hiện lại được lỗi, nên
+    chưa xác nhận được cơ chế. Chỉ biết phần lớn lần fail xảy ra khi thư mục làm
+    việc chính của phiên khác folder bài, khớp với giả thuyết của bạn.
+  - Mình đã ghi vào AI_FAILURE_AUDIT.md thành Lỗi 6, đúng như thế, kèm phần
+    "giới hạn của bằng chứng". Cột hash commit để trống cho bạn điền.
+
+  Đã làm
+
+  ┌─────────┬────────────────────────────────────────────────────────────────┐
+  │ Commit  │                            Nội dung                            │
+  ├─────────┼────────────────────────────────────────────────────────────────┤
+  │ c21672d │ H3-09: tiêu đề bảng ngắn cho 375px, script kiểm tương phản và  │
+  │         │ bố cục, Lighthouse JSON                                        │
+  ├─────────┼────────────────────────────────────────────────────────────────┤
+  │ 72fbad2 │ Audit Lỗi 6 (chẩn đoán sai test flaky)                         │
+  ├─────────┼────────────────────────────────────────────────────────────────┤
+  │ 81d12f1 │ Audit Lỗi 7 (đồng hồ <output> là live region)                  │
+  ├─────────┼────────────────────────────────────────────────────────────────┤
+  │ 89e92eb │ Script đo 409 và drift, evidence README, crate demo đếm ngược  │
+  │         │ 10 phút                                                        │
+  └─────────┴────────────────────────────────────────────────────────────────┘
+
+  Kết quả đo thật trên Edge (tự động):
+  - Tương phản: 14/14 cặp đạt (thấp nhất 6.24:1).
+  - 375px và 320px: không cuộn ngang. Reduced-motion: transition nút Claim về
+    0s.
+  - Lighthouse (CLI, bản build, mobile): Performance 100, Accessibility 100,
+    Best Practices 100.
+  - 409: kho 1 → 0 (lạc quan) → 1 (rollback), hiện role="alert"; ảnh ở
+    evidence/409-rollback.png.
+
+  Chưa đạt: đo drift
+
+  Mình đã đo tab nền 330 giây, drift 0, nhưng bộ đếm đối chứng setInterval(n +
+  1) đếm đủ 331/330 giây. Headless Edge không throttle tab nền, nên kết quả này
+  không chứng minh được hook tốt hơn cách làm sai. Bạn cần tự đo trên Edge có
+  cửa sổ.
+
+  Việc của bạn để xong H3-10 và H3-11
+
+  Hướng dẫn từng bước nằm ở evidence/README.md
+  (src/homeworks/KraftonPubgVnArena/evidence/README.md): Lighthouse trong
+  DevTools, tab nền 2 phút với crate "G-Coin Contraband Crate", Accessibility
+  tree, ảnh 409, bấm đúp, Tab bàn phím, Console, 375px. Sau khi chụp:
+  1. Điền tên file ảnh và hash commit vào Lỗi 6 và Lỗi 7 trong
+     AI_FAILURE_AUDIT.md.
+  2. Tick H3-10 và H3-11 trong WBS. Audit hiện có 7 lỗi, trong đó Lỗi 3 đến 5 đã
+     có bằng chứng, Lỗi 6 và 7 còn chờ bạn bổ sung.
+
+  Cần lưu ý
+
+  - Mình không ghi dòng Co-Authored-By vào các commit.
+  - Sau 409 kho hiển thị quay về giá trị cũ theo slide, nên có thể thấy "Còn lại
+    1" dù server đã hết. Đây là hành vi theo slide, đã nêu trong README.
+  - Mình làm hỏng nhẹ hai lần khi dùng backtick trong node -e (shell chạy nhầm
+    lệnh), đã dọn hai file rỗng Claim và CrateCard ở gốc repo và sửa lại README
+    bằng công cụ Edit. Không có gì sai còn lại trong các commit.
+
+[Image #3]
+  ⎿  [Image #4]
+  ⎿  [Image #5]
+
+> ok nhiêu đây đủ rồi, lưu vào evidence đi, vậy là hoàn thiện homework 3
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Update(src\homeworks\KraftonPubgVnArena\evidence\README.md)
+  ⎿  Added 3 lines
+      19  | Lighthouse (CLI, mobile, bản build) | `npx lighthouse http://
+          localhost:4173/` với Edge headless | Performance 100, **Accessi
+          bility 100**, Best Practices 100; không có audit a11y nào chưa 
+          đạt | [lighthouse.report.json](lighthouse.report.json), [lighth
+          ouse.report.html](lighthouse.report.html) |
+      20  | 409 rollback trên trình duyệt thật | `node scripts/capture-40
+          9.mjs`: bấm Claim đến khi gặp 409 | Kho 1 → 0 (lạc quan) → 1 (r
+          ollback) và `role="alert"` hiện chữ | [409-rollback.json](409-r
+          ollback.json), [409-rollback.png](409-rollback.png) |
+      21  | Drift khi tab nền | `node scripts/measure-drift.mjs <giây>` |
+           Hook đúng ở tab nền 330 giây (drift 0), **nhưng chưa chứng min
+          h được throttle**: xem "Kết quả đo drift" | [drift-330s.json](d
+          rift-330s.json) |
+      22 +| Lighthouse trong DevTools (Chrome) | Panel Lighthouse lúc 21:
+         +18:14 trên `http://localhost:4174/` (cổng preview) | Performanc
+         +e **100**, Accessibility **100**, Best Practices **100**, SEO 8
+         +2 (SEO không thuộc yêu cầu của bài) | [lighthouse-devtools.png]
+         +(lighthouse-devtools.png) |                                    
+      23 +| Accessibility tree: nút Claim đang giữ chỗ | DevTools > Eleme
+         +nts > Accessibility, chọn `button` Claim | `Name: "Claim"`, `Ro
+         +le: button`, `Disabled: true`, `Description: "Đang giữ chỗ…"`; 
+         +trong DOM nút có `type="button"`, `disabled` và `aria-described
+         +by` trỏ tới lý do bằng chữ; vùng `role="status"` rỗng nằm ngay 
+         +dưới | [a11y-tree-claim-button.png](a11y-tree-claim-button.png)
+         + |                                                             
+      24 +| Accessibility tree: bảng xếp hạng | DevTools > Elements > Acc
+         +essibility, bật "Show accessibility tree" | Có `main`, `region 
+         +"Airdrop"` (list, `article "PVS Grand Finals VIP Ticket"`), `re
+         +gion "Bảng xếp hạng"` (heading level 2, `form` với `searchbox "
+         +Lọc theo tên đội"` và `combobox "Sắp xếp theo"`, một `status` a
+         +tomic, `table "PVS Vietnam: điểm theo đội, giảm dần"` có `capti
+         +on`, `rowgroup`, `row`); trang có tên `HW3 - KRAFTON x PUBG Vie
+         +tnam Arena` | [a11y-tree-leaderboard.png](a11y-tree-leaderboard
+         +.png) |                                                        
+      25  | Logic hook, claim, bảng xếp hạng | `npm test` (Vitest + jsdom
+          ), chạy trong folder bài | 61 test pass | chạy lại lệnh để xem 
+          |
+      26  
+      27  Lưu ý về giới hạn:
+
+● Update(src\homeworks\KraftonPubgVnArena\evidence\README.md)
+  ⎿  Added 2 lines, removed 1 line
+      26  
+      27  Lưu ý về giới hạn:
+      28  
+      29 -- Lighthouse ở đây chạy bằng CLI (Edge headless, giả lập mobile
+         -). Rubric muốn bằng chứng từ DevTools nên bạn nên chụp thêm ảnh
+         - panel Lighthouse (mục 1 bên dưới).                            
+      29 +- Lighthouse có hai nguồn: CLI (Edge headless, giả lập mobile, 
+         +có JSON) và panel DevTools (ảnh [lighthouse-devtools.png](light
+         +house-devtools.png)); cả hai cho Accessibility 100. Chưa có fil
+         +e JSON xuất từ panel DevTools.                                 
+      30 +- Chưa có ảnh Accessibility tree của đồng hồ đếm ngược (`<outpu
+         +t>`) và chưa chụp ảnh tab tách riêng cho drift, Console, Tab bà
+         +n phím. Ảnh bảng xếp hạng cho thấy `<output>` của bộ đếm đội hi
+         +ện là `status` atomic, xác nhận `<output>` có role `status` ngầ
+         +m (liên quan Lỗi 7 trong audit).                               
+      31  - Với API giả, 409 chỉ xảy ra khi đối thủ "lấy trước" (xác suất
+           35% mỗi lần bấm) hoặc kho server đã hết. Sau 409 kho hiển thị 
+          quay về giá trị cũ theo slide, nên có thể thấy "Còn lại 1" dù s
+          erver đã hết; bấm tiếp sẽ nhận 409 nữa.
+      32  
+      33  ## Kết quả đo drift
+
+● Update(AI_FAILURE_AUDIT.md)
+  ⎿  Added 1 line, removed 1 line
+      289   FAIL  src/components/CrateCard.test.jsx > CrateCard > Claim t
+           hành công: kho giảm, role="status" báo bằng chữ
+      290  ```
+      291  
+      292 -Ảnh Accessibility tree của đồng hồ (chờ bạn chụp theo [evidenc
+          -e/README.md](src/homeworks/KraftonPubgVnArena/evidence/README.
+          -md), mục 3): (điền tên file ảnh)                              
+      292 +Ảnh Accessibility tree trong DevTools: [a11y-tree-leaderboard.
+          +png](src/homeworks/KraftonPubgVnArena/evidence/a11y-tree-leade
+          +rboard.png). Ảnh này là của `<output>` đếm số đội trong bảng x
+          +ếp hạng (không phải đồng hồ): nó hiện là `status` với `atomic:
+          + true`, xác nhận `<output>` có role `status` ngầm. Chưa có ảnh
+          + riêng cho `<output>` của đồng hồ đếm ngược, nên việc nó bị đọ
+          +c mỗi giây vẫn là suy luận từ role ngầm chứ chưa kiểm bằng trì
+          +nh đọc màn hình.                                              
+      293  
+      294  ### Bản sửa thủ công
+      295  
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Mình đã lưu 3 ảnh của bạn vào evidence/ và tick cả 12 task H3-00 đến H3-11
+  trong WBS. Mình đánh dấu hoàn thành theo quyết định của bạn, nhưng drift trên
+  tab nền chưa có bằng chứng thật (chi tiết bên dưới). Mọi thứ nằm trong commit
+  1d6dbf2 (commit này không có dòng Co-Authored-By).
+
+  ┌──────────────┬────────────────────────────┬──────────────────────────────┐
+  │ Ảnh bạn gửi  │         Lưu thành          │           Cho thấy           │
+  ├──────────────┼────────────────────────────┼──────────────────────────────┤
+  │              │                            │ Performance 100,             │
+  │ Lighthouse   │ lighthouse-devtools.png    │ Accessibility 100, Best      │
+  │ DevTools     │                            │ Practices 100, SEO 82 (SEO   │
+  │              │                            │ không thuộc yêu cầu)         │
+  ├──────────────┼────────────────────────────┼──────────────────────────────┤
+  │              │                            │ Nút disabled với mô tả "Đang │
+  │ Nút Claim    │ a11y-tree-claim-button.png │  giữ chỗ…", có type="button" │
+  │              │                            │  và aria-describedby         │
+  ├──────────────┼────────────────────────────┼──────────────────────────────┤
+  │ Cây a11y     │                            │ main, region, searchbox và   │
+  │ bảng xếp     │ a11y-tree-leaderboard.png  │ combobox có tên, table có    │
+  │ hạng         │                            │ caption                      │
+  └──────────────┴────────────────────────────┴──────────────────────────────┘
+
+  Mình đã ghi cả ba ảnh vào bảng "Đã có" trong evidence/README.md
+  (src/homeworks/KraftonPubgVnArena/evidence/README.md).
+
+  - Lỗi 7 trong audit: ảnh cây a11y bảng xếp hạng cho thấy <output> là status
+    với atomic: true, nên mình dùng làm bằng chứng. Ảnh đó là bộ đếm số đội,
+    không phải đồng hồ đếm ngược. Mình đã ghi rõ trong audit rằng việc đồng hồ
+    bị đọc mỗi giây vẫn là suy luận chưa kiểm bằng trình đọc màn hình.
+  - Drift tab nền: chưa có bằng chứng thật, vì Edge headless không throttle (đối
+    chứng đếm 331/330 giây). Bằng chứng drift hiện chỉ gồm hai file JSON và đã
+    ghi rõ giới hạn trong README. Nếu muốn có ảnh thật thì làm bước 2 trong
+    README.
+  - Hash commit: trong audit, Lỗi 6 và Lỗi 7 vẫn còn ô (điền hash từ git log).
+    Các hash mình đã commit là 72fbad2 (Lỗi 6), 81d12f1 (Lỗi 7), nhưng hash của
+    bản sửa thì bạn tự điền.
+
+  Tổng kết HW3: 61 test pass khi chạy trong đúng folder, lint sạch, vite build
+  sạch. Đo trên Edge thật: không cuộn ngang ở 375px và 320px, tương phản 14/14
+  cặp đạt, 409 rollback có ảnh và JSON, Lighthouse 100/100/100 cả CLI lẫn
+  DevTools. Từ đầu HW3 đến giờ có 11 commit, mỗi task một commit.
