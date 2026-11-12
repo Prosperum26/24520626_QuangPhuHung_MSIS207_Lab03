@@ -1,0 +1,42 @@
+\documentclass[12pt,a4paper]{report}
+
+% Compile with XeLaTeX (twice, to update the table of contents)
+\input{preamble/packages.tex}
+
+\setlength{\parindent}{0pt}
+\newcolumntype{L}[1]{>{\RaggedRight\arraybackslash}p{#1}}
+
+% Figure helper: shows the image if the file exists, otherwise a visible
+% placeholder, so the report compiles while evidence is still missing.
+% Usage: \evfig{file}{width}{caption}{label}
+\newcommand{\evfig}[4]{%
+  \begin{figure}[H]
+    \centering
+    \IfFileExists{images/#1}{%
+      \includegraphics[width=#2\textwidth]{images/#1}%
+    }{%
+      \fbox{\parbox[c][4cm][c]{0.7\textwidth}{\centering
+        \textbf{[TODO: evidence missing]}\\ \texttt{\detokenize{#1}}}}%
+    }
+    \caption{#3}
+    \label{#4}
+  \end{figure}%
+}
+
+% Marks text that must be filled in once Exercise 1 is verified.
+\newcommand{\todo}[1]{\textcolor{red}{\textbf{[TODO: #1]}}}
+
+\begin{document}
+
+\pagenumbering{roman}
+\input{frontmatter/titlepage}
+\input{frontmatter/toc_lists}
+
+\clearpage
+\pagenumbering{arabic}
+
+\input{chapters/chapter1}
+\input{chapters/chapter2}
+\input{chapters/chapter3}
+\input{chapters/conclusion}
+\end{document}
