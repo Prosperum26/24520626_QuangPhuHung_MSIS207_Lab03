@@ -1,0 +1,1199 @@
+  ⎿  SessionStart:startup hook error
+  ⎿  [bash C:\Users\Phu Hung\.claude\plugins\cache\anthropic-plugin-directory\cl
+     aude-memory\1.0.0-0afb7b2da7cc/hooks/scripts/memory-context.sh]:
+     C:/Users/Phu: line 1: syntax error near unexpected token `('
+
+[Image #1]
+
+> ok trong lúc chờ hoàn thiệm homework 3 ta bắt đầu brainstorm bonus homework,
+  cái này bonus nên ngoài cái của thầy mình nghĩ nên có tùy ý sáng tạo mạnh 1
+  tí, mình đang tải nhạc nền mp3 bài hát về cho bạn sài luôn
+
+● Using superpowers:brainstorming to explore the bonus homework idea before any
+  code.
+
+● Skill(superpowers:brainstorming)
+  ⎿  Successfully loaded skill
+
+● Đây là bài mới nên mình đi đủ quy trình (câu hỏi, phương án, design, spec) và
+  chưa viết code, bắt đầu bằng việc đọc bối cảnh trong repo. · summary
+
+  Searched for 2 patterns, read 2 files (ctrl+o to expand)
+
+● Mình đã đọc xong bối cảnh. Phần bonus của đề (Context.md §10) rất gọn: FSM,
+  reducer nỗ lực bất đối xứng, timer "seen không rep" 5 giây, <output
+  role="status">, 375px. WBS có sẵn ở BonusSituationship/TASK_DECOMPOSITION.md
+  (src/homeworks/BonusSituationship/TASK_DECOMPOSITION.md), chia thành B-00 đến
+  B-05.
+
+  Mình hiểu như sau (bạn sửa nếu sai):
+  - Phần của thầy (giữ nguyên làm lõi): FSM thay boolean, reducer log bất biến,
+    điểm và cờ đỏ là state dẫn xuất, timer ghosting có cleanup, a11y và 375px.
+  - Phần của bạn: lớp sáng tạo bên trên lõi đó. Bài không chấm điểm, nên mục
+    tiêu là làm cho "ra chất" và vẫn giải thích được khi bị thầy sửa code tại
+    chỗ.
+  - Nhạc nền mp3: bạn tự tải. Hai điểm cần lưu ý:
+    - Trình duyệt chặn autoplay, và WCAG 1.4.2 yêu cầu có nút tạm dừng. Vì vậy
+      nhạc sẽ do người dùng bấm bật, không tự phát.
+    - File mp3 có bản quyền thì nên để ngoài git (thêm vào .gitignore) hoặc chỉ
+      dùng cục bộ.
+
+  Câu hỏi chính, để định hướng sáng tạo. Bạn muốn phần "sáng tạo mạnh" nghiêng
+  về hướng nào?
+
+  1. Nhạc điều khiển state (khuyên chọn). Nhạc là một phần của FSM. Vào
+     DATING_NO_LOVE thì nhạc chạy bình thường. Khi GHOSTED_EXIT thì nhạc tắt dần
+     và AudioContext được dọn. Nút chuyển pha tác động vào âm thanh. Hướng này
+     nối với bài HW2 (Web Audio) và phần cleanup, nên dễ giải thích.
+  2. Kể chuyện bằng giao diện. Giao diện mô phỏng khung chat. Mỗi lần "nhắn" tạo
+     một signal, có đồng hồ "Đã xem" đếm ngược 5 giây, và màu sắc đổi theo từng
+     pha. Nhạc chỉ làm nền.
+  3. Lyrics sync. Lời bài hát hiện theo thời gian phát (timeupdate), mỗi câu gắn
+     với một sự kiện FSM (ví dụ câu "chắc em là kẻ mất trí" kích hoạt
+     red-flag). Hướng này ấn tượng nhất nhưng phải tự gõ timestamp, và khó đảm
+     bảo kiểm chứng được.
+  4. Kết hợp 1 và 2, bỏ lyrics sync.
+
+  Bạn chọn số mấy, hay muốn một hướng khác? Sau câu trả lời này mình sẽ hỏi tiếp
+  về bộ tên trạng thái (slide có hai bộ mâu thuẫn), rồi đề xuất 2-3 phương án
+  kiến trúc.
+
+> à vậy thì khỏi nhạc, bản quyền khổ lắm, làm nhanh đơn giản thôi do là bonus
+
+● Ok, bỏ nhạc. Mình giữ đúng lõi của đề và dùng WBS B-00 đến B-05 có sẵn, không
+  thêm thứ gì khác. Dưới đây là design ngắn để bạn duyệt trước khi mình viết
+  code.
+
+  Chốt các điểm slide còn mơ hồ
+  - Bộ trạng thái: FRIENDS | DATING_NO_LOVE | OFFICIAL_LOVE | GHOSTED_EXIT, theo
+    bộ trong code mẫu của slide (Context.md §9).
+  - Bảng chuyển (hàm thuần transition(phase, event)):
+    - FRIENDS → DATING_NO_LOVE bằng ASK_OUT
+    - DATING_NO_LOVE → OFFICIAL_LOVE bằng COMMIT
+    - DATING_NO_LOVE hoặc OFFICIAL_LOVE → GHOSTED_EXIT bằng GHOST
+    - GHOSTED_EXIT là trạng thái cuối. Sự kiện không hợp lệ thì trả về pha cũ.
+  - Nút "Dừng Lại" và nút Reset: Dừng Lại gửi GHOST. Reset đưa pha về FRIENDS và
+    xoá log.
+
+  Cấu trúc (một project Vite riêng, copy cấu hình từ Ex1)
+  - src/fsm.js: transition() thuần, kèm test.
+  - src/effort.js:
+    - Reducer log tín hiệu bất biến, dùng [...prev, signal].
+    - Hàm điểm impact = steps * multiplier.
+    - Multiplier là hằng số theo actor: EM 0.1, AI_DO 50.
+    - isRedFlag = phase === 'DATING_NO_LOVE' && emImpact < rivalImpact. Hai điểm
+      tổng và cờ đỏ tính trong render bằng reduce, không dùng useEffect.
+  - src/SituationshipAnalyzer.jsx dùng một useReducer giữ { phase, log }.
+    - Form có <select> actor và <input type="number"> steps, cả hai có useId +
+      <label htmlFor>. Số đọc bằng valueAsNumber kèm Number.isNaN.
+    - Cảnh báo nằm trong <output role="status" aria-live="polite">.
+    - Timer "seen không rep" là một useEffect có clearTimeout. Nó chạy khi phase
+      === 'DATING_NO_LOVE' và log có tín hiệu EM cuối cùng chưa có AI_DO trả
+      lời. Sau 5 giây không có phản hồi thì gửi GHOST. Thêm tín hiệu mới hoặc
+      bấm Dừng Lại thì effect cleanup dọn timer.
+  - CSS Modules + Custom Properties, 375px không cuộn ngang.
+
+  Thay đổi so với WBS
+  - B-04 ghi "abort promise", nhưng bài này không có request nào (đề loại AI
+    chat thật). Mình bỏ phần abort và chỉ giữ clearTimeout. Nếu thầy hỏi, câu
+    trả lời là không có promise nào để abort.
+  - Dependency của effect là [phase, log.length] thay vì [phase, myTries], vì
+    phải reset timer khi AI_DO phản hồi.
+  - B-00 cần npm install trong folder mới. Mình sẽ chạy lệnh này khi bạn đồng ý.
+
+  Quy trình
+  - Mỗi lượt làm một task: B-00 → B-01 → B-02 → B-03 → B-04 → B-05, có test và
+    lint thật trước khi báo xong. Mình không commit, chỉ đề xuất commit theo hai
+    message của đề.
+  - Bài này đơn giản nên mình không viết spec file riêng. WBS hiện có đã đóng
+    vai trò đó.
+
+  Bạn duyệt design này chứ? Nếu duyệt, mình bắt đầu từ B-00. Nếu muốn đổi bảng
+  chuyển trạng thái hoặc để timeout không tự GHOST, bạn nói luôn.
+
+> ok viết chi tiết Task de compostition, commit rồi bắt đầu làm dần đi
+
+● Mình viết lại WBS chi tiết trước.
+
+● Write(src\homeworks\BonusSituationship\TASK_DECOMPOSITION.md)
+  ⎿  Added 95 lines, removed 14 lines
+        8  `<SituationshipAnalyzer />` lấy cảm hứng từ bài "Hẹn Hò Nhưng 
+           Không Yêu": thay bộ boolean mâu thuẫn bằng máy trạng thái hữu 
+           hạn, tính điểm bất đối xứng bằng state dẫn xuất, timer "seen k
+           hông rep" 5 giây có cleanup.
+        9  
+       10  **Ràng buộc cứng:** FSM thay cho `isDating`/`isLoved`; nhật ký
+            tín hiệu bất biến (`[...prev, signal]`); điểm và cờ đỏ tính t
+           rong render; cảnh báo trong `<output role="status" aria-live="
+           polite">`; input có `useId` + label; 375px.
+       11 -**Ngoài phạm vi:** AI chat thật, lưu trữ.                     
+       11  
+       13 -## 2. Contract                                                
+       12 +**Ngoài phạm vi:** AI chat thật, lưu trữ, âm thanh/nhạc nền (b
+          +ản quyền, không cần cho bonus), request mạng.                 
+       13  
+       15 -Slide có hai bộ tên trạng thái mâu thuẫn ([Context.md §9](../.
+          -./../docs/Context.md)); **chốt một bộ** ở task B-01 (đề xuất b
+          -ộ trong code mẫu):                                            
+       14 +## 2. Quyết định đã chốt                                      
+       15  
+       16 +| Vấn đề | Quyết định | Lý do |                               
+       17 +|---|---|---|                                                 
+       18 +| Hai bộ tên trạng thái trong slide | `FRIENDS`, `DATING_NO_LO
+          +VE`, `OFFICIAL_LOVE`, `GHOSTED_EXIT` | Bộ trong code mẫu; Cont
+          +ext.md §9 yêu cầu chọn một bộ và nhất quán |                  
+       19 +| Multiplier | Hằng số theo actor: `EM` = 0.1, `AI_DO` = 50 | 
+          +Form chỉ nhập `steps`, giảm bề mặt lỗi |                      
+       20 +| Timeout timer | Hết 5 giây không có `AI_DO` trả lời thì gửi 
+          +`GHOST` | Giữ đúng ý "seen không rep"; Reset để chơi lại |    
+       21 +| "Abort promise" trong đề | Bỏ; chỉ `clearTimeout` | Bài khôn
+          +g có promise/request nào để abort |                           
+       22 +| State | Một `useReducer` giữ `{ phase, log }` | Một chỗ duy 
+          +nhất đổi state, dễ nâng/thêm field khi bị sửa tại chỗ |       
+       23 +| Dependency của effect | `[phase, log]` | Reset timer khi `AI
+          +_DO` phản hồi, không chỉ khi `EM` nhắn |                      
+       24 +                                                              
+       25 +## 3. Contract                                                
+       26 +                                                              
+       27  ```js
+       28  /** @typedef {'FRIENDS'|'DATING_NO_LOVE'|'OFFICIAL_LOVE'|'GHOS
+           TED_EXIT'} RelationshipPhase */
+       29 +/** @typedef {'ASK_OUT'|'COMMIT'|'GHOST'} RelationshipEvent */
+       30  /** @typedef {{ id:string, actor:'EM'|'AI_DO', steps:number, m
+           ultiplier:number }} EffortSignal */
+       20 -// impact = steps * multiplier   (vd EM: 100 * 0.1 = 10;  AI_D
+          -O: 1 * 50 = 50)                                               
+       31 +/** @typedef {{ phase: RelationshipPhase, log: readonly Effort
+          +Signal[] }} AnalyzerState */                                  
+       32 +                                                              
+       33 +// impact(signal) = steps * multiplier   (vd EM: 100 * 0.1 = 1
+          +0;  AI_DO: 1 * 50 = 50)                                       
+       34 +// emImpact / rivalImpact = tổng impact của log theo actor    
+       35  // isRedFlag = phase === 'DATING_NO_LOVE' && emImpact < rivalI
+           mpact
+       36  ```
+       37  
+       24 -- Bảng chuyển trạng thái (hàm thuần `transition(phase, event)`
+          -) đặt một chỗ; `GHOSTED_EXIT` là trạng thái cuối (unmount, giả
+          -i phóng timer).                                               
+       25 -- Timer ghosting: effect phụ thuộc `[phase, myTries]`; cleanup
+          - `clearTimeout`; nút "Dừng Lại" cũng dọn timer.               
+       38 +**Bảng chuyển** (`transition(phase, event)`, hàm thuần, đặt mộ
+          +t chỗ trong `src/fsm.js`):                                    
+       39  
+       27 -## 3. Task                                                    
+       40 +| Từ pha | Sự kiện | Sang pha |                               
+       41 +|---|---|---|                                                 
+       42 +| `FRIENDS` | `ASK_OUT` | `DATING_NO_LOVE` |                  
+       43 +| `DATING_NO_LOVE` | `COMMIT` | `OFFICIAL_LOVE` |             
+       44 +| `DATING_NO_LOVE` | `GHOST` | `GHOSTED_EXIT` |               
+       45 +| `OFFICIAL_LOVE` | `GHOST` | `GHOSTED_EXIT` |                
+       46 +| `GHOSTED_EXIT` | mọi sự kiện | `GHOSTED_EXIT` (trạng thái cu
+          +ối) |                                                         
+       47 +| Cặp khác | | giữ nguyên pha cũ |                            
+       48  
+       49 +**Invariant:**                                                
+       50 +- Không có cặp boolean nào mô tả quan hệ; chỉ `phase`.        
+       51 +- `log` không bao giờ bị mutate; thêm tín hiệu bằng `[...log, 
+          +signal]`.                                                     
+       52 +- `emImpact`, `rivalImpact`, `isRedFlag` không nằm trong state
+          +, tính lại mỗi render.                                        
+       53 +- Mọi `setTimeout` có `clearTimeout` trong cleanup; unmount kh
+          +ông để lại timer.                                             
+       54 +- `id` của tín hiệu duy nhất (counter trong reducer hoặc `cryp
+          +to.randomUUID()`), dùng làm `key`.                            
+       55 +                                                              
+       56 +## 4. Task                                                    
+       57 +                                                              
+       58  | ID | Task | File | Gate | Trạng thái |
+       59  |---|---|---|---|---|
+       60  | B-00 | Khởi tạo project Vite riêng: sao chép `package.json` 
+           (đổi `name`), `vite.config.js`, `eslint.config.js`, `index.htm
+           l`, `src/main.jsx`, `src/test/setup.js` từ Ex1, rồi `npm insta
+           ll` | `package.json`, `vite.config.js`, `eslint.config.js`, `i
+           ndex.html`, `src/main.jsx`, `src/test/setup.js` | `npm test` v
+           à `npm run lint` chạy được | [ ] |
+       32 -| B-01 | Chốt bộ trạng thái + `transition()` thuần | `src/fsm.
+          -js` | Test: mọi chuyển hợp lệ/không hợp lệ | [ ] |            
+       33 -| B-02 | Reducer nhật ký tín hiệu bất biến + điểm dẫn xuất | `
+          -src/effort.js` | Test: không mutate; điểm đúng | [ ] |        
+       34 -| B-03 | Component + `<output role="status">` cờ đỏ | `src/Sit
+          -uationshipAnalyzer.jsx` | Test: red flag khi `em < rival` | [ 
+          -] |                                                           
+       35 -| B-04 | Ghosting timer 5s + cleanup + abort promise | `src/Si
+          -tuationshipAnalyzer.jsx` | Test (fake timers): unmount không c
+          -òn timer | [ ] |                                              
+       36 -| B-05 | Form tín hiệu `useId` + label; CSS Modules 375px | `s
+          -rc/**/*.module.css` | Lighthouse a11y 100 | [ ] |             
+       61 +| B-01 | Chốt bộ trạng thái + `transition()` thuần | `src/fsm.
+          +js`, `src/fsm.test.js` | Test: mọi chuyển hợp lệ; cặp không hợ
+          +p lệ giữ pha; `GHOSTED_EXIT` bất động với mọi sự kiện | [ ] | 
+       62 +| B-02 | Reducer nhật ký tín hiệu bất biến + điểm dẫn xuất | `
+          +src/effort.js`, `src/effort.test.js` | Test: không mutate (`Ob
+          +ject.freeze` mảng gốc); `100 × 0.1` vs `1 × 50`; `isRedFlag` đ
+          +úng theo pha | [ ] |                                          
+       63 +| B-03 | Component + `<output role="status">` cờ đỏ | `src/Sit
+          +uationshipAnalyzer.jsx`, `src/SituationshipAnalyzer.test.jsx` 
+          +| Test: red flag khi `em < rival` ở `DATING_NO_LOVE`; không có
+          + cờ ở pha khác; `role="status"` có nội dung đúng | [ ] |      
+       64 +| B-04 | Ghosting timer 5s + cleanup | `src/SituationshipAnaly
+          +zer.jsx` | Test (fake timers): hết 5s sang `GHOSTED_EXIT`; `AI
+          +_DO` trả lời hoặc Dừng Lại thì hủy; unmount không còn timer (`
+          +vi.getTimerCount() === 0`) | [ ] |                            
+       65 +| B-05 | Form tín hiệu `useId` + label; CSS Modules 375px | `s
+          +rc/SituationshipAnalyzer.module.css`, `src/App.jsx` | Lighthou
+          +se a11y 100; 375px không cuộn ngang; `valueAsNumber` + `Number
+          +.isNaN` có test | [ ] |                                       
+       66  
+       38 -## 4. Commit (từ đề)                                          
+       67 +### Chi tiết từng task                                        
+       68  
+       40 -`feat(fsm): model HenHoKhongYeu state machine` (B-01, B-02) · 
+          -`feat(ui): add derived red-flag meter & ghosting cleanup` (B-0
+          -3 đến B-05)                                                   
+       69 +**B-00 — Khởi tạo project**                                   
+       70 +- Sao chép cấu hình từ `src/exercises/Exercise1_DeveloperCard`
+          +, đổi `name` trong `package.json` thành `bonus-situationship`.
+          + Không sao chép `node_modules/`, `dist/`.                     
+       71 +- `src/main.jsx`: `createRoot` + `<StrictMode>`, render `<App 
+          +/>`.                                                          
+       72 +- Verify: `npm install`, `npm test` (chưa có test thì cho phép
+          + `--passWithNoTests` hoặc một test smoke), `npm run lint`.    
+       73 +                                                              
+       74 +**B-01 — FSM**                                                
+       75 +- `PHASES` và `EVENTS` là hằng số đóng băng; bảng chuyển là ob
+          +ject tra cứu, không `switch` lồng.                            
+       76 +- `transition(phase, event)` trả pha mới; không throw với cặp 
+          +không hợp lệ.                                                 
+       77 +- Test dạng bảng: duyệt mọi (pha × sự kiện), khẳng định kết qu
+          +ả khớp bảng ở mục 3.                                          
+       78 +                                                              
+       79 +**B-02 — Effort**                                             
+       80 +- `MULTIPLIER = { EM: 0.1, AI_DO: 50 }`; `createSignal(actor, 
+          +steps, id)` trả `EffortSignal`.                               
+       81 +- `effortReducer(log, action)` xử lý `ADD` (`[...log, signal]`
+          +) và `CLEAR` (`[]`); `impactOf(log, actor)` dùng `reduce`; `is
+          +RedFlag(phase, emImpact, rivalImpact)`.                       
+       82 +- Test: mảng gốc bị `Object.freeze` mà reducer vẫn chạy; tổng 
+          +EM 100 bước = 10, AI_DO 1 bước = 50.                          
+       83 +                                                              
+       84 +**B-03 — Component**                                          
+       85 +- `useReducer` giữ `{ phase, log }`, gộp `transition` và `effo
+          +rtReducer`. Nút theo pha: "Rủ đi chơi" (`ASK_OUT`), "Official"
+          + (`COMMIT`), "Dừng Lại" (`GHOST`), "Reset".                   
+       86 +- Danh sách log dùng `key={signal.id}`. Không dùng `<div>` thừ
+          +a khi có thẻ ngữ nghĩa (`<main>`, `<section>`, `<ul>`, `<dl>` 
+          +cho điểm).                                                    
+       87 +- `<output role="status" aria-live="polite">` hiển thị cảnh bá
+          +o; khi không có cờ thì vẫn render phần tử rỗng/nhẹ để vùng liv
+          +e ổn định.                                                    
+       88 +                                                              
+       89 +**B-04 — Timer**                                              
+       90 +- Một `useEffect` phụ thuộc `[phase, log]`: nếu `phase === 'DA
+          +TING_NO_LOVE'` và tín hiệu cuối cùng là `EM` thì `setTimeout((
+          +) => dispatch(GHOST), 5000)`; cleanup `clearTimeout`.         
+       91 +- Test với `vi.useFakeTimers()`: advance 4999ms chưa ghost, 50
+          +00ms thì ghost; thêm tín hiệu `AI_DO` giữa chừng thì không gho
+          +st; unmount rồi `vi.getTimerCount()` bằng 0. Test rõ ràng chạy
+          + dưới `<StrictMode>` (effect chạy hai lần ở dev, không được nh
+          +ân đôi timer).                                                
+       92 +                                                              
+       93 +**B-05 — Form, CSS, a11y**                                    
+       94 +- `useId()` cho `<select>` actor và `<input type="number">` st
+          +eps, mỗi cái có `<label htmlFor>`. Đọc số bằng `e.target.value
+          +AsNumber`, chặn `Number.isNaN` và số `< 1`.                   
+       95 +- CSS Modules + Custom Properties, không inline `style`. Kiểm 
+          +tra 375px bằng DevTools device mode.                          
+       96 +- Verify: Lighthouse accessibility, Accessibility tree (landma
+          +rk, tên label, `status`), tab bàn phím qua mọi nút. Lưu bằng c
+          +hứng ở `evidence/`.                                           
+       97 +                                                              
+       98 +## 5. Lệnh kiểm tra lặp lại                                   
+       99 +                                                              
+      100 +Chạy trong folder này:                                        
+      101 +                                                              
+      102 +```bash                                                       
+      103 +npm test                                                      
+      104 +npm run lint                                                  
+      105 +grep -rn "http://" src                                        
+      106 +grep -rnE "isDating|isLoved|hasTitle" src                     
+      107 +```                                                           
+      108 +                                                              
+      109 +Hai lệnh `grep` phải ra 0 dòng (ngoài chú thích mô tả lỗi).   
+      110 +                                                              
+      111 +## 6. Commit                                                  
+      112 +                                                              
+      113 +Message chốt từ đề, dùng đúng nguyên văn:                     
+      114 +                                                              
+      115 +| Commit | Task | Message |                                   
+      116 +|---|---|---|                                                 
+      117 +| 1 | B-00 | `chore(bonus): init vite project for situationshi
+          +p analyzer` |                                                 
+      118 +| 2 | B-01, B-02 | `feat(fsm): model HenHoKhongYeu state machi
+          +ne` |                                                         
+      119 +| 3 | B-03 đến B-05 | `feat(ui): add derived red-flag meter & 
+          +ghosting cleanup` |                                           
+      120 +                                                              
+      121 +Nếu B-03, B-04, B-05 diff lớn thì tách thành nhiều commit `fea
+          +t(ui): ...`, giữ message đầu tiên của đề cho commit đầu của cụ
+          +m.                                                            
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Chỉ file WBS được stage, các thay đổi HW3 chưa commit vẫn nằm ngoài. Bạn đã
+  yêu cầu commit nên mình commit, kèm dòng co-author theo AGENTS.md.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Đã commit 90e479b. Giờ làm B-00: đọc các file cấu hình của Ex1 để sao chép.
+
+  Read 4 files, ran 1 shell command (ctrl+o to expand)
+
+● Mình đang tạo file cấu hình cho project, bỏ rule aria-role của DeveloperCard,
+  rồi thêm App.jsx placeholder và smoke test để npm test có gì chạy. · summary
+
+● Write(src\homeworks\BonusSituationship\package.json)
+  ⎿  Wrote 32 lines to src\homeworks\BonusSituationship\package.json
+       1 {
+       2   "name": "msis207-lab03-bonus-situationship",
+       3   "private": true,
+       4   "version": "0.0.0",
+       5   "type": "module",
+       6   "scripts": {
+       7     "dev": "vite",
+       8     "build": "vite build",
+       9     "preview": "vite preview",
+      10     "test": "vitest run",
+     … +22 lines (ctrl+o to expand)
+
+● Write(src\homeworks\BonusSituationship\vite.config.js)
+  ⎿  Wrote 10 lines to src\homeworks\BonusSituationship\vite.config.js
+       1 import { defineConfig } from 'vitest/config';
+       2 import react from '@vitejs/plugin-react';
+       3
+       4 export default defineConfig({
+       5   plugins: [react()],
+       6   test: {
+       7     environment: 'jsdom',
+       8     setupFiles: ['./src/test/setup.js'],
+       9   },
+      10 });
+
+● Write(src\homeworks\BonusSituationship\eslint.config.js)
+  ⎿  Wrote 33 lines to src\homeworks\BonusSituationship\eslint.config.js
+       1 import js from '@eslint/js';
+       2 import globals from 'globals';
+       3 import react from 'eslint-plugin-react';
+       4 import reactHooks from 'eslint-plugin-react-hooks';
+       5 import jsxA11y from 'eslint-plugin-jsx-a11y';
+       6
+       7 export default [
+       8   { ignores: ['dist/', 'node_modules/', 'evidence/'] },
+       9   js.configs.recommended,
+      10   react.configs.flat.recommended,
+     … +23 lines (ctrl+o to expand)
+
+● Write(src\homeworks\BonusSituationship\index.html)
+  ⎿  Wrote 13 lines to src\homeworks\BonusSituationship\index.html
+       1 <!doctype html>
+       2 <html lang="vi">
+       3   <head>
+       4     <meta charset="UTF-8" />
+       5     <meta name="viewport" content="width=device-width, initial-s
+         cale=1.0" />
+       6     <link rel="icon" href="data:," />
+       7     <title>Bonus - Situationship Analyzer</title>
+       8   </head>
+       9   <body>
+     … +4 lines (ctrl+o to expand)
+
+● Write(src\homeworks\BonusSituationship\src\main.jsx)
+  ⎿  Wrote 12 lines to src\homeworks\BonusSituationship\src\main.jsx
+       1 import { StrictMode } from 'react';
+       2 import { createRoot } from 'react-dom/client';
+       3 import { App } from './App.jsx';
+       4
+       5 const rootEl = document.getElementById('root');
+       6 if (!rootEl) throw new Error('Missing #root mount container');
+       7
+       8 createRoot(rootEl).render(
+       9   <StrictMode>
+      10     <App />
+     … +2 lines (ctrl+o to expand)
+
+● Write(src\homeworks\BonusSituationship\src\test\setup.js)
+  ⎿  Wrote 5 lines to src\homeworks\BonusSituationship\src\test\setup.js
+      1 import '@testing-library/jest-dom/vitest';
+      2 import { afterEach } from 'vitest';
+      3 import { cleanup } from '@testing-library/react';
+      4
+      5 afterEach(cleanup);
+
+● Write(src\homeworks\BonusSituationship\src\App.jsx)
+  ⎿  Wrote 8 lines to src\homeworks\BonusSituationship\src\App.jsx
+      1 // Placeholder cho B-00; B-03 thay bằng <SituationshipAnalyzer />
+        .
+      2 export function App() {
+      3   return (
+      4     <main>
+      5       <h1>Situationship Analyzer</h1>
+      6     </main>
+      7   );
+      8 }
+
+● Write(src\homeworks\BonusSituationship\src\App.test.jsx)
+  ⎿  Wrote 11 lines to src\homeworks\BonusSituationship\src\App.test.jsx
+       1 import { describe, it, expect } from 'vitest';
+       2 import { render, screen } from '@testing-library/react';
+       3 import { App } from './App.jsx';
+       4
+       5 describe('App (smoke, B-00)', () => {
+       6   it('render landmark main và heading', () => {
+       7     render(<App />);
+       8     expect(screen.getByRole('main')).toBeInTheDocument();
+       9     expect(screen.getByRole('heading', { level: 1, name: /situat
+         ionship analyzer/i })).toBeInTheDocument();
+     … +2 lines (ctrl+o to expand)
+
+  Ran 1 shell command (ctrl+o to expand)
+● Test và lint đều sạch. Mình tick B-00 trong WBS rồi kiểm tra git không bắt
+  nhầm node_modules.
+
+● Update(src\homeworks\BonusSituationship\TASK_DECOMPOSITION.md)
+  ⎿  Added 1 line, removed 1 line
+      57  
+      58  | ID | Task | File | Gate | Trạng thái |
+      59  |---|---|---|---|---|
+      60 -| B-00 | Khởi tạo project Vite riêng: sao chép `package.json` (
+         -đổi `name`), `vite.config.js`, `eslint.config.js`, `index.html`
+         -, `src/main.jsx`, `src/test/setup.js` từ Ex1, rồi `npm install`
+         - | `package.json`, `vite.config.js`, `eslint.config.js`, `index
+         -.html`, `src/main.jsx`, `src/test/setup.js` | `npm test` và `np
+         -m run lint` chạy được | [ ] |                                  
+      60 +| B-00 | Khởi tạo project Vite riêng: sao chép `package.json` (
+         +đổi `name`), `vite.config.js`, `eslint.config.js`, `index.html`
+         +, `src/main.jsx`, `src/test/setup.js` từ Ex1, rồi `npm install`
+         + | `package.json`, `vite.config.js`, `eslint.config.js`, `index
+         +.html`, `src/main.jsx`, `src/test/setup.js` | `npm test` và `np
+         +m run lint` chạy được | [x] |                                  
+      61  | B-01 | Chốt bộ trạng thái + `transition()` thuần | `src/fsm.j
+          s`, `src/fsm.test.js` | Test: mọi chuyển hợp lệ; cặp không hợp 
+          lệ giữ pha; `GHOSTED_EXIT` bất động với mọi sự kiện | [ ] |
+      62  | B-02 | Reducer nhật ký tín hiệu bất biến + điểm dẫn xuất | `s
+          rc/effort.js`, `src/effort.test.js` | Test: không mutate (`Obje
+          ct.freeze` mảng gốc); `100 × 0.1` vs `1 × 50`; `isRedFlag` đúng
+           theo pha | [ ] |
+      63  | B-03 | Component + `<output role="status">` cờ đỏ | `src/Situ
+          ationshipAnalyzer.jsx`, `src/SituationshipAnalyzer.test.jsx` | 
+          Test: red flag khi `em < rival` ở `DATING_NO_LOVE`; không có cờ
+           ở pha khác; `role="status"` có nội dung đúng | [ ] |
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Mình đã viết lại WBS chi tiết, commit nó, và làm xong B-00. Phần B-00 chưa
+  commit.
+
+  Đã commit: 90e479b docs(bonus): detail situationship WBS with decisions and
+  per-task gates. Chỉ có file WBS, các thay đổi HW3 đang dang dở của bạn không
+  bị lẫn vào. WBS giờ có bảng quyết định đã chốt, bảng chuyển trạng thái,
+  invariant, chi tiết B-00 đến B-05 và lệnh kiểm tra lặp lại.
+
+  B-00 (khởi tạo project Vite riêng)
+  - Mình tạo package.json, vite.config.js, eslint.config.js, index.html,
+    src/main.jsx, src/test/setup.js, một App.jsx placeholder và App.test.jsx
+    smoke.
+  - Cấu hình copy từ Ex1. Mình bỏ rule aria-role riêng của DeveloperCard vì bài
+    này không dùng.
+  - npm install thêm 345 package, 0 vulnerabilities.
+  - npm test: 1 file, 1 test pass.
+  - npm run lint: không có cảnh báo hay lỗi.
+  - Git không bắt node_modules/.
+  - Mình đã tick [x] B-00 trong WBS.
+
+  Chưa verify: chưa chạy npm run dev hay build, vì placeholder chưa có gì để
+  xem.
+
+  Đề xuất commit cho B-00. Bạn tự chạy hoặc bảo mình chạy:
+
+  git add src/homeworks/BonusSituationship
+  git commit -m "chore(bonus): init vite project for situationship analyzer"
+
+  Lệnh git add này chỉ lấy folder bonus, gồm cả package-lock.json và WBS đã
+  tick. Cuối message cần thêm dòng Co-Authored-By: Claude Sonnet 5.5
+  <noreply@anthropic.com>.
+
+  Tiếp theo là B-01 (src/fsm.js với transition() thuần và test dạng bảng). Mình
+  viết test trước rồi mới viết code, bạn bảo mình làm tiếp nhé.
+
+> <ide_opened_file>The user opened the file c:\Dev\Project\24520626_QuangPhuHun
+  g_MSIS207_Lab03\src\homeworks\BonusSituationship\TASK_DECOMPOSITION.md in the
+  IDE. This may or may not be related to the current task.</ide_opened_file>
+
+> ok chia nhỏ ra tự commit và để mình tự thêm dòng cop authore sau, hoàn thiện
+  tới B05 luôn đi
+
+● Mình commit B-00 ngay, không có dòng co-author theo ý bạn, rồi làm B-01.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Write(src\homeworks\BonusSituationship\src\fsm.test.js)
+  ⎿  Wrote 36 lines to src\homeworks\BonusSituationship\src\fsm.test.js
+       1 import { describe, it, expect } from 'vitest';
+       2 import { PHASES, EVENTS, transition } from './fsm.js';
+       3
+       4 // Bảng kỳ vọng: chỉ liệt kê chuyển hợp lệ; mọi cặp khác phải gi
+         ữ nguyên pha.
+       5 const VALID = {
+       6   'FRIENDS|ASK_OUT': 'DATING_NO_LOVE',
+       7   'DATING_NO_LOVE|COMMIT': 'OFFICIAL_LOVE',
+       8   'DATING_NO_LOVE|GHOST': 'GHOSTED_EXIT',
+       9   'OFFICIAL_LOVE|GHOST': 'GHOSTED_EXIT',
+     … +27 lines (ctrl+o to expand)
+
+● Test B-01 viết trước. Giờ viết fsm.js, và viết luôn test cùng module cho B-02.
+
+● Write(src\homeworks\BonusSituationship\src\fsm.js)
+  ⎿  Wrote 26 lines to src\homeworks\BonusSituationship\src\fsm.js
+       1 /**
+       2  * @typedef {'FRIENDS'|'DATING_NO_LOVE'|'OFFICIAL_LOVE'|'GHOSTED
+         _EXIT'} RelationshipPhase
+       3  * @typedef {'ASK_OUT'|'COMMIT'|'GHOST'} RelationshipEvent
+       4  */
+       5
+       6 // Slide có hai bộ tên mâu thuẫn; chốt bộ trong code mẫu (Contex
+         t.md §9).
+       7 export const PHASES = Object.freeze(['FRIENDS', 'DATING_NO_LOVE'
+         , 'OFFICIAL_LOVE', 'GHOSTED_EXIT']);
+     … +19 lines (ctrl+o to expand)
+
+● Write(src\homeworks\BonusSituationship\src\effort.test.js)
+  ⎿  Wrote 56 lines to src\homeworks\BonusSituationship\src\effort.test.js
+      1 import { describe, it, expect } from 'vitest';
+      2 import { MULTIPLIER, createSignal, effortReducer, impactOf, isRed
+        Flag } from './effort.js';
+      3
+      4 describe('createSignal', () => {
+      5   it('gắn multiplier theo actor', () => {
+      6     expect(createSignal('s1', 'EM', 100)).toEqual({ id: 's1', act
+        or: 'EM', steps: 100, multiplier: MULTIPLIER.EM });
+      7     expect(createSignal('s2', 'AI_DO', 1).multiplier).toBe(50);
+      8   });
+     … +48 lines (ctrl+o to expand)
+
+● Write(src\homeworks\BonusSituationship\src\effort.js)
+  ⎿  Wrote 38 lines to src\homeworks\BonusSituationship\src\effort.js
+       1 /**
+       2  * @typedef {'EM'|'AI_DO'} Actor
+       3  * @typedef {{ id: string, actor: Actor, steps: number, multipli
+         er: number }} EffortSignal
+       4  */
+       5
+       6 // "Em cố trăm lần" (0.1/bước) so với "ai đó một phần" (50/bước)
+         .
+       7 export const MULTIPLIER = Object.freeze({ EM: 0.1, AI_DO: 50 });
+       8
+     … +30 lines (ctrl+o to expand)
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● B-01 và B-02 pass (13 test), lint sạch. Tick WBS và commit.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Commit 35b4f9e xong. Giờ làm B-03: component và test. Mình đưa luôn form useId
+  + label vào đây để khỏi viết lại ở B-05 (B-05 còn lại CSS và kiểm a11y).
+
+● Write(src\homeworks\BonusSituationship\src\SituationshipAnalyzer.test.jsx)
+  ⎿  Wrote 81 lines to
+     src\homeworks\BonusSituationship\src\SituationshipAnalyzer.test.jsx
+      1 import { describe, it, expect } from 'vitest';
+      2 import { render, screen, fireEvent, within } from '@testing-libra
+        ry/react';
+      3 import { SituationshipAnalyzer } from './SituationshipAnalyzer.js
+        x';
+      4
+      5 function send(actor, steps) {
+      6   fireEvent.change(screen.getByLabelText(/ai nhắn/i), { target: {
+         value: actor } });
+      7   fireEvent.change(screen.getByLabelText(/số bước/i), { target: {
+     … +75 lines (~3 KB) (ctrl+o to expand)
+
+● Write(src\homeworks\BonusSituationship\src\SituationshipAnalyzer.jsx)
+  ⎿  Wrote 126 lines to
+     src\homeworks\BonusSituationship\src\SituationshipAnalyzer.jsx
+       1 import { useId, useReducer, useState } from 'react';
+       2 import { transition } from './fsm.js';
+       3 import { createSignal, effortReducer, impactOf, isRedFlag } from
+          './effort.js';
+       4
+       5 const PHASE_LABEL = {
+       6   FRIENDS: 'Bạn bè',
+       7   DATING_NO_LOVE: 'Hẹn hò nhưng không yêu',
+       8   OFFICIAL_LOVE: 'Yêu chính thức',
+       9   GHOSTED_EXIT: 'Đã bị bỏ rơi',
+     … +117 lines (ctrl+o to expand)
+
+● Write(src\homeworks\BonusSituationship\src\App.jsx)
+  ⎿  Added 3 lines, removed 6 lines
+      1 -// Placeholder cho B-00; B-03 thay bằng <SituationshipAnalyzer /
+        ->.                                                              
+      1 +import { SituationshipAnalyzer } from './SituationshipAnalyzer.j
+        +sx';                                                            
+      2 +                                                                
+      3  export function App() {
+      3 -  return (                                                      
+      4 -    <main>                                                      
+      5 -      <h1>Situationship Analyzer</h1>                           
+      6 -    </main>                                                     
+      7 -  );                                                            
+      4 +  return <SituationshipAnalyzer />;                             
+      5  }
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Hai lỗi: test của mình sai vì thông báo "Chưa có cờ đỏ." chứa đúng cụm bị
+  assert, nên mình đổi câu thông báo; lint thì chặn role="status" trên <output>,
+  nên mình giữ theo yêu cầu và tắt đúng rule đó trên một dòng. · summary
+
+● Update(src\homeworks\BonusSituationship\src\SituationshipAnalyzer.jsx)
+  ⎿  Added 1 line, removed 1 line
+      48    const canSend = !ghosted && Number.isInteger(steps) && steps 
+          >= 1;
+      49    const can = (event) => transition(phase, event) !== phase;
+      50  
+      51 -  let message = 'Chưa có cờ đỏ.';                              
+      51 +  let message = 'Ổn, chưa có dấu hiệu lạ.';                    
+      52    if (ghosted) message = 'Kết thúc: đã bị bỏ rơi. Bấm Reset để 
+          thử lại.';
+      53    else if (redFlag) message = `Cờ đỏ: em cố ${round1(emImpact)}
+           điểm mà ai đó chỉ cần ${round1(rivalImpact)} điểm.`;
+      54  
+
+● Update(src\homeworks\BonusSituationship\src\SituationshipAnalyzer.jsx)
+  ⎿  Added 1 line
+       96            <dt>Ai đó</dt>
+       97            <dd>{round1(rivalImpact)}</dd>
+       98          </dl>
+       99 +        {/* eslint-disable-next-line jsx-a11y/no-redundant-rol
+          +es -- đề yêu cầu ghi tường minh role="status" aria-live="polit
+          +e" */}                                                        
+      100          <output role="status" aria-live="polite">{message}</ou
+           tput>
+      101        </section>
+      102  
+
+● Update(src\homeworks\BonusSituationship\src\SituationshipAnalyzer.test.jsx)
+  ⎿  Added 2 lines, removed 1 line
+      15    it('bắt đầu ở FRIENDS, chưa có cờ đỏ', () => {
+      16      render(<SituationshipAnalyzer />);
+      17      expect(screen.getByText('Bạn bè')).toBeInTheDocument();
+      18 -    expect(status()).toHaveTextContent(/chưa có cờ đỏ/i);      
+      18 +    expect(status()).toHaveTextContent(/chưa có dấu hiệu lạ/i);
+      19 +    expect(status()).not.toHaveTextContent(/cờ đỏ/i);          
+      20    });
+      21  
+      22    it('cờ đỏ khi DATING_NO_LOVE và em < ai đó (100 x 0.1 = 10 < 
+          1 x 50)', () => {
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● B-03 pass 20/20, lint sạch. Tick và commit, rồi sang B-04 (timer).
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Viết test timer trước (fake timers, chạy dưới <StrictMode>), rồi mới thêm
+  effect.
+● Write(src\homeworks\BonusSituationship\src\ghostingTimer.test.jsx)
+  ⎿  Wrote 90 lines to
+     src\homeworks\BonusSituationship\src\ghostingTimer.test.jsx
+       1 import { StrictMode } from 'react';
+       2 import { describe, it, expect, beforeEach, afterEach, vi } from
+         'vitest';
+       3 import { render, screen, fireEvent, act } from '@testing-library
+         /react';
+       4 import { SituationshipAnalyzer } from './SituationshipAnalyzer.j
+         sx';
+       5
+       6 function send(actor, steps) {
+       7   fireEvent.change(screen.getByLabelText(/ai nhắn/i), { target:
+     … +84 lines (~2 KB) (ctrl+o to expand)
+
+● Update(src\homeworks\BonusSituationship\src\SituationshipAnalyzer.jsx)
+  ⎿  Added 1 line, removed 1 line
+      1 -import { useId, useReducer, useState } from 'react';            
+      1 +import { useEffect, useId, useReducer, useState } from 'react'; 
+      2  import { transition } from './fsm.js';
+      3  import { createSignal, effortReducer, impactOf, isRedFlag } from
+          './effort.js';
+      4  
+
+● Update(src\homeworks\BonusSituationship\src\SituationshipAnalyzer.jsx)
+  ⎿  Added 1 line
+      30  }
+      31  
+      32  const round1 = (n) => String(Math.round(n * 10) / 10);
+      33 +const GHOST_AFTER_MS = 5000;                                   
+      34  
+      35  export function SituationshipAnalyzer() {
+      36    const [state, dispatch] = useReducer(reducer, INITIAL);
+
+● Update(src\homeworks\BonusSituationship\src\SituationshipAnalyzer.jsx)
+  ⎿  Added 11 lines
+      49    const canSend = !ghosted && Number.isInteger(steps) && steps 
+          >= 1;
+      50    const can = (event) => transition(phase, event) !== phase;
+      51  
+      52 +  // "Seen không rep": đang hẹn hò và tin cuối cùng là của em, 
+         +chưa ai đó trả lời.                                            
+      53 +  const awaitingReply = phase === 'DATING_NO_LOVE' && log.at(-1
+         +)?.actor === 'EM';                                             
+      54 +                                                               
+      55    let message = 'Ổn, chưa có dấu hiệu lạ.';
+      56    if (ghosted) message = 'Kết thúc: đã bị bỏ rơi. Bấm Reset để 
+          thử lại.';
+      57    else if (redFlag) message = `Cờ đỏ: em cố ${round1(emImpact)}
+           điểm mà ai đó chỉ cần ${round1(rivalImpact)} điểm.`;
+      58 +  else if (awaitingReply) message = 'Đã xem, đang chờ rep...'; 
+      59  
+      60 +  // Timer duy nhất của bài. Tín hiệu mới, đổi pha, Reset hay u
+         +nmount đều chạy cleanup.                                       
+      61 +  useEffect(() => {                                            
+      62 +    if (!awaitingReply) return undefined;                      
+      63 +    const timerId = setTimeout(() => dispatch({ type: 'EVENT', 
+         +event: 'GHOST' }), GHOST_AFTER_MS);                            
+      64 +    return () => clearTimeout(timerId);                        
+      65 +  }, [awaitingReply, log]);                                    
+      66 +                                                               
+      67    function handleSteps(e) {
+      68      const n = e.target.valueAsNumber;
+      69      setSteps(Number.isNaN(n) ? NaN : n);
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● 28 test pass. Mình kiểm tra thêm rằng test timer thật sự bắt được lỗi: tạm bỏ
+  clearTimeout và xem test có fail không.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Bỏ cleanup thì 5 test fail, khôi phục thì 28/28 pass. Test timer có giá trị
+  thật. Tick B-04 và commit bằng message nguyên văn của đề.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Giờ B-05: CSS Modules + Custom Properties, 375px, rồi kiểm a11y. Mình viết
+  tokens, module CSS và gắn class vào component.
+
+● Write(src\homeworks\BonusSituationship\src\styles\tokens.css)
+  ⎿  Wrote 26 lines to
+     src\homeworks\BonusSituationship\src\styles\tokens.css
+       1 /* Custom Properties dùng chung. Tỉ lệ tương phản đã chọn để đạt
+          AA (>= 4.5:1) trên --surface. */
+       2 :root {
+       3   --bg: #0b0e1a;
+       4   --surface: #151a2e;
+       5   --border: #2c3354;
+       6   --text: #e8eaf6;
+       7   --muted: #b4bbd6;
+       8   --accent: #ff6b81;
+       9   --on-accent: #1a0b10;
+     … +17 lines (ctrl+o to expand)
+
+● Write(src\homeworks\BonusSituationship\src\SituationshipAnalyzer.module.css)
+  ⎿  Wrote 137 lines to
+     src\homeworks\BonusSituationship\src\SituationshipAnalyzer.module.css
+       1 .page {
+       2   max-width: 40rem;
+       3   margin: 0 auto;
+       4   padding: var(--gap);
+       5   display: grid;
+       6   gap: var(--gap);
+       7 }
+       8
+       9 .header h1 {
+      10   margin: 0;
+     … +127 lines (ctrl+o to expand)
+
+  Read 1 file (ctrl+o to expand)
+
+● Update(src\homeworks\BonusSituationship\src\SituationshipAnalyzer.jsx)
+  ⎿  Added 46 lines, removed 30 lines
+       75    }
+       76  
+       77    return (
+       78 -    <main>                                                    
+       79 -      <header>                                                
+       78 +    <main className={styles.page}>                            
+       79 +      <header className={styles.header}>                      
+       80          <hgroup>
+       81            <h1>Situationship Analyzer</h1>
+       82            <p>Hẹn hò nhưng không yêu: máy trạng thái thay cho đ
+           ống boolean.</p>
+       83          </hgroup>
+       84        </header>
+       85  
+       86 -      <section aria-label="Pha quan hệ">                      
+       86 +      <section className={styles.card} aria-label="Pha quan hệ
+          +">                                                            
+       87          <h2>Pha quan hệ</h2>
+       88 -        <p><strong>{PHASE_LABEL[phase]}</strong></p>          
+       89 -        <button type="button" disabled={!can('ASK_OUT')} onCli
+          -ck={() => dispatch({ type: 'EVENT', event: 'ASK_OUT' })}>     
+       90 -          Rủ đi chơi                                          
+       91 -        </button>                                             
+       92 -        <button type="button" disabled={!can('COMMIT')} onClic
+          -k={() => dispatch({ type: 'EVENT', event: 'COMMIT' })}>       
+       93 -          Official                                            
+       94 -        </button>                                             
+       95 -        <button type="button" disabled={!can('GHOST')} onClick
+          -={() => dispatch({ type: 'EVENT', event: 'GHOST' })}>         
+       96 -          Dừng Lại                                            
+       97 -        </button>                                             
+       98 -        <button type="button" onClick={() => dispatch({ type: 
+          -'RESET' })}>                                                  
+       99 -          Reset                                               
+      100 -        </button>                                             
+       88 +        <p className={styles.phase}><strong>{PHASE_LABEL[phase
+          +]}</strong></p>                                               
+       89 +        <p className={styles.actions}>                        
+       90 +          <button type="button" className={styles.btn} disable
+          +d={!can('ASK_OUT')} onClick={() => dispatch({ type: 'EVENT', e
+          +vent: 'ASK_OUT' })}>                                          
+       91 +            Rủ đi chơi                                        
+       92 +          </button>                                           
+       93 +          <button type="button" className={styles.btn} disable
+          +d={!can('COMMIT')} onClick={() => dispatch({ type: 'EVENT', ev
+          +ent: 'COMMIT' })}>                                            
+       94 +            Official                                          
+       95 +          </button>                                           
+       96 +          <button type="button" className={styles.btn} disable
+          +d={!can('GHOST')} onClick={() => dispatch({ type: 'EVENT', eve
+          +nt: 'GHOST' })}>                                              
+       97 +            Dừng Lại                                          
+       98 +          </button>                                           
+       99 +          <button type="button" className={styles.btnGhost} on
+          +Click={() => dispatch({ type: 'RESET' })}>                    
+      100 +            Reset                                             
+      101 +          </button>                                           
+      102 +        </p>                                                  
+      103        </section>
+      104  
+      103 -      <section aria-labelledby={scoresTitleId}>               
+      105 +      <section className={styles.card} aria-labelledby={scores
+          +TitleId}>                                                     
+      106          <h2 id={scoresTitleId}>Điểm nỗ lực</h2>
+      105 -        <dl>                                                  
+      107 +        <dl className={styles.scores}>                        
+      108            <dt>Em</dt>
+      109            <dd>{round1(emImpact)}</dd>
+      110            <dt>Ai đó</dt>
+      111            <dd>{round1(rivalImpact)}</dd>
+      112          </dl>
+      113          {/* eslint-disable-next-line jsx-a11y/no-redundant-rol
+           es -- đề yêu cầu ghi tường minh role="status" aria-live="polit
+           e" */}
+      112 -        <output role="status" aria-live="polite">{message}</ou
+          -tput>                                                         
+      114 +        <output role="status" aria-live="polite" className={re
+          +dFlag ? `${styles.status} ${styles.statusFlag}` : styles.statu
+          +s}>                                                           
+      115 +          {message}                                           
+      116 +        </output>                                             
+      117        </section>
+      118  
+      115 -      <section aria-label="Gửi tín hiệu">                     
+      119 +      <section className={styles.card} aria-label="Gửi tín hiệ
+          +u">                                                           
+      120          <h2>Gửi tín hiệu</h2>
+      117 -        <form onSubmit={handleSubmit}>                        
+      121 +        <form className={styles.form} onSubmit={handleSubmit}>
+      122            <label htmlFor={actorId}>Ai nhắn</label>
+      119 -          <select id={actorId} value={actor} onChange={(e) => 
+          -setActor(e.target.value)}>                                    
+      123 +          <select id={actorId} className={styles.field} value=
+          +{actor} onChange={(e) => setActor(e.target.value)}>           
+      124              <option value="EM">Em (x0.1)</option>
+      125              <option value="AI_DO">Ai đó (x50)</option>
+      126            </select>
+      127            <label htmlFor={stepsId}>Số bước</label>
+      124 -          <input id={stepsId} type="number" min="1" step="1" v
+          -alue={Number.isNaN(steps) ? '' : steps} onChange={handleSteps}
+          - />                                                           
+      125 -          <button type="submit" disabled={!canSend}>Gửi tín hi
+          -ệu</button>                                                   
+      128 +          <input                                              
+      129 +            id={stepsId}                                      
+      130 +            className={styles.field}                          
+      131 +            type="number"                                     
+      132 +            min="1"                                           
+      133 +            step="1"                                          
+      134 +            value={Number.isNaN(steps) ? '' : steps}          
+      135 +            onChange={handleSteps}                            
+      136 +          />                                                  
+      137 +          <button type="submit" className={styles.btn} disable
+          +d={!canSend}>Gửi tín hiệu</button>                            
+      138          </form>
+      139        </section>
+      140  
+      129 -      <section aria-labelledby={logTitleId}>                  
+      141 +      <section className={styles.card} aria-labelledby={logTit
+          +leId}>                                                        
+      142          <h2 id={logTitleId}>Nhật ký</h2>
+      131 -        <ul>                                                  
+      132 -          {log.map((s) => (                                   
+      133 -            <li key={s.id}>{ACTOR_LABEL[s.actor]}: {s.steps} b
+          -ước x {s.multiplier}</li>                                     
+      134 -          ))}                                                 
+      135 -        </ul>                                                 
+      143 +        {log.length === 0 ? (                                 
+      144 +          <p className={styles.empty}>Chưa có tín hiệu nào.</p
+          +>                                                             
+      145 +        ) : (                                                 
+      146 +          <ul className={styles.log}>                         
+      147 +            {log.map((s) => (                                 
+      148 +              <li key={s.id}>{ACTOR_LABEL[s.actor]}: {s.steps}
+          + bước x {s.multiplier}</li>                                   
+      149 +            ))}                                               
+      150 +          </ul>                                               
+      151 +        )}                                                    
+      152        </section>
+      153      </main>
+      154    );
+
+● Update(src\homeworks\BonusSituationship\src\SituationshipAnalyzer.jsx)
+  ⎿  Added 1 line
+      1  import { useEffect, useId, useReducer, useState } from 'react';
+      2  import { transition } from './fsm.js';
+      3  import { createSignal, effortReducer, impactOf, isRedFlag } from
+          './effort.js';
+      4 +import styles from './SituationshipAnalyzer.module.css';        
+      5  
+      6  const PHASE_LABEL = {
+      7    FRIENDS: 'Bạn bè',
+
+● Update(src\homeworks\BonusSituationship\src\main.jsx)
+  ⎿  Added 1 line
+      1  import { StrictMode } from 'react';
+      2  import { createRoot } from 'react-dom/client';
+      3 +import './styles/tokens.css';                                   
+      4  import { App } from './App.jsx';
+      5  
+      6  const rootEl = document.getElementById('root');
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Build, test, lint và grep đều sạch. HW3 đã có sẵn script kiểm 375px và
+  contrast, nên mình xem để dùng lại.
+
+  Read 2 files (ctrl+o to expand)
+
+● Hai script đó nằm trong folder HW3 (chưa commit) và cần puppeteer-core. Mình
+  kiểm tra công cụ trình duyệt/Lighthouse có sẵn không trước khi chọn cách kiểm.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Puppeteer-core, axe-core và Edge đều sẵn có, nhưng Lighthouse thì không, nên
+  mình sẽ dùng axe-core (engine mà audit a11y của Lighthouse cũng dùng) và ghi
+  rõ là chưa chạy Lighthouse. Mình đang viết hai script kiểm cho bài này.
+  · summary
+
+● Write(src\homeworks\BonusSituationship\scripts\check-contrast.mjs)
+  ⎿  Wrote 51 lines to
+     src\homeworks\BonusSituationship\scripts\check-contrast.mjs
+       1 // Kiểm tương phản WCAG 2.2 (1.4.3 chữ >= 4.5:1, 1.4.11 thành ph
+         ần giao diện >= 3:1)
+       2 // cho các cặp màu thật sự dùng trong app. Đọc thẳng src/styles/
+         tokens.css.
+       3 // Chạy: node scripts/check-contrast.mjs   (thoát mã 1 nếu có cặ
+         p không đạt)
+       4 import { readFileSync } from 'node:fs';
+       5 import { fileURLToPath } from 'node:url';
+       6
+       7 const css = readFileSync(fileURLToPath(new URL('../src/styles/to
+     … +45 lines (~2 KB) (ctrl+o to expand)
+
+● Write(src\homeworks\BonusSituationship\scripts\check-ui.mjs)
+  ⎿  Wrote 117 lines to
+     src\homeworks\BonusSituationship\scripts\check-ui.mjs
+       1 // Kiểm trên trình duyệt thật: không cuộn ngang ở 375px/320px, a
+         xe-core ở 3 trạng thái,
+       2 // thứ tự Tab bàn phím, nội dung vùng role="status". Lưu ảnh vào
+          evidence/.
+       3 // Cần puppeteer-core và axe-core nhưng KHÔNG thêm vào package.j
+         son:
+       4 //   npm i --no-save puppeteer-core axe-core
+       5 // Chạy (sau `npm run build` và `npm run preview -- --port 4174`
+         ):
+       6 //   node scripts/check-ui.mjs [url] [đường dẫn trình duyệt]
+     … +111 lines (ctrl+o to expand)
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Tương phản đạt toàn bộ, package.json không bị đổi (--no-save). Chạy preview và
+  kiểm trên Edge thật.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Tất cả kiểm tra đều đạt trừ thứ tự Tab, vốn đúng nhưng script bấm Tab 8 lần
+  thay vì 6 nên lần thứ 7 rơi vào BODY. Mình sửa script để chỉ bấm đúng 6 lần.
+  · summary
+
+● Update(src\homeworks\BonusSituationship\scripts\check-ui.mjs)  ⎿  Added 2 lines, removed 1 line
+      85    await clickByText(page, 'Rủ đi chơi');
+      86    await page.evaluate(() => document.activeElement.blur());
+      87    const order = [];
+      88 -  for (let i = 0; i < 8; i += 1) {                             
+      88 +  // 6 điều khiển còn bật sau "Rủ đi chơi": Official, Dừng Lại,
+         + Reset, select, input, Gửi tín hiệu.                           
+      89 +  for (let i = 0; i < 6; i += 1) {                             
+      90      await page.keyboard.press('Tab');
+      91      order.push(await page.evaluate(() => {
+      92        const el = document.activeElement;
+
+● Update(src\homeworks\BonusSituationship\scripts\check-ui.mjs)
+  ⎿  Added 6 lines, removed 1 line
+       95      }));
+       96    }
+       97    const names = order.map((o) => o.tag + ':' + o.name);
+       98 -  results.push({ check: 'thứ tự Tab (sau khi rủ đi chơi)', ord
+          -er: names, ok: order.every((o) => o.outline === 'solid') });  
+       98 +  const expected = ['BUTTON', 'BUTTON', 'BUTTON', 'SELECT', 'I
+          +NPUT', 'BUTTON'];                                             
+       99 +  results.push({                                              
+      100 +    check: 'thứ tự Tab theo thứ tự đọc, mỗi điều khiển có outl
+          +ine focus',                                                   
+      101 +    order: names,                                             
+      102 +    ok: order.every((o, i) => o.tag === expected[i] && o.outli
+          +ne === 'solid'),                                              
+      103 +  });                                                         
+      104    await page.close();
+      105  }
+      106  
+
+  Read 1 file, ran 1 shell command (ctrl+o to expand)
+
+● Ảnh 375px đạt yêu cầu: không tràn ngang, cờ đỏ hiển thị đúng và focus ring
+  vàng rõ. Tiếp theo mình dọn preview server, ghi evidence và chạy kiểm tra
+  cuối. · summary
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Lint đang báo 18 lỗi mà trước đó sạch. Mình xem chi tiết trước khi nói gì
+  thêm.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Lỗi chỉ xuất hiện ở hai script .mjs vì config ESLint chỉ khai báo globals cho
+  *.js/jsx; code app không có lỗi. Mình sẽ thêm scripts/ vào danh sách ignore
+  giống evidence/. · summary
+
+● Update(src\homeworks\BonusSituationship\eslint.config.js)
+  ⎿  Added 1 line, removed 1 line
+       5  import jsxA11y from 'eslint-plugin-jsx-a11y';
+       6  
+       7  export default [
+       8 -  { ignores: ['dist/', 'node_modules/', 'evidence/'] },        
+       8 +  { ignores: ['dist/', 'node_modules/', 'evidence/', 'scripts/'
+         +] },                                                           
+       9    js.configs.recommended,
+      10    react.configs.flat.recommended,
+      11    react.configs.flat['jsx-runtime'],
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Lint sạch, 28 test pass, chỉ folder bonus được stage. Commit B-05 (không có
+  dòng co-author, bạn tự thêm sau).
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Bonus Situationship đã xong B-00 đến B-05 và đã commit. npm test pass 28/28,
+  npm run lint sạch, build ra dist/ bình thường, các grep kiểm tra cho ra 0
+  dòng.
+
+  Commit (6 commit, chưa có dòng co-author để bạn thêm; các thay đổi dang dở của
+  HW3 không bị lẫn vào):
+  5f9d692 style(bonus): css modules, 375px layout and a11y evidence      (B-05)
+  5a38359 feat(ui): add derived red-flag meter & ghosting cleanup         (B-04,
+  message nguyên văn của đề)
+  814bf48 feat(ui): add red-flag meter component with derived scores      (B-03)
+  35b4f9e feat(fsm): model HenHoKhongYeu state machine                    (B-01,
+  B-02)
+  8fb6ca0 chore(bonus): init vite project for situationship analyzer      (B-00)
+  90e479b docs(bonus): detail situationship WBS ...
+
+  Đã kiểm bằng Edge thật (kết quả lưu ở evidence/):
+  - 375px và 320px không cuộn ngang, kể cả khi đã có cờ đỏ và nhật ký.
+  - axe-core báo 0 vi phạm ở 3 trạng thái: FRIENDS, cờ đỏ, GHOSTED_EXIT.
+  - Tương phản đạt AA ở mọi cặp màu.
+  - Tab đi đúng thứ tự qua 6 điều khiển, mỗi cái có focus ring.
+  - Timer "seen không rep" bị bỏ rơi sau 5019ms, đo trên trình duyệt thật.
+  - Mình thử bỏ clearTimeout thì 5 test timer fail, khôi phục thì pass lại, nên
+    test timer có tác dụng thật.
+
+  Chưa verify: chưa chạy Lighthouse (máy chưa cài). WBS gate ghi "Lighthouse
+  a11y 100" nhưng mình chỉ chạy axe-core, nên không ghi là đã đạt 100 và đã sửa
+  dòng gate cho đúng thực tế.
+
+  Chỗ khác đề bạn nên biết:
+  1. Rule lint no-redundant-roles: <output role="status"> bị rule này chặn vì
+     output đã mặc định có role status. Đề lại yêu cầu ghi tường minh, nên mình
+     giữ và tắt rule đúng một dòng, có comment lý do.
+  2. Dependency của effect: là [awaitingReply, log] thay vì [phase, log] như bản
+     WBS đã chốt. Điều kiện về pha nằm trong awaitingReply. Mình đã sửa WBS cho
+     khớp.
+  3. Form làm sớm: form useId + label được viết ngay ở B-03 để khỏi làm lại, nên
+     B-05 chỉ còn CSS và kiểm a11y.
+  4. scripts/ bị ESLint bỏ qua: hai script kiểm đều là .mjs dùng
+     process/document, bị báo no-undef. Chúng là công cụ kiểm, không phải code
+     nộp. Muốn chạy lại cần npm i --no-save puppeteer-core axe-core,
+     package.json không đổi.
+
+  Cho buổi bảo vệ: phase và log nằm trong một useReducer. Điểm, cờ đỏ và
+  awaitingReply đều tính trong render. Hằng số GHOST_AFTER_MS = 5000 đặt đầu
+  file, nên đổi thời gian chờ hay hệ số 0.1/50 chỉ sửa một chỗ.
+
+  git status còn thấy docs/report_homework_lab03/ chưa theo dõi. Đó không phải
+  của mình, nên mình không đụng vào.
+
+> chia nhỏ ra và commit đi
+
+● Mình xem phần còn lại chưa commit trước khi chia.
+
+  Ran 2 shell commands (ctrl+o to expand)
+
+● Phần HW3 đã commit xong, giờ chỉ còn docs/report_homework_lab03/ (báo cáo
+  LaTeX không phải của mình), mình kiểm tra kích thước và nội dung trước khi
+  chia commit. · summary
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Không có gì nhạy cảm (dòng TODO chỉ là macro trong main.tex). Chia thành 4
+  commit để dễ xem diff và bỏ riêng PDF nếu cần.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Working tree sạch. Mình đã chia phần còn lại thành 4 commit nhỏ, chưa có dòng
+  co-author:
+
+  f068479 docs(report): add compiled main.pdf
+  965915c docs(report): add devtools and lighthouse screenshots for hw1-hw3
+  f300aa6 docs(report): add chapters for exercises, homeworks and conclusion
+  1e9b8e4 docs(report): add latex skeleton, preamble and title page
+
+  Tình trạng trước khi commit:
+  - Các thay đổi HW3 (Claim/, CrateCard/, evidence, scripts) đã được commit
+    trước đó, nên không còn gì để chia.
+  - Chỉ còn docs/report_homework_lab03/ chưa theo dõi, là báo cáo LaTeX của bạn,
+    không phải do mình viết. Mình chỉ đọc kích thước và tìm chuỗi nhạy cảm
+    (không có), chưa đọc nội dung các chương.
+
+  Hai điều bạn nên kiểm:
+  1. PDF có khớp source không. main.pdf (1.8 MB) nằm ở commit riêng vì mình
+     không biết nó được biên dịch từ phiên bản .tex hiện tại hay cũ. Nếu bạn sửa
+     .tex sau khi compile, hãy compile lại rồi git commit --amend hoặc tạo
+     commit mới cho PDF. Nếu không muốn nộp PDF trong git thì chỉ cần git revert
+     f068479.
+  2. Báo cáo chưa nhắc tới bonus. Mình chưa mở các chương nên không biết có đề
+     cập Situationship hay không. Nếu bạn muốn thêm, mình có evidence sẵn ở
+     src/homeworks/BonusSituationship/evidence/.
+
+  Mình chưa push gì lên remote.
