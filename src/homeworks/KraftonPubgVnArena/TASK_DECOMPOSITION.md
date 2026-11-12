@@ -60,7 +60,7 @@ Dự án dùng JSX/JS nên contract viết bằng JSDoc `@typedef` trong `src/do
 | H3-01 | Contract (JSDoc), dữ liệu mẫu 4 đội + crate, `formatVnd`, `getDropPhase` | `src/domain/*.js` | Test: định dạng VND; ma trận phase | [x] |
 | H3-02 | `usePubgAirdropTimer` đúng slide (`Date.now() + serverOffsetMs`, interval 200ms, `visibilitychange` resync, trả `{ remainingMs, isLive }`) | `src/hooks/usePubgAirdropTimer.js` | Test fake timers: tab nền 1 phút, khi `visible` giá trị đúng ngay; đổi `targetEpochMs` thì tính lại | [x] |
 | H3-03 | Cleanup interval/listener, an toàn StrictMode | `src/hooks/usePubgAirdropTimer.js` | Test: unmount gỡ cả interval và listener | [x] |
-| H3-04 | API giả `reserveCrate` 200/409 | `src/api/arena.js` | Test: 409 theo cấu hình/rival; abort được | [ ] |
+| H3-04 | API giả `reserveCrate` 200/409 | `src/api/arena.js` | Test: 409 theo cấu hình/rival; abort được | [x] |
 | H3-05 | Hook/reducer claim lạc quan + khoá `claimId` chống bấm đúp | `src/hooks/useCrateClaim.js` | Test: hai click liên tiếp chỉ một request | [ ] |
 | H3-06 | Rollback khi 409, hiển thị thông báo bằng chữ | `src/hooks/useCrateClaim.js` | Test: stock trở lại giá trị cũ, `role="alert"` | [ ] |
 | H3-07 | UI crate/vé: đếm ngược, giá VND, nút Claim theo phase | `src/components/CrateCard.jsx` | Nút `disabled` khi không hợp lệ + lý do bằng chữ | [ ] |
