@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { formatVnd } from './formatVnd.js';
+import { formatCountdown } from './formatCountdown.js';
 import { DROP_WINDOW_MS, getDropPhase, isDropExpired } from './dropPhase.js';
 import { SQUADS, createSampleCrates } from './arenaConfig.js';
 
@@ -45,5 +46,18 @@ describe('arenaConfig', () => {
     const crates = createSampleCrates(1_000_000);
     expect(crates.every((c) => c.dropEpochMs > 1_000_000)).toBe(true);
     expect(new Set(crates.map((c) => c.id)).size).toBe(crates.length);
+  });
+});
+
+describe('formatCountdown', () => {
+  it.each([
+    [0, '00:00'],
+    [1, '00:01'],
+    [20_000, '00:20'],
+    [65_000, '01:05'],
+    [3_600_000, '1:00:00'],
+    [-500, '00:00'],
+  ])('%i ms -> %s', (ms, expected) => {
+    expect(formatCountdown(ms)).toBe(expected);
   });
 });

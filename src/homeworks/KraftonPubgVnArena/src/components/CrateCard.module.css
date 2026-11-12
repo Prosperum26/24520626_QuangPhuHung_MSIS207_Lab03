@@ -1,0 +1,107 @@
+/* Thẻ nổi kiểu Drum Kit: viền ink dày, bóng đổ cứng, nút lún xuống đúng --lift khi bấm. */
+.card {
+  display: grid;
+  gap: 1rem;
+  padding: 1.25rem;
+  border: 3px solid var(--ink);
+  border-radius: var(--radius-panel);
+  background: var(--surface);
+  box-shadow: 0 var(--lift) 0 var(--ink);
+}
+
+.header {
+  display: grid;
+  gap: 0.5rem;
+  justify-items: start;
+}
+
+.title {
+  font-size: 1.375rem;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+/* Chip phase: màu theo phase, nhưng luôn có nhãn chữ. */
+.phase {
+  padding: 0.15rem 0.75rem;
+  border: 2px solid var(--ink);
+  border-radius: 999px;
+  background: var(--phase-color);
+  font-size: 0.9375rem;
+  font-weight: 700;
+}
+
+.facts {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.25rem 1rem;
+}
+
+.facts dt {
+  color: var(--ink-soft);
+}
+
+.facts dd {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  text-align: right;
+}
+
+.countdown {
+  font-size: 1.5rem;
+  letter-spacing: 0.02em;
+}
+
+.claim {
+  min-height: 3rem;
+  padding: 0 1.5rem;
+  border: 3px solid var(--ink);
+  border-radius: 0.9rem;
+  background: var(--accent);
+  box-shadow: 0 var(--lift) 0 var(--ink);
+  color: var(--ink);
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition:
+    translate 70ms ease-out,
+    box-shadow 70ms ease-out;
+}
+
+.claim:active:not(:disabled) {
+  translate: 0 var(--lift);
+  box-shadow: 0 0 0 var(--ink);
+}
+
+/* Nút không hợp lệ: nền nhạt, không bóng, vẫn đọc được chữ (không chỉ dựa vào màu). */
+.claim:disabled {
+  background: var(--paper);
+  box-shadow: none;
+  color: var(--ink-soft);
+  cursor: not-allowed;
+}
+
+.reason,
+.status {
+  color: var(--ink-soft);
+}
+
+.status:empty {
+  display: none;
+}
+
+.error {
+  padding: 0.5rem 0.75rem;
+  border: 2px solid var(--ink);
+  border-radius: 0.75rem;
+  background: var(--looted);
+  font-weight: 700;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .claim {
+    transition: none;
+  }
+}

@@ -22,3 +22,6 @@ export function createSampleCrates(nowMs = Date.now()) {
     { id: 'g-coin-crate', title: 'PVS Finals VIP Pass + 5,000 G-Coin', priceVnd: 99000, remainingStock: 1, dropEpochMs: nowMs + 45_000 },
   ];
 }
+
+/** Xác suất một người chơi khác lấy suất trước, để demo thấy 409 rollback. */
+export const RIVAL_CHANCE = 0.35;
