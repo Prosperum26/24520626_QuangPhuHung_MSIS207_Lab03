@@ -2,6 +2,13 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { PianoStudio } from './PianoStudio.jsx';
 import { createFakeAudio } from '../audio/fakeAudio.js';
+import { formatSpeed } from '../useSequencer.js';
+
+// Mỗi lần Sequencer render nó gọi formatSpeed (3 nhãn tốc độ): dùng làm bộ đếm render.
+vi.mock('../useSequencer.js', async (importOriginal) => {
+  const original = await importOriginal();
+  return { ...original, formatSpeed: vi.fn(original.formatSpeed) };
+});
 
 let audio;
 beforeEach(() => {
@@ -41,6 +48,16 @@ async function recordTwoNotes() {
   await playNote(64, 100);
   fireEvent.click(button('Ghi'));
 }
+
+describe('PianoStudio: Sequencer không render lại khi nhấn phím', () => {
+  it('nhấn/nhả phím chỉ đổi state đàn, Sequencer bị memo bỏ qua', () => {
+    render(<PianoStudio />);
+    formatSpeed.mockClear();
+    fireEvent.pointerDown(key(60), { button: 0 });
+    fireEvent.pointerUp(key(60));
+    expect(formatSpeed).not.toHaveBeenCalled();
+  });
+});
 
 describe('PianoStudio: trạng thái ban đầu', () => {
   it('chưa ghi thì Phát và Dừng bị vô hiệu; vùng status có sẵn', () => {

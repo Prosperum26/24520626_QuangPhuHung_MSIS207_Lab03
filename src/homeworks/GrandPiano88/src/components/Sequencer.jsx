@@ -1,4 +1,4 @@
-import { useId } from 'react';
+import { memo, useId } from 'react';
 import { SPEEDS } from '../pianoConfig.js';
 import { formatSpeed } from '../useSequencer.js';
 import styles from './Sequencer.module.css';
@@ -7,13 +7,24 @@ import styles from './Sequencer.module.css';
  * Bảng điều khiển ghi và phát lại, thuần hiển thị (trạng thái nằm trong useSequencer).
  * Vùng role="status" luôn có trong DOM (không tạo lại mỗi lần đổi trạng thái) để trình đọc màn hình
  * bắt được thay đổi. Nút "Ghi" là nút bật/tắt: nhãn cố định, trạng thái ở aria-pressed.
+ * Bọc `memo`: cha (PianoStudio) render lại ở mỗi lần nhấn phím, còn các prop ở đây chỉ đổi khi ghi/phát.
  * @param {{
  *   status: 'idle' | 'recording' | 'playing', count: number, speed: number, message: string,
  *   onRecord: () => void, onStopRecord: () => void, onPlay: () => void, onStop: () => void,
  *   onSpeedChange: (speed: number) => void,
  * }} props
  */
-export function Sequencer({ status, count, speed, message, onRecord, onStopRecord, onPlay, onStop, onSpeedChange }) {
+export const Sequencer = memo(function Sequencer({
+  status,
+  count,
+  speed,
+  message,
+  onRecord,
+  onStopRecord,
+  onPlay,
+  onStop,
+  onSpeedChange,
+}) {
   const headingId = useId();
   const speedName = useId();
   const isRecording = status === 'recording';
@@ -65,4 +76,4 @@ export function Sequencer({ status, count, speed, message, onRecord, onStopRecor
       </fieldset>
     </section>
   );
-}
+});
