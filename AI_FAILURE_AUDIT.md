@@ -19,6 +19,7 @@
 | 4 | Exercise 1 (E1-07) | Demo "ảnh lỗi" và favicon mặc định bắn lỗi đỏ vào Console, trái gate "Console sạch" | Log Console đo trên Edge | Đã sửa, chờ hash commit |
 | 5 | Homework 1 (H1-D) | AI thêm font Google Fonts (stylesheet bên thứ ba chặn render) và tải trước 7 file WAV lúc mount mà không đo Performance; Lighthouse Performance 69 | Ảnh Lighthouse (DevTools) | Đã sửa và đo lại (Performance 69 lên 100) |
 | 6 | Homework 3 (H3-00 đến H3-08) | `npm test` fail ngẫu nhiên ("failed to find the current suite"); AI kết luận "flaky, chưa rõ nguyên nhân" và thử đổi cấu hình thay vì kiểm tra cách mình chạy test (thư mục và shell) | Output `npm test` nhiều lần, đối chứng với Ex1, HW1, HW2 | Đã sửa (chạy đúng folder), chờ hash commit |
+| 7 | Homework 3 (H3-07) | Đồng hồ đếm ngược dùng `<output>` (role `status`, live region) mà không tắt thông báo: đổi mỗi giây sẽ bị trình đọc màn hình đọc liên tục; lỗi chỉ lộ ra vì test gặp hai phần tử `status` | Output test; Accessibility tree (chờ ảnh DevTools) | Đã sửa, chờ ảnh và hash commit |
 
 ## Lỗi 1 — Đọc sai cấu trúc folder của checklist và ghi nhầm là "bắt buộc"
 
@@ -266,3 +267,35 @@ Giới hạn của bằng chứng: sau đó AI chạy lại HW3 bằng Bash (c�
 ### Bài học
 
 Khi kết quả test không ổn định giữa các lần chạy, bước đầu tiên là kiểm tra môi trường chạy (thư mục, shell) và đối chứng với project tương đương đang pass, không phải đổi cấu hình hay đổi pool. Cũng không được kết luận "flaky trên máy này" khi chưa có thí nghiệm kiểm soát.
+
+## Lỗi 7 — Đồng hồ đếm ngược là live region mà không tắt thông báo
+
+### Bối cảnh
+
+- **Task:** H3-07 (`CrateCard`, xem [WBS HW3](src/homeworks/KraftonPubgVnArena/TASK_DECOMPOSITION.md)).
+- **Prompt gốc của bạn:** "ok tiếp tục hoàn thiện tới h3-08 đi, phong cách giao diện lấy từ 2 homeowkr trước luôn"
+- **Điều AI tuyên bố:** AI viết đồng hồ bằng thẻ `<output>` theo quy tắc ngữ nghĩa của dự án (`<output>` cho giá trị tính ra) và không nhắc tới ảnh hưởng với trình đọc màn hình.
+
+### Lỗi
+
+`<output>` có role ngầm là `status` (live region `polite`). Số đếm ngược đổi mỗi giây nên trình đọc màn hình có thể đọc liên tục và lấn át thông báo quan trọng như "Đã giữ chỗ thành công." (cũng là `role="status"`). AI không nhận ra khi viết component; lỗi chỉ lộ ra khi chính test của AI gọi `getByRole('status')`. Việc đồng hồ thật sự bị đọc mỗi giây chưa được kiểm bằng trình đọc màn hình, chỉ suy ra từ vai trò ngầm của `<output>`.
+
+### Bằng chứng
+
+Output test thật lúc đó:
+
+```text
+TestingLibraryElementError: Found multiple elements with the role "status"
+ FAIL  src/components/CrateCard.test.jsx > CrateCard > Claim thành công: kho giảm, role="status" báo bằng chữ
+```
+
+Ảnh Accessibility tree của đồng hồ (chờ bạn chụp theo [evidence/README.md](src/homeworks/KraftonPubgVnArena/evidence/README.md), mục 3): (điền tên file ảnh)
+
+### Bản sửa thủ công
+
+- **Commit:** (điền hash từ `git log`)
+- **Thay đổi:** thêm `aria-live="off"` cho `<output>` của đồng hồ để không phát thanh mỗi giây; test chọn thông báo claim theo nội dung và kiểm `role="status"` của riêng nó.
+
+### Bài học
+
+Thẻ ngữ nghĩa mang theo vai trò ngầm (`<output>` là live region). Khi dùng cho nội dung cập nhật liên tục phải chủ động tắt hoặc giới hạn thông báo, và kiểm bằng Accessibility tree chứ không chỉ bằng test.
