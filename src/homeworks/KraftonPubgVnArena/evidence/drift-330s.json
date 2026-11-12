@@ -1,0 +1,18 @@
+{
+  "hiddenSeconds": 330,
+  "visibilityAfterSwitch": "hidden",
+  "visibilityWhileHidden": "hidden",
+  "naiveTicksExpected": 330,
+  "naiveTicksActual": 331,
+  "whileHidden": {
+    "displayed": "04:29",
+    "expectedSeconds": 269,
+    "driftSeconds": 0
+  },
+  "afterWake": {
+    "displayed": "04:29",
+    "expectedSeconds": 269,
+    "driftSeconds": 0
+  },
+  "ok": true
+}

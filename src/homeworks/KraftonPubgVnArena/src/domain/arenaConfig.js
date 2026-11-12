@@ -20,6 +20,8 @@ export function createSampleCrates(nowMs = Date.now()) {
   return [
     { id: 'pvs-vip-ticket', title: 'PVS Grand Finals VIP Ticket', priceVnd: 350000, remainingStock: 5, dropEpochMs: nowMs + 20_000 },
     { id: 'g-coin-crate', title: 'PVS Finals VIP Pass + 5,000 G-Coin', priceVnd: 99000, remainingStock: 1, dropEpochMs: nowMs + 45_000 },
+    // Drop sau 10 phút: đủ dài để đo drift khi tab nền (xem scripts/measure-drift.mjs).
+    { id: 'g-coin-contraband', title: 'G-Coin Contraband Crate', priceVnd: 199000, remainingStock: 10, dropEpochMs: nowMs + 600_000 },
   ];
 }
 

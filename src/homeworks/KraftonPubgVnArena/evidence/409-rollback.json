@@ -1,0 +1,26 @@
+{
+  "steps": [
+    {
+      "attempt": 1,
+      "before": "5",
+      "during": "4",
+      "after": "3",
+      "alert": null
+    },
+    {
+      "attempt": 2,
+      "before": "3",
+      "during": "2",
+      "after": "1",
+      "alert": null
+    },
+    {
+      "attempt": 3,
+      "before": "1",
+      "during": "0",
+      "after": "1",
+      "alert": "Crate đã bị lấy hết. Suất của bạn không được giữ."
+    }
+  ],
+  "ok": true
+}
