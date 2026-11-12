@@ -1,0 +1,60 @@
+[
+  {
+    "check": "không cuộn ngang ở 375px (trạng thái đầu)",
+    "scrollWidth": 375,
+    "clientWidth": 375,
+    "ok": true
+  },
+  {
+    "check": "không cuộn ngang ở 320px (trạng thái đầu)",
+    "scrollWidth": 320,
+    "clientWidth": 320,
+    "ok": true
+  },
+  {
+    "check": "axe-core: FRIENDS (trạng thái đầu)",
+    "passes": 35,
+    "violations": [],
+    "ok": true
+  },
+  {
+    "check": "status hiện cờ đỏ khi em 10 < ai đó 50",
+    "text": "Cờ đỏ: em cố 10 điểm mà ai đó chỉ cần 50 điểm.",
+    "ok": true
+  },
+  {
+    "check": "không cuộn ngang ở 375px khi có cờ đỏ + nhật ký",
+    "scrollWidth": 375,
+    "clientWidth": 375,
+    "ok": true
+  },
+  {
+    "check": "axe-core: DATING_NO_LOVE + cờ đỏ",
+    "passes": 37,
+    "violations": [],
+    "ok": true
+  },
+  {
+    "check": "axe-core: GHOSTED_EXIT (form bị khoá)",
+    "passes": 37,
+    "violations": [],
+    "ok": true
+  },
+  {
+    "check": "thứ tự Tab theo thứ tự đọc, mỗi điều khiển có outline focus",
+    "order": [
+      "BUTTON:Official",
+      "BUTTON:Dừng Lại",
+      "BUTTON:Reset",
+      "SELECT:Em (x0.1)Ai đó (x50)",
+      "INPUT:",
+      "BUTTON:Gửi tín hiệu"
+    ],
+    "ok": true
+  },
+  {
+    "check": "seen không rep: bị bỏ rơi sau ~5s",
+    "ms": 5019,
+    "ok": true
+  }
+]

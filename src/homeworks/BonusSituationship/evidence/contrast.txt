@@ -1,0 +1,16 @@
+ĐẠT  16.05:1 (cần 4.5) Chữ chính trên nền trang  --text #e8eaf6 / --bg #0b0e1a
+ĐẠT  14.38:1 (cần 4.5) Chữ chính trên thẻ  --text #e8eaf6 / --surface #151a2e
+ĐẠT   9.04:1 (cần 4.5) Chữ phụ trên thẻ  --muted #b4bbd6 / --surface #151a2e
+ĐẠT  10.09:1 (cần 4.5) Chữ phụ trên nền trang (header)  --muted #b4bbd6 / --bg #0b0e1a
+ĐẠT   6.29:1 (cần 4.5) Tên pha (accent) trên thẻ  --accent #ff6b81 / --surface #151a2e
+ĐẠT   7.03:1 (cần 4.5) Thông báo cờ đỏ (accent) trên nền status  --accent #ff6b81 / --bg #0b0e1a
+ĐẠT   6.98:1 (cần 4.5) Chữ nút trên nền accent  --on-accent #1a0b10 / --accent #ff6b81
+ĐẠT  14.38:1 (cần 4.5) Chữ nút Reset trên thẻ  --text #e8eaf6 / --surface #151a2e
+ĐẠT  16.05:1 (cần 4.5) Chữ phụ trong ô nhập (text trên bg)  --text #e8eaf6 / --bg #0b0e1a
+ĐẠT   9.04:1 (cần 3) Viền ô nhập / viền nút Reset trên thẻ  --muted #b4bbd6 / --surface #151a2e
+ĐẠT  11.95:1 (cần 3) Viền focus trên thẻ  --focus #ffd166 / --surface #151a2e
+ĐẠT  13.34:1 (cần 3) Viền focus trên nền trang  --focus #ffd166 / --bg #0b0e1a
+ĐẠT   7.03:1 (cần 3) Vạch nhấn cờ đỏ trên nền status  --accent #ff6b81 / --bg #0b0e1a
+Ghi chú: nút bị vô hiệu (disabled) được WCAG miễn trừ tương phản, không kiểm.
+
+Tất cả cặp đạt.

@@ -1,6 +1,7 @@
 import { useEffect, useId, useReducer, useState } from 'react';
 import { transition } from './fsm.js';
 import { createSignal, effortReducer, impactOf, isRedFlag } from './effort.js';
+import styles from './SituationshipAnalyzer.module.css';
 
 const PHASE_LABEL = {
   FRIENDS: 'Bạn bè',
@@ -75,64 +76,80 @@ export function SituationshipAnalyzer() {
   }
 
   return (
-    <main>
-      <header>
+    <main className={styles.page}>
+      <header className={styles.header}>
         <hgroup>
           <h1>Situationship Analyzer</h1>
           <p>Hẹn hò nhưng không yêu: máy trạng thái thay cho đống boolean.</p>
         </hgroup>
       </header>
 
-      <section aria-label="Pha quan hệ">
+      <section className={styles.card} aria-label="Pha quan hệ">
         <h2>Pha quan hệ</h2>
-        <p><strong>{PHASE_LABEL[phase]}</strong></p>
-        <button type="button" disabled={!can('ASK_OUT')} onClick={() => dispatch({ type: 'EVENT', event: 'ASK_OUT' })}>
-          Rủ đi chơi
-        </button>
-        <button type="button" disabled={!can('COMMIT')} onClick={() => dispatch({ type: 'EVENT', event: 'COMMIT' })}>
-          Official
-        </button>
-        <button type="button" disabled={!can('GHOST')} onClick={() => dispatch({ type: 'EVENT', event: 'GHOST' })}>
-          Dừng Lại
-        </button>
-        <button type="button" onClick={() => dispatch({ type: 'RESET' })}>
-          Reset
-        </button>
+        <p className={styles.phase}><strong>{PHASE_LABEL[phase]}</strong></p>
+        <p className={styles.actions}>
+          <button type="button" className={styles.btn} disabled={!can('ASK_OUT')} onClick={() => dispatch({ type: 'EVENT', event: 'ASK_OUT' })}>
+            Rủ đi chơi
+          </button>
+          <button type="button" className={styles.btn} disabled={!can('COMMIT')} onClick={() => dispatch({ type: 'EVENT', event: 'COMMIT' })}>
+            Official
+          </button>
+          <button type="button" className={styles.btn} disabled={!can('GHOST')} onClick={() => dispatch({ type: 'EVENT', event: 'GHOST' })}>
+            Dừng Lại
+          </button>
+          <button type="button" className={styles.btnGhost} onClick={() => dispatch({ type: 'RESET' })}>
+            Reset
+          </button>
+        </p>
       </section>
 
-      <section aria-labelledby={scoresTitleId}>
+      <section className={styles.card} aria-labelledby={scoresTitleId}>
         <h2 id={scoresTitleId}>Điểm nỗ lực</h2>
-        <dl>
+        <dl className={styles.scores}>
           <dt>Em</dt>
           <dd>{round1(emImpact)}</dd>
           <dt>Ai đó</dt>
           <dd>{round1(rivalImpact)}</dd>
         </dl>
         {/* eslint-disable-next-line jsx-a11y/no-redundant-roles -- đề yêu cầu ghi tường minh role="status" aria-live="polite" */}
-        <output role="status" aria-live="polite">{message}</output>
+        <output role="status" aria-live="polite" className={redFlag ? `${styles.status} ${styles.statusFlag}` : styles.status}>
+          {message}
+        </output>
       </section>
 
-      <section aria-label="Gửi tín hiệu">
+      <section className={styles.card} aria-label="Gửi tín hiệu">
         <h2>Gửi tín hiệu</h2>
-        <form onSubmit={handleSubmit}>
+        <form className={styles.form} onSubmit={handleSubmit}>
           <label htmlFor={actorId}>Ai nhắn</label>
-          <select id={actorId} value={actor} onChange={(e) => setActor(e.target.value)}>
+          <select id={actorId} className={styles.field} value={actor} onChange={(e) => setActor(e.target.value)}>
             <option value="EM">Em (x0.1)</option>
             <option value="AI_DO">Ai đó (x50)</option>
           </select>
           <label htmlFor={stepsId}>Số bước</label>
-          <input id={stepsId} type="number" min="1" step="1" value={Number.isNaN(steps) ? '' : steps} onChange={handleSteps} />
-          <button type="submit" disabled={!canSend}>Gửi tín hiệu</button>
+          <input
+            id={stepsId}
+            className={styles.field}
+            type="number"
+            min="1"
+            step="1"
+            value={Number.isNaN(steps) ? '' : steps}
+            onChange={handleSteps}
+          />
+          <button type="submit" className={styles.btn} disabled={!canSend}>Gửi tín hiệu</button>
         </form>
       </section>
 
-      <section aria-labelledby={logTitleId}>
+      <section className={styles.card} aria-labelledby={logTitleId}>
         <h2 id={logTitleId}>Nhật ký</h2>
-        <ul>
-          {log.map((s) => (
-            <li key={s.id}>{ACTOR_LABEL[s.actor]}: {s.steps} bước x {s.multiplier}</li>
-          ))}
-        </ul>
+        {log.length === 0 ? (
+          <p className={styles.empty}>Chưa có tín hiệu nào.</p>
+        ) : (
+          <ul className={styles.log}>
+            {log.map((s) => (
+              <li key={s.id}>{ACTOR_LABEL[s.actor]}: {s.steps} bước x {s.multiplier}</li>
+            ))}
+          </ul>
+        )}
       </section>
     </main>
   );

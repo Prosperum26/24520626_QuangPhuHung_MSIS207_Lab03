@@ -1,0 +1,137 @@
+.page {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: var(--gap);
+  display: grid;
+  gap: var(--gap);
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.header p {
+  margin: 0.25rem 0 0;
+  color: var(--muted);
+}
+
+.card {
+  min-width: 0; /* cho phép co lại, tránh cuộn ngang ở 375px */
+  padding: var(--gap);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.card h2 {
+  margin: 0 0 0.75rem;
+  font-size: 1.125rem;
+}
+
+.phase {
+  margin: 0 0 0.75rem;
+  font-size: 1.25rem;
+  color: var(--accent);
+  overflow-wrap: anywhere;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.btn {
+  min-height: var(--tap);
+  padding: 0 1rem;
+  border: 0;
+  border-radius: 8px;
+  background: var(--accent);
+  color: var(--on-accent);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn:disabled {
+  background: var(--border);
+  color: var(--muted);
+  cursor: not-allowed;
+}
+
+.btnGhost {
+  composes: btn;
+  background: transparent;
+  color: var(--text);
+  box-shadow: inset 0 0 0 2px var(--muted);
+}
+
+.scores {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.25rem 1rem;
+  margin: 0 0 0.75rem;
+}
+
+.scores dt {
+  color: var(--muted);
+}
+
+.scores dd {
+  margin: 0;
+  font-weight: 700;
+}
+
+.status {
+  display: block;
+  padding: 0.5rem 0.75rem;
+  border-left: 4px solid var(--muted);
+  background: var(--bg);
+  border-radius: 4px;
+  overflow-wrap: anywhere;
+}
+
+/* Cờ đỏ vẫn có chữ "Cờ đỏ:" trong nội dung; màu chỉ nhấn thêm, không mang nghĩa một mình. */
+.statusFlag {
+  border-left-color: var(--accent);
+  color: var(--accent);
+}
+
+.form {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.form label {
+  color: var(--muted);
+}
+
+.field {
+  min-height: var(--tap);
+  width: 100%;
+  padding: 0 0.75rem;
+  border: 1px solid var(--muted);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+}
+
+.log {
+  margin: 0;
+  padding-left: 1.25rem;
+  display: grid;
+  gap: 0.25rem;
+}
+
+.empty {
+  margin: 0;
+  color: var(--muted);
+}
+
+.btn:focus-visible,
+.field:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}

@@ -1,0 +1,26 @@
+/* Custom Properties dùng chung. Tỉ lệ tương phản đã chọn để đạt AA (>= 4.5:1) trên --surface. */
+:root {
+  --bg: #0b0e1a;
+  --surface: #151a2e;
+  --border: #2c3354;
+  --text: #e8eaf6;
+  --muted: #b4bbd6;
+  --accent: #ff6b81;
+  --on-accent: #1a0b10;
+  --focus: #ffd166;
+  --radius: 12px;
+  --gap: 1rem;
+  --tap: 2.75rem; /* 44px: vùng bấm đủ lớn trên mobile */
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 1rem/1.5 system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}

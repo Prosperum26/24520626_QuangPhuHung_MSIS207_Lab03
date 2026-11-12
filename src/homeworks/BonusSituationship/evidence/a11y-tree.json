@@ -1,0 +1,288 @@
+{
+  "role": "RootWebArea",
+  "backendNodeId": 2,
+  "loaderId": "8FE78CFCAA4CB2C9DDFFC84BB6B35D3C",
+  "name": "Bonus - Situationship Analyzer",
+  "url": "http://localhost:4174/",
+  "children": [
+    {
+      "role": "main",
+      "backendNodeId": 6,
+      "loaderId": "8FE78CFCAA4CB2C9DDFFC84BB6B35D3C",
+      "name": "",
+      "children": [
+        {
+          "role": "heading",
+          "backendNodeId": 31,
+          "loaderId": "8FE78CFCAA4CB2C9DDFFC84BB6B35D3C",
+          "name": "Situationship Analyzer",
+          "level": 1
+        },
+        {
+          "role": "StaticText",
+          "backendNodeId": 69,
+          "loaderId": "8FE78CFCAA4CB2C9DDFFC84BB6B35D3C",
+          "name": "Hẹn hò nhưng không yêu: máy trạng thái thay cho đống boolean."
+        },
+        {
+          "role": "region",
+          "backendNodeId": 8,
+          "loaderId": "8FE78CFCAA4CB2C9DDFFC84BB6B35D3C",
+          "name": "Pha quan hệ",
+          "children": [
+            {
+              "role": "heading",
+              "backendNodeId": 32,
+              "loaderId": "8FE78CFCAA4CB2C9DDFFC84BB6B35D3C",
+              "name": "Pha quan hệ",
+              "level": 2
+            },
+            {
+              "role": "StaticText",
+              "backendNodeId": 71,
+              "loaderId": "8FE78CFCAA4CB2C9DDFFC84BB6B35D3C",
+              "name": "Đã bị bỏ rơi"
+            },
+            {
+              "role": "button",
+              "backendNodeId": 36,
+              "loaderId": "8FE78CFCAA4CB2C9DDFFC84BB6B35D3C",
+              "name": "Rủ đi chơi",
+              "disabled": true
+            },
+            {
+              "role": "button",
+              "backendNodeId": 9,
+              "loaderId": "8FE78CFCAA4CB2C9DDFFC84BB6B35D3C",
+              "name": "Official",
+              "disabled": true
+            },
+            {
+              "role": "button",
+              "backendNodeId": 10,
+              "loaderId": "8FE78CFCAA4CB2C9DDFFC84BB6B35D3C",
+              "name": "Dừng Lại",
+              "disabled": true
+            },
+            {
+              "role": "button",
+              "backendNodeId": 11,
+              "loaderId": "8FE78CFCAA4CB2C9DDFFC84BB6B35D3C",
+              "name": "Reset"
+            }
+          ]
+        },
+        {
+          "role": "region",
+          "backendNodeId": 12,
+          "loaderId": "8FE78CFCAA4CB2C9DDFFC84BB6B35D3C",
+          "name": "Điểm nỗ lực",
+          "children": [
+            {
+              "role": "heading",
+              "backendNodeId": 37,
+              "loaderId": "8FE78CFCAA4CB2C9DDFFC84BB6B35D3C",
+              "name": "Điểm nỗ lực",
+              "level": 2
+            },
+            {
+              "role": "StaticText",
+              "backendNodeId": 77,
+              "loaderId": "8FE78CFCAA4CB2C9DDFFC84BB6B35D3C",
+              "name": "Em"
+            },
+            {
+              "role": "StaticText",
+              "backendNodeId": 78,
+              "loaderId": "8FE78CFCAA4CB2C9DDFFC84BB6B35D3C",
+              "name": "10"
+            },
+            {
+              "role": "StaticText",
+              "backendNodeId": 79,
+              "loaderId": "8FE78CFCAA4CB2C9DDFFC84BB6B35D3C",
+              "name": "Ai đó"
+            },
+            {
+              "role": "StaticText",
+              "backendNodeId": 80,
+              "loaderId": "8FE78CFCAA4CB2C9DDFFC84BB6B35D3C",
+              "name": "50"
+            },
+            {
+              "role": "status",
+              "backendNodeId": 17,
+              "loaderId": "8FE78CFCAA4CB2C9DDFFC84BB6B35D3C",
+              "name": "",
+              "atomic": true,
+              "live": "polite",
+              "relevant": "additions text",
+              "children": [
+                {
+                  "role": "StaticText",
+                  "backendNodeId": 81,
+                  "loaderId": "8FE78CFCAA4CB2C9DDFFC84BB6B35D3C",
+                  "name": "Kết thúc: đã bị bỏ rơi. Bấm Reset để thử lại."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "role": "region",
+          "backendNodeId": 13,
+          "loaderId": "8FE78CFCAA4CB2C9DDFFC84BB6B35D3C",
+          "name": "Gửi tín hiệu",
+          "children": [
+            {
+              "role": "heading",
+              "backendNodeId": 43,
+              "loaderId": "8FE78CFCAA4CB2C9DDFFC84BB6B35D3C",
+              "name": "Gửi tín hiệu",
+              "level": 2
+            },
+            {
+              "role": "form",
+              "backendNodeId": 3,
+              "loaderId": "8FE78CFCAA4CB2C9DDFFC84BB6B35D3C",
+              "name": "",
+              "children": [
+                {
+                  "role": "StaticText",
+                  "backendNodeId": 83,
+                  "loaderId": "8FE78CFCAA4CB2C9DDFFC84BB6B35D3C",
+                  "name": "Ai nhắn"
+                },
+                {
+                  "role": "combobox",
+                  "backendNodeId": 4,
+                  "loaderId": "8FE78CFCAA4CB2C9DDFFC84BB6B35D3C",
+                  "name": "Ai nhắn",
+                  "value": "Ai đó (x50)",
+                  "expanded": false,
+                  "haspopup": "menu",
+                  "children": [
+                    {
+                      "role": "option",
+                      "backendNodeId": 51,
+                      "loaderId": "8FE78CFCAA4CB2C9DDFFC84BB6B35D3C",
+                      "name": "Em (x0.1)",
+                      "selected": false
+                    },
+                    {
+                      "role": "option",
+                      "backendNodeId": 54,
+                      "loaderId": "8FE78CFCAA4CB2C9DDFFC84BB6B35D3C",
+                      "name": "Ai đó (x50)",
+                      "selected": true
+                    }
+                  ]
+                },
+                {
+                  "role": "StaticText",
+                  "backendNodeId": 84,
+                  "loaderId": "8FE78CFCAA4CB2C9DDFFC84BB6B35D3C",
+                  "name": "Số bước"
+                },
+                {
+                  "role": "spinbutton",
+                  "backendNodeId": 5,
+                  "loaderId": "8FE78CFCAA4CB2C9DDFFC84BB6B35D3C",
+                  "name": "Số bước",
+                  "value": 1,
+                  "valuetext": "1",
+                  "focused": true,
+                  "required": false,
+                  "valuemax": 0,
+                  "valuemin": 1
+                },
+                {
+                  "role": "button",
+                  "backendNodeId": 62,
+                  "loaderId": "8FE78CFCAA4CB2C9DDFFC84BB6B35D3C",
+                  "name": "Gửi tín hiệu",
+                  "disabled": true
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "role": "region",
+          "backendNodeId": 63,
+          "loaderId": "8FE78CFCAA4CB2C9DDFFC84BB6B35D3C",
+          "name": "Nhật ký",
+          "children": [
+            {
+              "role": "heading",
+              "backendNodeId": 64,
+              "loaderId": "8FE78CFCAA4CB2C9DDFFC84BB6B35D3C",
+              "name": "Nhật ký",
+              "level": 2
+            },
+            {
+              "role": "StaticText",
+              "backendNodeId": 88,
+              "loaderId": "8FE78CFCAA4CB2C9DDFFC84BB6B35D3C",
+              "name": "Em"
+            },
+            {
+              "role": "StaticText",
+              "backendNodeId": 89,
+              "loaderId": "8FE78CFCAA4CB2C9DDFFC84BB6B35D3C",
+              "name": ": "
+            },
+            {
+              "role": "StaticText",
+              "backendNodeId": 90,
+              "loaderId": "8FE78CFCAA4CB2C9DDFFC84BB6B35D3C",
+              "name": "100"
+            },
+            {
+              "role": "StaticText",
+              "backendNodeId": 91,
+              "loaderId": "8FE78CFCAA4CB2C9DDFFC84BB6B35D3C",
+              "name": " bước x "
+            },
+            {
+              "role": "StaticText",
+              "backendNodeId": 92,
+              "loaderId": "8FE78CFCAA4CB2C9DDFFC84BB6B35D3C",
+              "name": "0.1"
+            },
+            {
+              "role": "StaticText",
+              "backendNodeId": 94,
+              "loaderId": "8FE78CFCAA4CB2C9DDFFC84BB6B35D3C",
+              "name": "Ai đó"
+            },
+            {
+              "role": "StaticText",
+              "backendNodeId": 95,
+              "loaderId": "8FE78CFCAA4CB2C9DDFFC84BB6B35D3C",
+              "name": ": "
+            },
+            {
+              "role": "StaticText",
+              "backendNodeId": 96,
+              "loaderId": "8FE78CFCAA4CB2C9DDFFC84BB6B35D3C",
+              "name": "1"
+            },
+            {
+              "role": "StaticText",
+              "backendNodeId": 97,
+              "loaderId": "8FE78CFCAA4CB2C9DDFFC84BB6B35D3C",
+              "name": " bước x "
+            },
+            {
+              "role": "StaticText",
+              "backendNodeId": 98,
+              "loaderId": "8FE78CFCAA4CB2C9DDFFC84BB6B35D3C",
+              "name": "50"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

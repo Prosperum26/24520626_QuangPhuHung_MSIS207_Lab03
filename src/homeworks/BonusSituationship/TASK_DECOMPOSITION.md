@@ -20,7 +20,7 @@
 | Timeout timer | Hết 5 giây không có `AI_DO` trả lời thì gửi `GHOST` | Giữ đúng ý "seen không rep"; Reset để chơi lại |
 | "Abort promise" trong đề | Bỏ; chỉ `clearTimeout` | Bài không có promise/request nào để abort |
 | State | Một `useReducer` giữ `{ phase, log }` | Một chỗ duy nhất đổi state, dễ nâng/thêm field khi bị sửa tại chỗ |
-| Dependency của effect | `[phase, log]` | Reset timer khi `AI_DO` phản hồi, không chỉ khi `EM` nhắn |
+| Dependency của effect | `[awaitingReply, log]` (`awaitingReply` đã gộp điều kiện pha) | Reset timer khi `AI_DO` phản hồi, không chỉ khi `EM` nhắn |
 
 ## 3. Contract
 
@@ -62,7 +62,7 @@
 | B-02 | Reducer nhật ký tín hiệu bất biến + điểm dẫn xuất | `src/effort.js`, `src/effort.test.js` | Test: không mutate (`Object.freeze` mảng gốc); `100 × 0.1` vs `1 × 50`; `isRedFlag` đúng theo pha | [x] |
 | B-03 | Component + `<output role="status">` cờ đỏ | `src/SituationshipAnalyzer.jsx`, `src/SituationshipAnalyzer.test.jsx` | Test: red flag khi `em < rival` ở `DATING_NO_LOVE`; không có cờ ở pha khác; `role="status"` có nội dung đúng | [x] |
 | B-04 | Ghosting timer 5s + cleanup | `src/SituationshipAnalyzer.jsx` | Test (fake timers): hết 5s sang `GHOSTED_EXIT`; `AI_DO` trả lời hoặc Dừng Lại thì hủy; unmount không còn timer (`vi.getTimerCount() === 0`) | [x] |
-| B-05 | Form tín hiệu `useId` + label; CSS Modules 375px | `src/SituationshipAnalyzer.module.css`, `src/App.jsx` | Lighthouse a11y 100; 375px không cuộn ngang; `valueAsNumber` + `Number.isNaN` có test | [ ] |
+| B-05 | Form tín hiệu `useId` + label; CSS Modules 375px | `src/SituationshipAnalyzer.module.css`, `src/App.jsx` | Lighthouse a11y 100; 375px không cuộn ngang; `valueAsNumber` + `Number.isNaN` có test | [x] |
 
 ### Chi tiết từng task
 
