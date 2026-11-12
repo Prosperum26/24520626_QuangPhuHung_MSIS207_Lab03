@@ -59,3 +59,34 @@ describe('usePubgAirdropTimer', () => {
     expect(result.current.remainingMs).toBe(120_000);
   });
 });
+
+describe('usePubgAirdropTimer cleanup', () => {
+  it('unmount gỡ interval và listener visibilitychange', () => {
+    const clearSpy = vi.spyOn(window, 'clearInterval');
+    const removeSpy = vi.spyOn(document, 'removeEventListener');
+    const { unmount } = renderHook(() => usePubgAirdropTimer(START + 10_000));
+    expect(vi.getTimerCount()).toBe(1);
+    unmount();
+    expect(clearSpy).toHaveBeenCalledTimes(1);
+    expect(removeSpy).toHaveBeenCalledWith('visibilitychange', expect.any(Function));
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
+  it('StrictMode (mount-unmount-mount) chỉ còn đúng một interval', () => {
+    const { result, unmount } = renderHook(() => usePubgAirdropTimer(START + 10_000), { reactStrictMode: true });
+    expect(vi.getTimerCount()).toBe(1);
+    act(() => vi.advanceTimersByTime(1000));
+    expect(result.current.remainingMs).toBe(9000);
+    unmount();
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
+  it('đổi targetEpochMs thì gỡ interval cũ và tính lại ngay theo mục tiêu mới', () => {
+    const { result, rerender } = renderHook(({ target }) => usePubgAirdropTimer(target), {
+      initialProps: { target: START + 10_000 },
+    });
+    rerender({ target: START + 60_000 });
+    expect(vi.getTimerCount()).toBe(1);
+    expect(result.current.remainingMs).toBe(60_000);
+  });
+});
